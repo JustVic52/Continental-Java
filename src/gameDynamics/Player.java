@@ -1,8 +1,6 @@
 package gameDynamics;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import gameTools.Carta;
 import gameTools.Escalera;
@@ -18,7 +16,7 @@ public class Player extends Round {
 	public Player(int t) {
 		points = 0;
 		turno = t;
-		ciclo = 2;
+		ciclo = 1;
 		mano = new Mano();
 		roundWinner = false;
 		gameWinner = false;
@@ -84,7 +82,9 @@ public class Player extends Round {
 	
 	public void bajarse() {
 		mano.bajarEscaleras();
+		mano.setEscaleras(0);
 		mano.bajarTrios();
+		mano.setTrios(0);
 	}
 	
 	public String getStringCombos(List<Escalera> escaleras, List<Trio> trios) {

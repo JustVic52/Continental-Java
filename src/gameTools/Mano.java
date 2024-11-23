@@ -87,6 +87,7 @@ public class Mano extends Combinaciones {
 			selection.get(i).setSeleccionada(false);
 		}
 		if (!selection.isEmpty()) { selection.clear(); }
+		updateManoTrios();
 	}
 	
 	public void resguardarEscaleras() { //coge las escaleras y las pasa al resguardo.
@@ -103,6 +104,7 @@ public class Mano extends Combinaciones {
 			selection.get(i).setSeleccionada(false);
 		}
 		if (!selection.isEmpty()) { selection.clear(); }
+		updateManoEscaleras();
 	}
 	
 	public void bajarTrios() {
@@ -113,8 +115,8 @@ public class Mano extends Combinaciones {
 					if (t.getTrio()[i] != null) { t.getTrio()[i].setResguardada(false); }
 				}
 			}
+			if (getListaTrios() != null) { getListaTrios().clear(); }
 			if (resguardoTrios.size() > 0) { resguardoTrios.clear(); }
-			updateMano();
 		}
 	}
 	
@@ -126,24 +128,25 @@ public class Mano extends Combinaciones {
 					if (e.getEscalera()[i] != null) { e.getEscalera()[i].setResguardada(false); }
 				}
 			}
+			if (getListaEscaleras() != null) { getListaEscaleras().clear(); }
 			if (resguardoEscaleras.size() > 0) { resguardoEscaleras.clear(); }
-			updateMano();
 		}
 	}
 
-	private void updateMano() {
-		if (!bajadaTrios.isEmpty()) {
-			for (Trio t : bajadaTrios) {
-				for (Carta c : t.getTrio()) {
-					mano.remove(c);
-				}
+	private void updateManoTrios() {
+		if (!resguardoTrios.isEmpty()) {
+			Trio t = resguardoTrios.get(resguardoTrios.size() - 1);
+			for (Carta c : t.getTrio()) {
+				mano.remove(c);
 			}
 		}
-		if (!bajadaEscalera.isEmpty()) {
-			for (Escalera e : bajadaEscalera) {
-				for (Carta c : e.getEscalera()) {
-					mano.remove(c);
-				}
+	}
+	
+	private void updateManoEscaleras() {
+		if (!resguardoEscaleras.isEmpty()) {
+			Escalera e = resguardoEscaleras.get(resguardoEscaleras.size() - 1);
+			for (Carta c : e.getEscalera()) {
+				mano.remove(c);
 			}
 		}
 	}

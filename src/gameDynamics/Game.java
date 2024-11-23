@@ -120,49 +120,52 @@ public class Game {
 	    	System.out.println("número incorrecto");
 	    	break;
 	    }
-	    System.out.println(player.getFullMano().toString());
 		//2. Intentar Bajarte y/o jugar cartas
-//	    System.out.println("Suponemos que juegas una carta");
-//	    player.getMano().remove(0);
-//	    System.out.println("1. Jugar Carta");
 	    if (!player.getBajadaEscaleras().isEmpty() || !player.getBajadaTrios().isEmpty()) {
 	    	System.out.println("Supongamos que juegas una carta\n");
 	 	    player.getMano().remove(0);
 	 	    System.out.println(player.getFullMano().toString());
 	    }
-	    if (player.getCiclo() > 1) {
-	    	boolean endPlay = false;
-	    	while (!endPlay) {
-	    		System.out.println(player.getFullMano().toString());
-	    		System.out.println("1. Jugar cartas");
-		    	System.out.println("2. Manejar cartas");
-		    	System.out.println("3. Pasar");
-		    	System.out.print("\nSeleccione una opción: ");
-		    	select = teclat.nextInt();
-		    	System.out.println("");
-		    	switch (select) {
-		    	case 1:
-		    		System.out.println("WORK IN PROGRESS\n");
-		    		break;
-		    	case 2:
-		    		boolean endSelection = false;
-		    		while (!endSelection) {
-		    			System.out.println(player.getFullMano().toString());
-			    		System.out.println("1. Seleccionar cartas");
-				    	System.out.println("2. Eliminar carta de la seleción");
-				    	System.out.println("3. Verificar");
-				    	System.out.println("4. Salir");
-				    	System.out.print("\nSeleccione una opción: ");
-			    		select = teclat.nextInt();
-			    		System.out.println("");
-			    		switch (select) {
-					    case 1:
-					 	    boolean done = false;
-					 	    while (!done) {
-					 	    	System.out.print("Seleccione una carta o pulse 0 para salir: ");
-					 	    	select = teclat.nextInt();
-					 	    	System.out.println("");
-					 	    	if (select == 0) {
+	    boolean endPlay = false;
+    	while (!endPlay) {
+    		System.out.println(player.getFullMano().toString());
+    		System.out.println("1. Jugar cartas");
+	    	System.out.println("2. Manejar cartas");
+	    	System.out.println("3. Pasar");
+	    	System.out.print("\nSeleccione una opción: ");
+	    	select = teclat.nextInt();
+	    	System.out.println("");
+	    	switch (select) {
+	    	case 1:
+	    		if (player.getCiclo() > 1) { System.out.println("WORK IN PROGRESS\n"); }
+	    		else { System.out.println("No puedes jugar cartas porque es tu primera jugada\n"); }
+	    		break;
+	    	case 2:
+	    		if (!player.getBajadaEscaleras().isEmpty() || !player.getBajadaTrios().isEmpty()) {
+	    			System.out.println("No puedes manejar tus cartas porque ya te has bajado");
+	    			break;
+	    		}
+	    		boolean endSelection = false;
+	    		while (!endSelection) {
+	    			System.out.println(player.getFullMano().toString());
+		    		System.out.println("1. Seleccionar cartas");
+			    	System.out.println("2. Eliminar carta de la seleción");
+			    	System.out.println("3. Verificar");
+			    	System.out.println("4. Salir");
+			    	System.out.print("\nSeleccione una opción: ");
+		    		select = teclat.nextInt();
+		    		System.out.println("");
+		    		switch (select) {
+				    case 1:
+				 	    boolean done = false;
+				 	    while (!done) {
+				 	    	System.out.print("Seleccione una carta o pulse 0 para salir: ");
+				 	    	select = teclat.nextInt();
+				 	    	System.out.println("");
+				 	    	if (select > player.getMano().size()) {
+				 	    		System.out.println("Valor no aceptado, escoja otro\n");
+				 	    	} else {
+				 	    		if (select == 0) {
 					 	    		System.out.println("Fin de la selección\n");
 					 	    		done = true;
 					 	    	}
@@ -174,86 +177,85 @@ public class Game {
 					 	    			} else { System.out.println("No puede seleccionar una carta resguardada\n"); }						
 							 	    } else { System.out.println("Carta ya seleccionada, seleccione otra\n"); }
 					 	    	}
-					 	    }
-					    	break;
-					    case 2:
-					 	    System.out.println("selecciona una carta: ");
-					 	    select = teclat.nextInt();
-					 	    player.deselect(select - 1);
-					    	break;
-					    case 3:
-					    	if (player.getSelection().isEmpty()) {
-					    		System.out.println("Seleccione las cartas que desea verificar primero\n");
-					    		break;
-					    	}
-					    	System.out.println("Combinaciones para verificar: ");
-					    	System.out.println("1. Escaleras");
-					    	System.out.println("2. Tríos");
-					    	System.out.println("3. Cancelar verificación\n");
-					    	System.out.print("selecciona qué quieres verificar: ");
-					    	select = teclat.nextInt();
-					    	System.out.println("");
-					    	switch (select) {
-					    	case 1:
-					    		if (numEscaleras == 0) { System.out.println("No hay Escaleras que verificar"); }
-					    		else if (player.getFullMano().getResguardoEscaleras().size() == numEscaleras) {
-					    			System.out.println("Ya has verificado todas las escaleras"); 
-					    		}
-					    		else {
-					    			player.getFullMano().sacarEscaleras(player.getSelection());
-					    			if (player.getFullMano().getCanEscalera()) {
-					    				player.getFullMano().resguardarEscaleras();
-					    				System.out.println("Escalera verificada!\n");
-					    			} else { System.out.println("No se pudo verificar la escalera\n"); }
-					    		}
-					    		break;
-					    	case 2:
-					    		if (numTrios == 0) { System.out.println("No hay Tríos que verificar"); }
-					    		else if (player.getFullMano().getResguardoTrios().size() == numTrios) {
-					    			System.out.println("Ya has verificado todas los Tríos"); 
-					    		}
-					    		else {
-					    			player.getFullMano().sacarTrios(player.getSelection());
-					    			if (player.getFullMano().getCanTrio()) {
-					    				player.getFullMano().resguardarTrios();
-					    				System.out.println("Trío verificado!\n");
-					    			} else { System.out.println("No se pudo verificar el trío\n"); }
-					    		}
-					    		break;
-					    	default:
-					    		break;
-					    	}
-					    	if (player.canBajarse(player.getRoundTrios(), player.getRoundEscaleras())) {
-					    		System.out.println("Ya puedes bajarte! Deseas hacerlo ahora? Si(1) | No(2)");
+				 	    	}
+				 	    }
+				    	break;
+				    case 2:
+				 	    System.out.println("selecciona una carta: ");
+				 	    select = teclat.nextInt();
+				 	    player.deselect(select - 1);
+				    	break;
+				    case 3:
+				    	System.out.println("Combinaciones para verificar: ");
+				    	System.out.println("1. Escalera");
+				    	System.out.println("2. Trío");
+				    	System.out.println("3. Cancelar verificación\n");
+				    	System.out.print("selecciona qué quieres verificar: ");
+				    	select = teclat.nextInt();
+				    	System.out.println("");
+				    	switch (select) {
+				    	case 1:
+				    		if (numEscaleras == 0) { System.out.println("No hay Escaleras que verificar"); }
+				    		else if (player.getFullMano().getResguardoEscaleras().size() == numEscaleras) {
+				    			System.out.println("Ya has verificado todas las escaleras"); 
+				    		}
+				    		else {
+				    			player.getFullMano().sacarEscaleras(player.getSelection());
+				    			if (player.getFullMano().getCanEscalera()) {
+				    				player.getFullMano().resguardarEscaleras();
+				    				System.out.println("Escalera verificada!\n");
+				    			} else { System.out.println("No se pudo verificar la escalera\n"); }
+				    		}
+				    		break;
+				    	case 2:
+				    		if (numTrios == 0) { System.out.println("No hay Tríos que verificar"); }
+				    		else if (player.getFullMano().getResguardoTrios().size() == numTrios) {
+				    			System.out.println("Ya has verificado todas los Tríos"); 
+				    		}
+				    		else {
+				    			player.getFullMano().sacarTrios(player.getSelection());
+				    			if (player.getFullMano().getCanTrio()) {
+				    				player.getFullMano().resguardarTrios();
+				    				System.out.println("Trío verificado!\n");
+				    			} else { System.out.println("No se pudo verificar el trío\n"); }
+				    		}
+				    		break;
+				    	default:
+				    		break;
+				    	}
+				    	if (player.canBajarse(numTrios, numEscaleras)) {
+				    		if (player.getCiclo() == 1) { System.out.println("No puedes bajar cartas porque es tu primera jugada\n"); }
+				    		else {
+				    			System.out.print("Ya puedes bajarte! Deseas hacerlo ahora? Si(1) | No(2) : ");
 					    		select = teclat.nextInt();
+					    		System.out.println("");
 					    		if (select == 1) { player.bajarse(); }
-					    		System.out.println(player.getFullMano().toString());
 					    		endSelection = true;
-					    	} else {
-					    		for (int i = 0; i < player.getSelection().size(); i++) {
-					    			player.getSelection().get(i).setSeleccionada(false);
-					    		}
-					    		player.getSelection().clear();
-					    		System.out.println("No te puedes bajar aún \n");
-					    		endSelection = true;
-					    	}
-					    	break;
-					    default:
-					    	player.getSelection().clear();
-					    	System.out.println("No juegas cartas este turno\n");
-					    	endSelection = true;
-			    		}
-				    }
-		    		break;
-		    	case 3:
-		    		endPlay = true;
-			    	break;
-		    	default:
-			    	System.out.println("número incorrecto");
-			    	break;
-		    	}
+				    		}
+				    	} else {
+				    		for (int i = 0; i < player.getSelection().size(); i++) {
+				    			player.getSelection().get(i).setSeleccionada(false);
+				    		}
+				    		player.getSelection().clear();
+				    		System.out.println("No te puedes bajar aún \n");
+				    		endSelection = true;
+				    	}
+				    	break;
+				    default:
+				    	player.getSelection().clear();
+				    	System.out.println("No juegas cartas este turno\n");
+				    	endSelection = true;
+		    		}
+			    }
+	    		break;
+	    	case 3:
+	    		endPlay = true;
+		    	break;
+	    	default:
+		    	System.out.println("número incorrecto");
+		    	break;
 	    	}
-    	} else { System.out.println("No puedes jugar cartas porque es tu primera jugada\n"); }
+    	}
 		//3. Descartar carta
 	    if (player.getCiclo() > 1 && player.getBajadaEscaleras().isEmpty() && player.getBajadaTrios().isEmpty()) {
 	    	System.out.println("No juegas cartas este turno\n");
@@ -263,16 +265,18 @@ public class Game {
 	    	System.out.print("Selecciona una carta para descartar: ");
 		    select = teclat.nextInt();
 		    System.out.println("");
-		    if (!player.getMano().get(select - 1).isResguardada()) {
-		    	player.discard(player.getMano().get(select - 1));
-		    	descartes.take(player.getUltimaCarta());
-		    	System.out.println(player.getFullMano().toString());
-			    System.out.println(descartes.toString());
-			    player.updateCiclo();
-			    discarded = true; 
-		    } else {
-		    	System.out.println("No puedes descartar una carta de tu resguardo\n");
-		    }	    
+		    if (select - 1 <= player.getMano().size()) {
+		    	if (!player.getMano().get(select - 1).isResguardada()) {
+			    	player.discard(player.getMano().get(select - 1));
+			    	descartes.take(player.getUltimaCarta());
+			    	System.out.println(player.getFullMano().toString());
+				    System.out.println(descartes.toString());
+				    player.updateCiclo();
+				    discarded = true; 
+			    } else {
+			    	System.out.println("No puedes descartar una carta de tu resguardo\n");
+			    }
+		    } else { System.out.println("Valor no aceptado, escoja otra vez\n"); }    
 	    }
 	}
 

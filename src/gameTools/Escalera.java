@@ -72,9 +72,10 @@ public class Escalera {
 		if (!comodines.isEmpty() && cont > 1) {
 			for(Carta c : comodines) {
 				add(c);
+				cont++;
 			}
+			comodines.clear();
 		}
-		System.out.println(toString());
 		//Si hay 4 o más encontramos la escalera
 		if (cont >= 4) {
 			boolean vuelta = false;
@@ -92,7 +93,6 @@ public class Escalera {
 					currentLength = 0;
 					if (vuelta) { break; }
 				}
-				System.out.println(currentLength);
 			}
 			maxLength = Math.max(maxLength, currentLength);
 			startIndex = Math.max(startIndex,currentStart);
@@ -162,12 +162,16 @@ public class Escalera {
 				i++;
 			}
 			if (i < numeros.length) {
-				while (i < numeros.length && numeros[i] != 0) {
-					i++;
+				int j = i;
+				while (j < numeros.length && numeros[j] != 0) {
+					j++;
 				}
-				if (i < numeros.length) {
-					escalera[i] = carta;
-					numeros[i] = 1;
+				if (j < numeros.length) {
+					escalera[j] = carta;
+					numeros[j] = 1;
+				} else {
+					escalera[i - 1] = carta;
+					numeros[i - 1] = 1;
 				}
 			}
 		} else {

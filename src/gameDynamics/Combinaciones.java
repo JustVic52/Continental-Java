@@ -27,6 +27,7 @@ public class Combinaciones {
 				temp.remove(c);
 			}
 			canTrio = true;
+			trios++;
 		}
 		selection.clear();
 		selection.addAll(temp);
@@ -34,8 +35,8 @@ public class Combinaciones {
 
 	public void sacarEscaleras(List<Carta> selection) {
 		canEscalera = false;
-		listaEscaleras = new ArrayList<>();
 		List<Carta> temp = new ArrayList<>(selection);
+		listaEscaleras = new ArrayList<>();
 		//desde la selección dada saca la escalera que le piden y la almacena en listaEscaleras
 		Escalera e = new Escalera();
 		if (e.canBeEscalera(temp)) {
@@ -44,6 +45,7 @@ public class Combinaciones {
 				temp.remove(c);
             }
 			canEscalera = true;
+			escaleras++;
 		}
 		selection.clear();
 		selection.addAll(temp);
@@ -53,22 +55,40 @@ public class Combinaciones {
 		return trios;
 	}
 	
+	public void setTrios(int t) {
+		trios = t;
+	}
+	
 	public boolean canBajarse(int numTrios, int numEscaleras) {
 		// coge los requisitos de la ronda y comprueba si se cumplen con listaTrios y listaEscaleras
 		// Si puede, devuelve true
 		boolean resTrios = false;
 		boolean resEscaleras = false;
-		if (listaEscaleras != null && listaEscaleras.size() == numEscaleras) {
-			resEscaleras = true;
-		}
-		if (listaTrios != null && listaTrios.size() == numTrios) {
-			resTrios = true;
+		if (numEscaleras != 0) {
+			if (listaEscaleras != null && escaleras == numEscaleras) {
+				resEscaleras = true;
+				if (numTrios != 0) {
+					if (listaTrios != null && trios == numTrios) {
+						resTrios = true;
+						return resTrios && resEscaleras;
+					}
+				} else { return resEscaleras; }
+			}
+		} else {
+			if (trios == numTrios) {
+				resTrios = true;
+				return resTrios;
+			}
 		}
 		return resTrios && resEscaleras;
 	}
 	
 	public int getEscaleras() {
 		return escaleras;
+	}
+	
+	public void setEscaleras(int e) {
+		escaleras = e;
 	}
 	
 	public List<Escalera> getListaEscaleras() {
