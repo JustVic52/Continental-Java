@@ -2,6 +2,7 @@ package gameDynamics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import gameTools.Carta;
 import gameTools.Escalera;
@@ -77,27 +78,30 @@ public class Player extends Round {
 		if (mano.getRetake()) { mano.retake(); }
 	}
 	
-	public boolean canBajarse(int numTrios, int numEscaleras, List<Carta> selection) {
-		List<Carta> temp = new ArrayList<>(selection);
-		if (temp.size() >= getMinimum()) {
-			return mano.canBajarse(numTrios, numEscaleras, temp);
-		}
-		else { return false; }
+	public boolean canBajarse(int numTrios, int numEscaleras) {
+		return mano.canBajarse(numTrios, numEscaleras);
 	}
 	
 	public void bajarse() {
-		int numTrios = getRoundTrios();
-		int numEscaleras = getRoundEscaleras();
-		if (mano.getSelection().size() >= getMinimum()) {
-			if (canBajarse(numTrios, numEscaleras, mano.getSelection())) {
-				if (numEscaleras > 0) {
-					mano.bajarEscaleras(mano.getListaEscaleras());	
-				}
-				if (numTrios > 0) {
-					mano.bajarTrios(mano.getListaTrios());
-				}
+		mano.bajarEscaleras();
+		mano.bajarTrios();
+	}
+	
+	public String getStringCombos(List<Escalera> escaleras, List<Trio> trios) {
+		String res = "";
+		if (!escaleras.isEmpty()) {
+			for (int i = 0; i < escaleras.size(); i++) {
+				res += (escaleras.size() == 1) ? "Escalera: " : "Escalera " + (i + 1) + ": ";
+				res += escaleras.get(i) + " ";
+			}	
+		}
+		if (!trios.isEmpty()) {
+			for (int i = 0; i < trios.size(); i++) {
+				res += (trios.size() == 1) ? "Trío: " : "Trío " + (i + 1) + ": ";
+				res += trios.get(i) + " ";
 			}
 		}
+		return res;
 	}
 	
 	public void updateBajarse() {

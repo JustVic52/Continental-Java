@@ -72,10 +72,11 @@ public class Trio {
 		numOfTrio = 0;
 	}
 	
-	public boolean canBeATrio(List<Carta> selection, int tempTrios) { //devuelve true si existe almenos un trío dentro de la selección y lo almacena
+	public boolean canBeATrio(List<Carta> selection) { //verifica que el trío que le paso existe y lo almacena
 		clear();
-		int j = 0;
-		int cont = 0;
+		//Si la selección está vacía devuelve false
+		if (selection.isEmpty()) { return false; }
+		//Sino, Saco los comodines de la selección
 		comodines = new ArrayList<>();
 		List<Carta> temp = new ArrayList<>();
 		for (int k = 0; k < selection.size(); k++) {
@@ -85,40 +86,35 @@ public class Trio {
 		}
 		selection.clear();
 		selection.addAll(temp);
-		while (trio[3] == null && j < selection.size()) {
-			ArrayList<Integer> checked = new ArrayList<>();
-			for (Carta c : selection) {
-				if (!checked.contains(c.getNumber())) { checked.add(c.getNumber()); }
-			}
-			cont = checked.size();
-			int i = j;
-			while (trio[3] == null && i < selection.size()) {
-				if (canBeAdded(selection.get(i))) {
-					add(selection.get(i));
-				}
-				if (trio[1] == null && comodines.size() > 1 && cont == 1) { break; }
-				if (trio[2] != null && !comodines.isEmpty() && tempTrios > 3) { break; }
-				i++;
-			} 
-			if (trio[2] != null) { //primero comprueba que el trío se ha formado y finaliza
-				updateComodines(selection);
-				return true; 
-			} else if (trio[1] != null && !comodines.isEmpty()) { //sino, comprueba que se puede añadir 1 comodín y finaliza
-				add(comodines.get(0));
+		//Compruebo si hay más de un número, si lo hay, no puedo hacer el trío
+		ArrayList<Integer> checked = new ArrayList<>();
+		for (Carta c : selection) {
+			if (!checked.contains(c.getNumber())) { checked.add(c.getNumber()); }
+		}
+		if (checked.size() > 1) { return false; }
+		//Formo el trío con las cartas que no son comodines
+		for (int i = 0; i < selection.size(); i++) {
+			if (canBeAdded(selection.get(i))) { add(selection.get(i)); }
+			if (trio[2] != null) {
 				updateComodines(selection);
 				return true;
-			} else if (trio[0] != null && comodines.size() > 1) { //sino, si ya no quedan cartas y hay 2 comodines se añaden y finaliza
-				for (int h = 0; h < 2; h++) {
-				    add(comodines.get(h));
-				}
-				updateComodines(selection);
-				return true;
-			} else { //y por último, si no se puede hacer nada de lo anterior, avanza
-				clear();
-				j++;
 			}
 		}
-		updateComodines(selection);
+		//Si aún faltan huecos, relleno con comodines
+		if (!comodines.isEmpty()) {
+			for (Carta c : comodines) {
+				add(c);
+				if (trio[3] != null) {
+					updateComodines(selection);
+					return true;
+				}
+			}
+			if (trio[2] != null) {
+				updateComodines(selection);
+				return true;
+			}
+		}
+		//Si nada de eso ha funcionado, pues no es un trío.
 		return false;
 	}
 	

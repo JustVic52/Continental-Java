@@ -12,47 +12,38 @@ public class Combinaciones {
 	private int trios, escaleras;
 	private boolean canEscalera, canTrio;
 	private List<Trio> listaTrios;
-	private List<Escalera> listaEscalera;
+	private List<Escalera> listaEscaleras;
 	
 	
-	public void sacarTrios(List<Carta> selection, int numTrios) {
+	public void sacarTrios(List<Carta> selection) {
+		canTrio = false;
 		listaTrios = new ArrayList<>();
-		int tempTrios = numTrios;
 		List<Carta> temp = new ArrayList<>(selection);
-		//desde la selección dada saca todos los trios que le piden y los almacena en listaTrios
-		for (int i = 0; i < numTrios; i++) {
-			Trio t = new Trio();
-			if (t.canBeATrio(temp, tempTrios)) {
-				listaTrios.add(t);
-				tempTrios--;
-				for (Carta c : t.getTrio()) {
-					temp.remove(c);
-				}
+		//desde la selección dada saca el trío que le piden y lo almacena en listaTrios
+		Trio t = new Trio();
+		if (t.canBeATrio(temp)) {
+			listaTrios.add(t);
+			for (Carta c : t.getTrio()) {
+				temp.remove(c);
 			}
-		}
-		if (listaTrios.size() == numTrios) {
 			canTrio = true;
 		}
 		selection.clear();
 		selection.addAll(temp);
 	}
 
-	public void sacarEscaleras(List<Carta> selection, int numEscaleras) {
-		listaEscalera = new ArrayList<>();
+	public void sacarEscaleras(List<Carta> selection) {
+		canEscalera = false;
+		listaEscaleras = new ArrayList<>();
 		List<Carta> temp = new ArrayList<>(selection);
 		System.out.println("selection: " + temp);
-		//desde la selección dada saca todas las escaleras que le piden y las almacena en listaEscaleras
-		for (int i = 0; i < numEscaleras; i++) {
-			Escalera e = new Escalera();
-			if (e.canBeEscalera(temp)) {
-				System.out.println("selection updated: " + temp);
-				listaEscalera.add(e);
-				for (Carta c : e.getEscalera()) {
-					if (c != null) { if (c.getNumber() != 14) { temp.remove(c); } }
-	            }
-			}
-		}
-		if (listaEscalera.size() == numEscaleras) {
+		//desde la selección dada saca la escalera que le piden y la almacena en listaEscaleras
+		Escalera e = new Escalera();
+		if (e.canBeEscalera(temp)) {
+			listaEscaleras.add(e);
+			for (Carta c : e.getEscalera()) {
+				temp.remove(c);
+            }
 			canEscalera = true;
 		}
 		selection.clear();
@@ -63,43 +54,18 @@ public class Combinaciones {
 		return trios;
 	}
 	
-	public boolean canBajarse(int numTrios, int numEscaleras, List<Carta> selection) {
-		// coge los requisitos de la ronda y comprueba si puede:
-		// - Crear X escaleras y luego X trios.
+	public boolean canBajarse(int numTrios, int numEscaleras) {
+		// coge los requisitos de la ronda y comprueba si se cumplen con listaTrios y listaEscaleras
 		// Si puede, devuelve true
-		if (listaTrios != null) { listaTrios.clear(); }
-		if (listaEscalera != null) { listaEscalera.clear(); }
-		List<Carta> temp = new ArrayList<>(selection);
-		boolean res = false;
-		if (numEscaleras > 0) {
-			sacarEscaleras(selection, numEscaleras);
-			if (canEscalera) {
-				if (numTrios > 0) {
-					sacarTrios(selection, numTrios);
-					if (canTrio) {
-						res = true;
-					} else {
-						sacarTrios(temp, numTrios);
-						if (canTrio) {
-							sacarEscaleras(temp, numEscaleras);
-							if (canEscalera) {
-								res = true;
-							}
-						}
-					}
-				} else {
-					res = true;
-				}
-			}
-			selection.clear();
-			selection.addAll(temp);
-		} else {
-			sacarTrios(selection, numTrios);
-			if (canTrio) {
-				res = true;
-			}
+		boolean resTrios = false;
+		boolean resEscaleras = false;
+		if (listaEscaleras != null && listaEscaleras.size() == numEscaleras) {
+			resEscaleras = true;
 		}
-		return res;
+		if (listaTrios != null && listaTrios.size() == numTrios) {
+			resTrios = true;
+		}
+		return resTrios && resEscaleras;
 	}
 	
 	public int getEscaleras() {
@@ -107,10 +73,18 @@ public class Combinaciones {
 	}
 	
 	public List<Escalera> getListaEscaleras() {
-		return listaEscalera;
+		return listaEscaleras;
 	}
 	
 	public List<Trio> getListaTrios() {
 		return listaTrios;
+	}
+	
+	public boolean getCanEscalera() {
+		return canEscalera;
+	}
+	
+	public boolean getCanTrio() {
+		return canTrio;
 	}
 }

@@ -3,7 +3,7 @@ package gameTools;
 public class Carta {
 	
 	private int value, palo, number;
-	public boolean comodin, seleccionada;
+	public boolean comodin, seleccionada, resguardada;
 	public static final int PICAS = 1, CORAZONES = 2, TREVOLES = 3, DIAMANTES = 4;
 	public static final int ACE = 1, JACK = 11, QUEEN = 12, KING = 13;
 	
@@ -12,14 +12,24 @@ public class Carta {
 		adjustValue(number);
 		palo = p;
 		seleccionada = false;
+		resguardada = false;
 	}
 	
+	public boolean isResguardada() {
+		return resguardada;
+	}
+
+	public void setResguardada(boolean r) {
+		resguardada = r;
+	}
+
 	public Carta() { //Crea un comodín
 		number = 14;
 		adjustValue(number);
 		comodin = true;
 		palo = 5;
 		seleccionada = false;
+		resguardada = false;
 	}
 	
 	private void adjustValue(int n) {

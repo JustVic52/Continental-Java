@@ -23,6 +23,21 @@ public class Round {
 	public int getMinimum() {
 		return cartasMin;
 	}
+	
+	public String sacarObjetivos() {
+		String res = "Objetivo: ";
+		int esc = escaleras;
+		int tri = trios;
+		if (esc > 0) {
+			res += (esc == 1) ? "1 Escalera" : esc + " Escaleras";
+			if (tri > 0) { res += " y "; }
+			else { res += "."; }
+		}
+		if (tri > 0) {
+			res += (tri == 1) ? "1 Trío." : tri + " Tríos.";
+		}
+		return res;
+	}
 
 	private void setRound(int num) {
 		//1.  1 escalera - 7 || Cartas Mínimas: 4
