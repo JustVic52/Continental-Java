@@ -32,8 +32,11 @@ public class Escalera {
 		return escalera;
 	}
 	
-	public boolean canBeEscalera(List<Carta> selection) { //devuelve true si existe almenos una escalera
+	public boolean canBeEscalera(List<Carta> selection) { //verifica la escalera que le paso y la almacena
 		clear();
+		//Si la selección está vacía devuelve false
+		if (selection.isEmpty() || selection.size() < 4) { return false; }
+		//Sino, saco los comodines
 		comodines = new ArrayList<>();
 		List<Carta> temp = new ArrayList<>();
 		for (int k = 0; k < selection.size(); k++) {
@@ -43,129 +46,75 @@ public class Escalera {
 		}
 		selection.clear();
 		selection.addAll(temp);
+		//Si hay más de un palo no voy a hacer la escalera
+		ArrayList<Integer> checked = new ArrayList<>();
+		for (Carta c : selection) {
+			if (!checked.contains(c.getPalo())) { checked.add(c.getPalo()); }
+		}
+		if (checked.size() != 1) { return false; }
+		//Estas variables me ayudan a determinar la longitud de la escalera
 		int currentLength = 0;
 		int maxLength = 0;
 		int startIndex = -1;
 		int currentStart = -1;
-		for (int j = 1; j < 5; j++) {
-			clear();
-			int cont = 0;
-			paloOfEscalera = j;
-			for (int i = 0; i < selection.size(); i++) {
-				if (canBeAdded(selection.get(i))) {
-					add(selection.get(i));
-				}
+		int cont = 0;
+		//Añadimos las cartas a la escalera y contamos si hay al menos 1
+		for (int i = 0; i < selection.size(); i++) {
+			if (canBeAdded(selection.get(i))) {
+				add(selection.get(i));
 			}
-			for (int i : numeros) {
-				if (i > 0) { cont++; }
+		}
+		for (int i : numeros) {
+			if (i > 0) { cont++; }
+		}
+		if (cont < 1) { return false; }
+		//Añado los comodines
+		if (!comodines.isEmpty() && cont > 1) {
+			for(Carta c : comodines) {
+				add(c);
 			}
-			if (cont >= 4) {
-				for (int k = 0; k < numeros.length; k++) {
-					if (numeros[k] == 1) {
-						if (currentLength == 0) { currentStart = k; }
-						currentLength++;
+		}
+		System.out.println(toString());
+		//Si hay 4 o más encontramos la escalera
+		if (cont >= 4) {
+			boolean vuelta = false;
+			for (int k = 0; k < numeros.length; k++) {
+				if (numeros[k] == 1) {
+					if (currentLength == 0) { currentStart = k; }
+					currentLength++;
+					if (k == 12 && numeros[0] == 1 && !vuelta) {
+						k = -1;
+						vuelta = true;
 					}
-					else {
-						maxLength = Math.max(maxLength, currentLength);
-						startIndex = Math.max(startIndex,currentStart);
-						currentLength = 0;
-					}
+				} else {
+					maxLength = Math.max(maxLength, currentLength);
+					startIndex = Math.max(startIndex,currentStart);
+					currentLength = 0;
+					if (vuelta) { break; }
 				}
-				maxLength = Math.max(maxLength, currentLength);
-				startIndex = Math.max(startIndex,currentStart);
-				
-				if (maxLength >= 4) {
-					for (int i = 0; i < startIndex - 1; i++) {
+				System.out.println(currentLength);
+			}
+			maxLength = Math.max(maxLength, currentLength);
+			startIndex = Math.max(startIndex,currentStart);
+			
+			if (maxLength >= 4) {
+				if (startIndex + maxLength > 13) {
+					for (int i = startIndex + maxLength - 13; i < startIndex; i++) {
 						escalera[i] = null;
 						numeros[i] = 0;
 					}
-					for (int i = startIndex + maxLength; i < escalera.length; i++) {
+				} else {
+					for (int i = 0; i < startIndex; i++) {
 						escalera[i] = null;
 						numeros[i] = 0;
 					}
-					updateComodines(selection);
-					return true;
-				}
-			}
-			if (!comodines.isEmpty() && cont > 1) {
-				int comodinesMax = comodines.size();
-				int contComodines = 0;
-				currentLength = 0;
-				maxLength = 0;
-				startIndex = -1;
-				currentStart = -1;
-				for (int i = 0; i < numeros.length; i++) {
-					if (numeros[i] == 0) { add(comodines.get(comodines.size() - 1)); }
-				}
-				Carta tempCom = comodines.get(0);
-				for (int k = 0; k < comodines.size(); k++) {
-					comodinesMax = k + 1;
-					for (int h = 0; h < numeros.length; h++) {
-						System.out.println(escalera[h]);
-						if (escalera[h].getNumber() != 14) {
-							if (currentLength == 0) { currentStart = h; }
-							currentLength++;
-							if (!comodines.isEmpty()) { comodines.remove(0); }
-							System.out.println(comodines);
-							if (contComodines == comodinesMax && escalera[h + 1].getNumber() == 14) { 
-								maxLength = Math.max(maxLength, currentLength);
-								startIndex = Math.max(startIndex,currentStart);
-								if (maxLength >= 4) {
-									for (int i = 0; i < startIndex; i++) {
-										escalera[i] = null;
-										numeros[i] = 0;
-									}
-									for (int i = startIndex + maxLength; i < escalera.length; i++) {
-										escalera[i] = null;
-										numeros[i] = 0;
-									}
-									updateComodines(selection);
-									return true;
-								} else {
-									for (int i = 0; i < contComodines; i++) {
-										add(tempCom);
-									}
-									currentLength = 0;
-									contComodines = 0;
-									maxLength = 0;
-									startIndex = -1;
-									currentStart = -1;
-								}
-							}
-						} else {
-							if (currentLength > 0) {
-								currentLength++;
-								contComodines++;
-								if (!comodines.isEmpty()) { comodines.remove(0); }
-								if (contComodines == comodinesMax && escalera[h + 1].getNumber() == 14) { 
-									maxLength = Math.max(maxLength, currentLength);
-									startIndex = Math.max(startIndex,currentStart);
-									if (maxLength >= 4) {
-										for (int i = 0; i < startIndex; i++) {
-											escalera[i] = null;
-											numeros[i] = 0;
-										}
-										for (int i = startIndex + maxLength; i < escalera.length; i++) {
-											escalera[i] = null;
-											numeros[i] = 0;
-										}
-										updateComodines(selection);
-										return true;
-									} else {
-										for (int i = 0; i < contComodines; i++) {
-											add(tempCom);
-										}
-										currentLength = 0;
-										contComodines = 0;
-										maxLength = 0;
-										startIndex = -1;
-										currentStart = -1;
-									}
-								}
-							}
-						}
+					for (int i = startIndex + maxLength; i < numeros.length; i++) {
+						escalera[i] = null;
+						numeros[i] = 0;
 					}
 				}
+				updateComodines(selection);
+				return true;
 			}
 		}
 		return false;
@@ -209,12 +158,17 @@ public class Escalera {
 	public void add(Carta carta) {
 		if (carta.getNumber() == 14) {
 			int i = 0;
-			while (i < numeros.length && numeros[i] != 0) {
+			while (i < numeros.length && numeros[i] != 1) {
 				i++;
 			}
 			if (i < numeros.length) {
-				escalera[i] = carta;
-				numeros[i] = 1;
+				while (i < numeros.length && numeros[i] != 0) {
+					i++;
+				}
+				if (i < numeros.length) {
+					escalera[i] = carta;
+					numeros[i] = 1;
+				}
 			}
 		} else {
 			if (numeros[carta.getNumber() - 1] == 0) {

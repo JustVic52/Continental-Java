@@ -83,11 +83,15 @@ public class Mano extends Combinaciones {
 				}
 			}
 		}
+		for (int i = 0; i < selection.size(); i++) {
+			selection.get(i).setSeleccionada(false);
+		}
+		if (!selection.isEmpty()) { selection.clear(); }
 	}
 	
 	public void resguardarEscaleras() { //coge las escaleras y las pasa al resguardo.
 		for (Escalera e : getListaEscaleras()) {
-			bajadaEscalera.add(e);
+			resguardoEscaleras.add(e);
 			for (int i = 0; i < e.getEscalera().length; i++) {
 				if (e.getEscalera()[i] != null) {
 					e.getEscalera()[i].setResguardada(true);
@@ -95,6 +99,10 @@ public class Mano extends Combinaciones {
 				}
 			}
 		}
+		for (int i = 0; i < selection.size(); i++) {
+			selection.get(i).setSeleccionada(false);
+		}
+		if (!selection.isEmpty()) { selection.clear(); }
 	}
 	
 	public void bajarTrios() {
@@ -102,7 +110,7 @@ public class Mano extends Combinaciones {
 			for (Trio t : resguardoTrios) {
 				bajadaTrios.add(t);
 				for (int i = 0; i < t.getTrio().length; i++) {
-					if (t.getTrio()[i] != null) { t.getTrio()[i].setResguardada(true); }
+					if (t.getTrio()[i] != null) { t.getTrio()[i].setResguardada(false); }
 				}
 			}
 			if (resguardoTrios.size() > 0) { resguardoTrios.clear(); }
@@ -115,7 +123,7 @@ public class Mano extends Combinaciones {
 			for (Escalera e : resguardoEscaleras) {
 				bajadaEscalera.add(e);
 				for (int i = 0; i < e.getEscalera().length; i++) {
-					if (e.getEscalera()[i] != null) { e.getEscalera()[i].setResguardada(true); }
+					if (e.getEscalera()[i] != null) { e.getEscalera()[i].setResguardada(false); }
 				}
 			}
 			if (resguardoEscaleras.size() > 0) { resguardoEscaleras.clear(); }

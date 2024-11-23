@@ -91,7 +91,7 @@ public class Trio {
 		for (Carta c : selection) {
 			if (!checked.contains(c.getNumber())) { checked.add(c.getNumber()); }
 		}
-		if (checked.size() > 1) { return false; }
+		if (checked.size() != 1) { return false; }
 		//Formo el trío con las cartas que no son comodines
 		for (int i = 0; i < selection.size(); i++) {
 			if (canBeAdded(selection.get(i))) { add(selection.get(i)); }

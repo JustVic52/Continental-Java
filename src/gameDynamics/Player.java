@@ -18,7 +18,7 @@ public class Player extends Round {
 	public Player(int t) {
 		points = 0;
 		turno = t;
-		ciclo = 1;
+		ciclo = 2;
 		mano = new Mano();
 		roundWinner = false;
 		gameWinner = false;

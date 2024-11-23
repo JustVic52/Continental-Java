@@ -91,7 +91,7 @@ public class Game {
 		}
 	}
 
-	private void newTurn(Player player) {
+	public void newTurn(Player player) {
 		int select = 0;
 		int numTrios = round.getRoundTrios();
 		int numEscaleras = round.getRoundEscaleras();
@@ -133,6 +133,7 @@ public class Game {
 	    if (player.getCiclo() > 1) {
 	    	boolean endPlay = false;
 	    	while (!endPlay) {
+	    		System.out.println(player.getFullMano().toString());
 	    		System.out.println("1. Jugar cartas");
 		    	System.out.println("2. Manejar cartas");
 		    	System.out.println("3. Pasar");
@@ -203,7 +204,6 @@ public class Game {
 					    			if (player.getFullMano().getCanEscalera()) {
 					    				player.getFullMano().resguardarEscaleras();
 					    				System.out.println("Escalera verificada!\n");
-					    				System.out.println(player.getFullMano().toString());
 					    			} else { System.out.println("No se pudo verificar la escalera\n"); }
 					    		}
 					    		break;
@@ -217,7 +217,6 @@ public class Game {
 					    			if (player.getFullMano().getCanTrio()) {
 					    				player.getFullMano().resguardarTrios();
 					    				System.out.println("Trío verificado!\n");
-					    				System.out.println(player.getFullMano().toString());
 					    			} else { System.out.println("No se pudo verificar el trío\n"); }
 					    		}
 					    		break;

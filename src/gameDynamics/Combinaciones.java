@@ -36,7 +36,6 @@ public class Combinaciones {
 		canEscalera = false;
 		listaEscaleras = new ArrayList<>();
 		List<Carta> temp = new ArrayList<>(selection);
-		System.out.println("selection: " + temp);
 		//desde la selección dada saca la escalera que le piden y la almacena en listaEscaleras
 		Escalera e = new Escalera();
 		if (e.canBeEscalera(temp)) {
