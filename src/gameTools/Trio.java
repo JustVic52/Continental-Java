@@ -35,7 +35,11 @@ public class Trio {
 				if (trio[i] == null) {
 					trio[i] = carta;
 					palos[i] = carta.getPalo();
-					if (carta.getNumber() != 14) { numOfTrio = carta.getNumber(); }
+					if (numOfTrio == 0 && carta.getNumber() != 14) { numOfTrio = carta.getNumber(); }
+					added = true;
+				} else if (trio[i] != null && trio[i].getNumber() == 14 && trio[3] != null) {
+					trio[i] = carta;
+					palos[i] = carta.getPalo();
 					added = true;
 				}
 				i++;
@@ -49,8 +53,7 @@ public class Trio {
 	}
 	
 	public boolean canBeAdded(Carta carta) {
-		return trio[3] == null && isDifferent(carta)
-				&& (numOfTrio == carta.getNumber() || carta.getNumber() == 14 || numOfTrio == 0);
+		return isDifferent(carta) && (carta.getNumber() == numOfTrio || carta.getNumber() == 14 || numOfTrio == 0);
 	}
 	
 	public String toString() {
@@ -95,7 +98,7 @@ public class Trio {
 		//Formo el trío con las cartas que no son comodines
 		for (int i = 0; i < selection.size(); i++) {
 			if (canBeAdded(selection.get(i))) { add(selection.get(i)); }
-			if (trio[2] != null) {
+			if (trio[2] != null && comodines.isEmpty()) {
 				updateComodines(selection);
 				return true;
 			}

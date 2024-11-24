@@ -37,12 +37,8 @@ public class Mano extends Combinaciones {
 	}
 	
 	public void discard(Carta carta) {
-		for (int i = 0; i < mano.size(); i++) {
-			if (carta.equals(mano.get(i)) && !carta.isResguardada()) {
-				mano.remove(carta);
-				ultimaCartaEliminada = carta;
-			}
-		}
+		mano.remove(carta);
+		ultimaCartaEliminada = carta;
 	}
 	
 	public void take(Carta carta) {
@@ -178,6 +174,19 @@ public class Mano extends Combinaciones {
 		if (!selection.isEmpty()) { res += "Cartas seleccionadas: " + selection + "\n"; }
 		if (!resguardoEscaleras.isEmpty()) { res += "Resguardo (Escaleras): " + resguardoEscaleras + "\n"; }
 		if (!resguardoTrios.isEmpty()) { res += "Resguardo (Tríos): " + resguardoTrios + "\n"; }
+		return res;
+	}
+	
+	public String bajadaToString() {
+		String res = "";
+		if (!bajadaEscalera.isEmpty()) { res += "Cartas bajadas (Escaleras): " + bajadaEscalera + "\n"; }
+		if (!bajadaTrios.isEmpty()) { res += "Cartas bajadas (Tríos): " + bajadaTrios + "\n"; }
+		return res;
+	}
+	
+	public String selectionToString() {
+		String res = "";
+		if (!selection.isEmpty()) { res += "Cartas seleccionadas: " + selection + "\n"; }
 		return res;
 	}
 

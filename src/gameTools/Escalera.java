@@ -182,6 +182,11 @@ public class Escalera {
 					numeros[carta.getNumber() - 1] = 1;
 				}
 			}
+			if (numeros[carta.getNumber() - 1] == 1 && escalera[carta.getNumber()] != null && escalera[carta.getNumber()].isComodin()) {
+				if (carta.getPalo() == paloOfEscalera) {
+					escalera[carta.getNumber() - 1] = carta;
+				}
+			}
 		}
 	}
 	

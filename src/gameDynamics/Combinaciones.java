@@ -10,7 +10,7 @@ import gameTools.Trio;
 public class Combinaciones {
 	
 	private int trios, escaleras;
-	private boolean canEscalera, canTrio;
+	private boolean canEscalera, canTrio, canAdded;
 	private List<Trio> listaTrios;
 	private List<Escalera> listaEscaleras;
 	
@@ -32,6 +32,18 @@ public class Combinaciones {
 		selection.clear();
 		selection.addAll(temp);
 	}
+	
+	public void comprobarTrio(Carta carta, Trio t) {
+		canAdded = false;
+		if (t.canBeAdded(carta)) {
+			t.add(carta);
+			canAdded = true;
+		}
+	}
+	
+	public boolean getAdded() {
+		return canAdded;
+	}
 
 	public void sacarEscaleras(List<Carta> selection) {
 		canEscalera = false;
@@ -49,6 +61,14 @@ public class Combinaciones {
 		}
 		selection.clear();
 		selection.addAll(temp);
+	}
+	
+	public void comprobarEscalera(Carta carta, Escalera e) {
+		canAdded = false;
+		if (e.canBeAdded(carta)) {
+			e.add(carta);
+			canAdded = true;
+		}
 	}
 	
 	public int getTrios() {

@@ -30,6 +30,10 @@ public class Game {
 			jugadores.add(new Player(i + 1));
 		}
 	}
+	
+	public List<Player> getJugadores() {
+		return jugadores;
+	}
 
 	public void run() {
 		for (int i = 0; i < numJugadores; i++) {
@@ -137,12 +141,70 @@ public class Game {
 	    	System.out.println("");
 	    	switch (select) {
 	    	case 1:
-	    		if (player.getCiclo() > 1) { System.out.println("WORK IN PROGRESS\n"); }
-	    		else { System.out.println("No puedes jugar cartas porque es tu primera jugada\n"); }
+	    		if (player.getCiclo() > 1 && (!player.getBajadaTrios().isEmpty() || !player.getBajadaEscaleras().isEmpty())) {
+	    			System.out.print("Seleccione la carta que quieres colocar: ");
+	    			select = teclat.nextInt();
+	    			System.out.println("");
+	    			if (select > player.getMano().size()) {
+		 	    		System.out.println("Valor no aceptado, escoja otro\n");
+		 	    	} else {
+		 	    		if (!player.getMano().get(select - 1).isSeleccionada()) {
+		 	    			if (!player.getMano().get(select - 1).isResguardada()) {
+		 	    				player.select(select - 1);
+					 	    	System.out.println(player.getFullMano().selectionToString());
+		 	    			} else { System.out.println("No puede seleccionar una carta resguardada\n"); }						
+				 	    } else { System.out.println("Carta ya seleccionada, seleccione otra\n"); }
+		 	    	}
+	    			for (int i = 0; i < jugadores.size(); i++) {
+	    				if (!jugadores.get(i).getBajadaEscaleras().isEmpty() || !jugadores.get(i).getBajadaTrios().isEmpty()) {
+	    					System.out.println(jugadores.get(i).bajadaToString());
+	    				}
+	    			}
+	    			System.out.print("Seleccione la bajada del jugador: ");
+	    			select = teclat.nextInt();
+	    			System.out.println("");
+	    			if (select > numJugadores) { System.out.println("Ese jugador no existe\n"); }
+	    			else {
+	    				int jug = select;
+	    				System.out.print("Desea añadir la carta a los tríos o las escaleras? Tríos(1) | Escaleras(2) : ");
+	    				select = teclat.nextInt();
+	    				System.out.println("");
+	    				int i = 0;
+	    				boolean added = false;
+	    				if (select == 1) {
+	    					while (i < jugadores.get(jug - 1).getBajadaTrios().size() && !added) {
+	    						jugadores.get(jug - 1).getFullMano().comprobarTrio(player.getSelection().get(0), player.getBajadaTrios().get(i));
+	    						added = player.getFullMano().getAdded();
+	    						i++;
+	    					}
+	    					if (player.getFullMano().getAdded()) {
+	    						System.out.println("Carta añadida!\n");
+	    						System.out.println(jugadores.get(jug - 1).bajadaToString());
+	    						player.getMano().remove(player.getSelection().get(0));
+	    					} else { System.out.println("No se pudo añadir la carta\n"); }
+	    				} else {
+	    					while (i < jugadores.get(jug - 1).getBajadaEscaleras().size() && !added) {
+	    						jugadores.get(jug - 1).getFullMano().comprobarEscalera(player.getSelection().get(0), player.getBajadaEscaleras().get(i));
+	    						added = player.getFullMano().getAdded();
+	    						i++;
+	    					}
+	    					if (player.getFullMano().getAdded()) {
+	    						System.out.println("Carta añadida!\n");
+	    						System.out.println(jugadores.get(jug - 1).bajadaToString());
+	    						player.getMano().remove(player.getSelection().get(0));
+	    					} else { System.out.println("No se pudo añadir la carta\n"); }
+	    				}
+	    			}
+	    			for (int i = 0; i < player.getSelection().size(); i++) {
+	    				player.getSelection().get(i).setSeleccionada(false);
+	    			}
+	    			player.getSelection().clear();
+	    		}
+	    		else { System.out.println("No puedes jugar cartas aún\n"); }
 	    		break;
 	    	case 2:
 	    		if (!player.getBajadaEscaleras().isEmpty() || !player.getBajadaTrios().isEmpty()) {
-	    			System.out.println("No puedes manejar tus cartas porque ya te has bajado");
+	    			System.out.println("No puedes manejar tus cartas porque ya te has bajado\n");
 	    			break;
 	    		}
 	    		boolean endSelection = false;
@@ -195,9 +257,9 @@ public class Game {
 				    	System.out.println("");
 				    	switch (select) {
 				    	case 1:
-				    		if (numEscaleras == 0) { System.out.println("No hay Escaleras que verificar"); }
+				    		if (numEscaleras == 0) { System.out.println("No hay Escaleras que verificar\n"); }
 				    		else if (player.getFullMano().getResguardoEscaleras().size() == numEscaleras) {
-				    			System.out.println("Ya has verificado todas las escaleras"); 
+				    			System.out.println("Ya has verificado todas las escaleras\n"); 
 				    		}
 				    		else {
 				    			player.getFullMano().sacarEscaleras(player.getSelection());
@@ -208,9 +270,9 @@ public class Game {
 				    		}
 				    		break;
 				    	case 2:
-				    		if (numTrios == 0) { System.out.println("No hay Tríos que verificar"); }
+				    		if (numTrios == 0) { System.out.println("No hay Tríos que verificar\n"); }
 				    		else if (player.getFullMano().getResguardoTrios().size() == numTrios) {
-				    			System.out.println("Ya has verificado todas los Tríos"); 
+				    			System.out.println("Ya has verificado todas los Tríos\n"); 
 				    		}
 				    		else {
 				    			player.getFullMano().sacarTrios(player.getSelection());

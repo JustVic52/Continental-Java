@@ -42,6 +42,12 @@ public class Player extends Round {
 		mano.take(carta);
 	}
 	
+	public String bajadaToString() {
+		String res = "Jugador " + turno + ": \n";
+		res += mano.bajadaToString();
+		return res;
+	}
+	
 	public void setRoundWinner(boolean w) {
 		roundWinner = w;
 	}
@@ -102,11 +108,6 @@ public class Player extends Round {
 			}
 		}
 		return res;
-	}
-	
-	public void updateBajarse() {
-		List<Carta> selection = mano.getSelection();
-		
 	}
 	
 	public void select(int num) { //añade una carta a la selección
