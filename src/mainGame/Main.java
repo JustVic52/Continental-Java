@@ -15,7 +15,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		game = new Game(2);
+		game = new Game(3);
 		player = game.getJugadores().get(0);
 		
 		game.playGame();	

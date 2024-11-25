@@ -2,6 +2,7 @@ package gameDynamics;
 
 import java.util.List;
 
+import gameTools.Carta;
 import gameTools.Descartes;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -12,8 +13,9 @@ public class Game {
 	private List<Player> jugadores;
 	private int numJugadores;
 	private Descartes descartes;
-	private boolean endRound;
+	private boolean endRound, taken;
 	private Scanner teclat;
+	private Player playerLadron;
 	
 	public Game(int nJ) {
 		round = new Round();
@@ -42,26 +44,31 @@ public class Game {
 			}
 		}
 		printObjectives();
-		int i = 0;
 		while (!endRound) {
 			//Sistema de turnos
-			System.out.println("==============");
-			System.out.println("  Jugador: " + jugadores.get(i).getTurno());
-			System.out.println("==============\n");
-			newTurn(jugadores.get(i)); //nuevo turno
-			jugadores.get(i).roundWin(); //comprobación de si ha ganado
-			if (jugadores.get(i).getRoundWinner()) {
-				System.out.println("===============");
-				System.out.println("  has ganado!");
-				System.out.println("===============\n");
-				jugadores.get(i).setCiclo(1);
-				endRound = true; 
-			} /*else {
-				System.out.println("==================");
-				System.out.println("  has perdido :(");
-				System.out.println("==================\n");
-			}*/
-			i = (i + 1) % numJugadores;
+			for (int i = 0; i < jugadores.size(); i++) {
+				System.out.println("==============");
+				System.out.println("  Jugador: " + jugadores.get(i).getTurno());
+				System.out.println("==============\n");
+				newTurn(jugadores.get(i)); //nuevo turno
+				jugadores.get(i).roundWin(); //comprobación de si ha ganado
+				if (jugadores.get(i).getRoundWinner()) {
+					for (Player p : jugadores) {
+						if (p.getRoundWinner()) {
+							System.out.println("=============================================");
+							System.out.println("  Jugador " + p.getTurno() + ", has ganado!");
+							System.out.println("=============================================\n");
+						} else {
+							System.out.println("================================================");
+							System.out.println("  Jugador " + p.getTurno() + ", has perdido :(");
+							System.out.println("================================================\n");
+						}
+						p.setCiclo(1);
+					}
+					endRound = true;
+				}
+			}
+			playerLadron = null;
 		}
 		
 		System.out.println("- Ronda terminada -");
@@ -99,31 +106,49 @@ public class Game {
 		int select = 0;
 		int numTrios = round.getRoundTrios();
 		int numEscaleras = round.getRoundEscaleras();
-		System.out.println(player.getFullMano().toString());
+		System.out.println(player.getFullMano().toString());		
 		//un turno tiene 3 fases. 
 		//1. Robar o de la pila de descartes o de la baraja
-		System.out.println("1. Robar de la baraja");
-		System.out.println("2. Robar de los descartes");
-		System.out.print("\nSeleccione una opción: ");
-		select = teclat.nextInt();
-		System.out.println("");
-	    switch (select) {
-	    case 1:
-	    	player.give();
-	    	break;
-	    case 2:
-	    	if (!descartes.isEmpty()) {
-	    		player.take(descartes.getCarta());
-		    	descartes.remove();
-	    	} else {
-	    		System.out.println("No hay descartes, se robará de la baraja\n");
-	    		player.give();
-	    	}
-	    	break;
-	    default:
-	    	System.out.println("número incorrecto");
-	    	break;
-	    }
+		if (playerLadron != null && player.equals(playerLadron)) {
+    		System.out.println("No puedes robar este turno porque has preseleccionado el último descarte\n");
+    	} else {
+    		System.out.println("1. Robar de la baraja");
+    		System.out.println("2. Robar de los descartes");
+    		System.out.print("\nSeleccione una opción: ");
+    		select = teclat.nextInt();
+    		System.out.println("");
+    	    switch (select) {
+    	    case 1:
+    	    	player.give();
+    	    	break;
+    	    case 2:
+    	    	if (!descartes.isEmpty()) {
+    	    		player.take(descartes.getCarta());
+    		    	descartes.remove();
+    	    	} else {
+    	    		System.out.println("No hay descartes, se robará de la baraja\n");
+    	    		player.give();
+    	    	}
+    	    	break;
+    	    default:
+    	    	System.out.println("número incorrecto");
+    	    	break;
+    	    }
+    	    for (Player p : jugadores) {
+    			if (p.getFullMano().getRetake()) {
+    				if (!taken) {
+    					p.take(descartes.getCarta());
+        		    	descartes.remove();
+    				}
+    				p.getFullMano().setRetake(false);
+    			} else {
+    				if (playerLadron != null && p.equals(playerLadron)) {
+    					p.take(descartes.getCarta());
+        		    	descartes.remove();
+    				}
+    			}
+    		}
+    	}
 		//2. Intentar Bajarte y/o jugar cartas
 	    boolean endPlay = false;
     	while (!endPlay) {
@@ -324,17 +349,40 @@ public class Game {
 		    System.out.println("");
 		    if (select - 1 <= player.getMano().size()) {
 		    	if (!player.getMano().get(select - 1).isResguardada()) {
-			    	player.discard(player.getMano().get(select - 1));
+		    		Carta temp = player.getMano().get(select - 1);
+		    		System.out.print("Quieres intentar recuperar la carta después de descartarla? Sí(1) | No(2) : ");
+		    		select = teclat.nextInt();
+				    System.out.println("");
+				    if (select == 1) {
+				    	player.getFullMano().setRetake(true);
+				    	int i = 0;
+				    	taken = false;
+				    	while (i < jugadores.size() && !taken) {
+				    		if (jugadores.get(i).equals(player)) { i++; }
+				    		System.out.println("Carta en juego: " + temp.toString() + "\n");
+				    		System.out.print("Jugador " + (i + 1) + ", Vas a querer esta carta? Sí(1) | No(2) : ");
+				    		select = teclat.nextInt();
+						    System.out.println("");
+						    if (select == 1) {
+						    	System.out.println("Jugador " + (i + 1) + " se llevará la carta\n");
+						    	playerLadron = jugadores.get(i);
+						    	jugadores.get(i).getFullMano().take(temp);
+						    	taken = true;
+						    }
+						    i++;
+				    	}
+				    }
+				    player.discard(temp);
 			    	descartes.take(player.getUltimaCarta());
-			    	System.out.println(player.getFullMano().toString());
-				    System.out.println(descartes.toString());
-				    player.updateCiclo();
-				    discarded = true; 
+				    discarded = true;
 			    } else {
 			    	System.out.println("No puedes descartar una carta de tu resguardo\n");
 			    }
 		    } else { System.out.println("Valor no aceptado, escoja otra vez\n"); }    
 	    }
+	    System.out.println(player.getFullMano().toString());
+	    System.out.println(descartes.toString());
+	    player.updateCiclo();
 	}
 
 	public void playGame() {
