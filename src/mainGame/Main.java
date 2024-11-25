@@ -15,34 +15,34 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		game = new Game(1);
+		game = new Game(2);
 		player = game.getJugadores().get(0);
 		
-//		game.playGame();	
+		game.playGame();	
 		
-		//Carta 1
-		Carta carta1 = new Carta(4, 1);
-		player.getMano().add(carta1);
-		player.select(0);
-		
-		//Carta 2
-		Carta carta2 = new Carta(2, 1);
-		player.getMano().add(carta2);
-		player.select(1);
-		
-		// Carta 3
-		Carta carta3 = new Carta();
-		player.getMano().add(carta3);
-		player.select(2);
-		
-		//Carta 4
-		Carta carta4 = new Carta(3, 1);
-		player.getMano().add(carta4);
-		player.select(3);
-		
-		//Carta 5
-		Carta carta5 = new Carta(5, 1);
-		player.getMano().add(carta5);
+//		//Carta 1
+//		Carta carta1 = new Carta(4, 1);
+//		player.getMano().add(carta1);
+//		player.select(0);
+//		
+//		//Carta 2
+//		Carta carta2 = new Carta(2, 1);
+//		player.getMano().add(carta2);
+//		player.select(1);
+//		
+//		// Carta 3
+//		Carta carta3 = new Carta();
+//		player.getMano().add(carta3);
+//		player.select(2);
+//		
+//		//Carta 4
+//		Carta carta4 = new Carta(3, 1);
+//		player.getMano().add(carta4);
+//		player.select(3);
+//		
+//		//Carta 5
+//		Carta carta5 = new Carta(5, 1);
+//		player.getMano().add(carta5);
 //		player.select(4);
 //		
 //		//Carta 6
@@ -91,7 +91,7 @@ public class Main {
 //		player.getMano().add(carta14);
 //		player.select(13);
 		
-		player.setCiclo(2);
-		game.newTurn(player);
+//		player.setCiclo(2);
+//		game.newTurn(player);
 	}
 }

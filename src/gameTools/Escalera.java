@@ -19,7 +19,8 @@ public class Escalera {
 	
 	public boolean canBeAdded(Carta carta) {
 		return (paloOfEscalera == carta.getPalo() || carta.getPalo() == 5 || paloOfEscalera == 0)
-				&& (carta.getNumber() == 14 || numeros[carta.getNumber() - 1] == 0);
+				&& (carta.getNumber() == 14 || numeros[carta.getNumber() - 1] == 0 
+				|| (escalera[carta.getNumber() - 1] != null && escalera [carta.getNumber() - 1].getNumber() == 14));
 	}
 	
 	public void clear() {
@@ -181,10 +182,11 @@ public class Escalera {
 					escalera[carta.getNumber() - 1] = carta;
 					numeros[carta.getNumber() - 1] = 1;
 				}
-			}
-			if (numeros[carta.getNumber() - 1] == 1 && escalera[carta.getNumber()] != null && escalera[carta.getNumber()].isComodin()) {
-				if (carta.getPalo() == paloOfEscalera) {
+			} else {
+				if (escalera[carta.getNumber() - 1].getNumber() == 14) {
+					Carta temp = escalera[carta.getNumber() - 1];
 					escalera[carta.getNumber() - 1] = carta;
+					add(temp);
 				}
 			}
 		}

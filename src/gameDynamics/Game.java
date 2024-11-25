@@ -125,11 +125,6 @@ public class Game {
 	    	break;
 	    }
 		//2. Intentar Bajarte y/o jugar cartas
-	    if (!player.getBajadaEscaleras().isEmpty() || !player.getBajadaTrios().isEmpty()) {
-	    	System.out.println("Supongamos que juegas una carta\n");
-	 	    player.getMano().remove(0);
-	 	    System.out.println(player.getFullMano().toString());
-	    }
 	    boolean endPlay = false;
     	while (!endPlay) {
     		System.out.println(player.getFullMano().toString());
@@ -177,7 +172,7 @@ public class Game {
 	    						added = player.getFullMano().getAdded();
 	    						i++;
 	    					}
-	    					if (player.getFullMano().getAdded()) {
+	    					if (added) {
 	    						System.out.println("Carta añadida!\n");
 	    						System.out.println(jugadores.get(jug - 1).bajadaToString());
 	    						player.getMano().remove(player.getSelection().get(0));
@@ -188,7 +183,7 @@ public class Game {
 	    						added = player.getFullMano().getAdded();
 	    						i++;
 	    					}
-	    					if (player.getFullMano().getAdded()) {
+	    					if (added) {
 	    						System.out.println("Carta añadida!\n");
 	    						System.out.println(jugadores.get(jug - 1).bajadaToString());
 	    						player.getMano().remove(player.getSelection().get(0));
