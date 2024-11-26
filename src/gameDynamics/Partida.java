@@ -1,13 +1,14 @@
 package gameDynamics;
 
 import java.util.List;
-
-import gameTools.Carta;
-import gameTools.Descartes;
 import java.util.Scanner;
+
+import cardTreatment.Carta;
+import cardTreatment.Descartes;
+
 import java.util.ArrayList;
 
-public class Game {
+public class Partida {
 
 	private Round round;
 	private List<Player> jugadores;
@@ -17,7 +18,7 @@ public class Game {
 	private Scanner teclat;
 	private Player playerLadron;
 	
-	public Game(int nJ) {
+	public Partida(int nJ) {
 		round = new Round();
 		jugadores = new ArrayList<>();
 		createPlayers(nJ);

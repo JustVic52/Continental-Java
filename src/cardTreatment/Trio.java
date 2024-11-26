@@ -1,4 +1,4 @@
-package gameTools;
+package cardTreatment;
 
 import java.util.*;
 

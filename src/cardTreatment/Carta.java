@@ -1,4 +1,4 @@
-package gameTools;
+package cardTreatment;
 
 public class Carta {
 	

@@ -2,10 +2,10 @@ package gameDynamics;
 
 import java.util.List;
 
-import gameTools.Carta;
-import gameTools.Escalera;
-import gameTools.Mano;
-import gameTools.Trio;
+import cardTreatment.Carta;
+import cardTreatment.Escalera;
+import cardTreatment.Mano;
+import cardTreatment.Trio;
 
 public class Player extends Round {
 	

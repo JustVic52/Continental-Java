@@ -1,11 +1,7 @@
-package gameDynamics;
+package cardTreatment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import gameTools.Carta;
-import gameTools.Escalera;
-import gameTools.Trio;
 
 public class Combinaciones {
 	

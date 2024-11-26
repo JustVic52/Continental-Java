@@ -1,24 +1,25 @@
 package mainGame;
 
-import gameDynamics.Game;
+import gameDynamics.Partida;
 import gameDynamics.Player;
-import gameTools.Carta;
-import gameDynamics.Combinaciones;
+import gameGraphics.GameWindow;
+
 import java.util.Scanner;
 
+import cardTreatment.Carta;
+import cardTreatment.Combinaciones;
+
 public class Main {
-	
-	private static Player player;
-	private static Game game;
 	
 	private Main() { }
 	
 	public static void main(String[] args) {
 		
-		game = new Game(3);
-		player = game.getJugadores().get(0);
+		Partida partida = new Partida(3);
+		Player player = partida.getJugadores().get(0);
+		Game game = new Game();
 		
-		game.playGame();	
+//		game.playGame();	
 		
 //		//Carta 1
 //		Carta carta1 = new Carta(4, 1);
@@ -92,6 +93,6 @@ public class Main {
 //		player.select(13);
 		
 //		player.setCiclo(2);
-//		game.newTurn(player);
+//		partida.newTurn(player);
 	}
 }

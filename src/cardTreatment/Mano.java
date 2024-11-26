@@ -1,10 +1,8 @@
-package gameTools;
+package cardTreatment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import gameDynamics.Combinaciones;
 
 //Esto es tu mano personal. Aquí se acumulan las cartas que tengas en la mano y se eliminan una vez las descartes.
 
