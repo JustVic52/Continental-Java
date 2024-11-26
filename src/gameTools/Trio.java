@@ -37,7 +37,7 @@ public class Trio {
 					palos[i] = carta.getPalo();
 					if (numOfTrio == 0 && carta.getNumber() != 14) { numOfTrio = carta.getNumber(); }
 					added = true;
-				} else if (trio[i] != null && trio[i].getNumber() == 14 && trio[3] != null) {
+				} else if (trio[i] != null && trio[i].getNumber() == 14 && (trio[3] == null || (trio[3] != null && trio[3].getNumber() == 14))) {
 					trio[i] = carta;
 					palos[i] = carta.getPalo();
 					added = true;
@@ -46,6 +46,10 @@ public class Trio {
 			}
 		}
 	}
+
+	public int getNumOfTrio() {
+		return numOfTrio;
+	}
 	
 	public void remove(int num) {
 		trio[num - 1] = null;
@@ -53,7 +57,7 @@ public class Trio {
 	}
 	
 	public boolean canBeAdded(Carta carta) {
-		return isDifferent(carta) && (carta.getNumber() == numOfTrio || carta.getNumber() == 14 || numOfTrio == 0);
+		return (trio[3] == null || (trio[3] != null && trio[3].getNumber() == 14)) && isDifferent(carta) && (carta.getNumber() == numOfTrio || carta.getNumber() == 14 || numOfTrio == 0);
 	}
 	
 	public String toString() {
@@ -133,4 +137,7 @@ public class Trio {
 		return trio;
 	}
 	
+	public int[] getPalos() {
+		return palos;
+	}
 }

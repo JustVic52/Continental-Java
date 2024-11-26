@@ -65,7 +65,7 @@ public class Combinaciones {
 	
 	public void comprobarEscalera(Carta carta, Escalera e) {
 		canAdded = false;
-		if (e.canBeAdded(carta)) {
+		if (e.canBeNewAdded(carta)) {
 			e.add(carta);
 			canAdded = true;
 		}

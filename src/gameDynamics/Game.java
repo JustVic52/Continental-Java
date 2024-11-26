@@ -55,20 +55,19 @@ public class Game {
 				if (jugadores.get(i).getRoundWinner()) {
 					for (Player p : jugadores) {
 						if (p.getRoundWinner()) {
-							System.out.println("=============================================");
+							System.out.println("==========================");
 							System.out.println("  Jugador " + p.getTurno() + ", has ganado!");
-							System.out.println("=============================================\n");
+							System.out.println("==========================\n");
 						} else {
-							System.out.println("================================================");
+							System.out.println("=============================");
 							System.out.println("  Jugador " + p.getTurno() + ", has perdido :(");
-							System.out.println("================================================\n");
+							System.out.println("=============================\n");
 						}
 						p.setCiclo(1);
 					}
 					endRound = true;
 				}
 			}
-			playerLadron = null;
 		}
 		
 		System.out.println("- Ronda terminada -");
@@ -122,6 +121,19 @@ public class Game {
     	    	player.give();
     	    	break;
     	    case 2:
+    	    	if (!player.equals(jugadores.get(0))) {
+    	    		if (playerLadron != null || jugadores.get(player.getTurno() - 2).getFullMano().getRetake()) {
+        	    		System.out.println("Ya se ha adjudicado el descarte, por lo que se robará de la baraja\n");
+        	    		player.give();
+        	    		break;
+        	    	}
+    	    	} else {
+    	    		if (playerLadron != null || jugadores.get(jugadores.size() - 1).getFullMano().getRetake()) {
+        	    		System.out.println("Ya se ha adjudicado el descarte, por lo que se robará de la baraja\n");
+        	    		player.give();
+        	    		break;
+        	    	}
+    	    	}
     	    	if (!descartes.isEmpty()) {
     	    		player.take(descartes.getCarta());
     		    	descartes.remove();
@@ -134,21 +146,22 @@ public class Game {
     	    	System.out.println("número incorrecto");
     	    	break;
     	    }
-    	    for (Player p : jugadores) {
-    			if (p.getFullMano().getRetake()) {
-    				if (!taken) {
-    					p.take(descartes.getCarta());
-        		    	descartes.remove();
-    				}
-    				p.getFullMano().setRetake(false);
-    			} else {
-    				if (playerLadron != null && p.equals(playerLadron)) {
-    					p.take(descartes.getCarta());
-        		    	descartes.remove();
-    				}
-    			}
-    		}
     	}
+		for (Player p : jugadores) {
+			if (p.getFullMano().getRetake()) {
+				if (!taken) {
+					p.take(descartes.getCarta());
+    		    	descartes.remove();
+				}
+				p.getFullMano().setRetake(false);
+			} else {
+				if (playerLadron != null && p.equals(playerLadron)) {
+					p.take(descartes.getCarta());
+    		    	descartes.remove();
+    		    	playerLadron = null;
+				}
+			}
+		}
 		//2. Intentar Bajarte y/o jugar cartas
 	    boolean endPlay = false;
     	while (!endPlay) {
@@ -193,8 +206,8 @@ public class Game {
 	    				boolean added = false;
 	    				if (select == 1) {
 	    					while (i < jugadores.get(jug - 1).getBajadaTrios().size() && !added) {
-	    						jugadores.get(jug - 1).getFullMano().comprobarTrio(player.getSelection().get(0), player.getBajadaTrios().get(i));
-	    						added = player.getFullMano().getAdded();
+	    						jugadores.get(jug - 1).getFullMano().comprobarTrio(jugadores.get(jug - 1).getSelection().get(0), jugadores.get(jug - 1).getBajadaTrios().get(i));
+	    						added = jugadores.get(jug - 1).getFullMano().getAdded();
 	    						i++;
 	    					}
 	    					if (added) {
@@ -204,8 +217,8 @@ public class Game {
 	    					} else { System.out.println("No se pudo añadir la carta\n"); }
 	    				} else {
 	    					while (i < jugadores.get(jug - 1).getBajadaEscaleras().size() && !added) {
-	    						jugadores.get(jug - 1).getFullMano().comprobarEscalera(player.getSelection().get(0), player.getBajadaEscaleras().get(i));
-	    						added = player.getFullMano().getAdded();
+	    						jugadores.get(jug - 1).getFullMano().comprobarEscalera(jugadores.get(jug - 1).getSelection().get(0), jugadores.get(jug - 1).getBajadaEscaleras().get(i));
+	    						added = jugadores.get(jug - 1).getFullMano().getAdded();
 	    						i++;
 	    					}
 	    					if (added) {
@@ -355,23 +368,25 @@ public class Game {
 				    System.out.println("");
 				    if (select == 1) {
 				    	player.getFullMano().setRetake(true);
-				    	int i = 0;
-				    	taken = false;
-				    	while (i < jugadores.size() && !taken) {
-				    		if (jugadores.get(i).equals(player)) { i++; }
-				    		System.out.println("Carta en juego: " + temp.toString() + "\n");
-				    		System.out.print("Jugador " + (i + 1) + ", Vas a querer esta carta? Sí(1) | No(2) : ");
+				    }
+				    int i = 0;
+			    	taken = false;
+			    	System.out.println("Carta en juego: " + temp.toString() + "\n");
+			    	while (i < jugadores.size() && !taken) {
+			    		if (jugadores.get(i).equals(player)) { i++; }
+			    		else {
+			    			System.out.print("Jugador " + (i + 1) + ", Vas a querer esta carta? Sí(1) | No(2) : ");
 				    		select = teclat.nextInt();
 						    System.out.println("");
 						    if (select == 1) {
 						    	System.out.println("Jugador " + (i + 1) + " se llevará la carta\n");
 						    	playerLadron = jugadores.get(i);
-						    	jugadores.get(i).getFullMano().take(temp);
 						    	taken = true;
 						    }
 						    i++;
-				    	}
-				    }
+			    		}
+			    	}
+			    	if (!taken) { System.out.println("Se le devolverá la carta al jugador original\n"); }
 				    player.discard(temp);
 			    	descartes.take(player.getUltimaCarta());
 				    discarded = true;
