@@ -1,6 +1,12 @@
 package gameGraphics;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
@@ -8,18 +14,39 @@ import inputs.MouseInputs;
 public class GamePanel extends JPanel {
 	
 	private MouseInputs mouseInputs;
-	private int xDelta = 100, yDelta = 100;
-	private int frames = 0;
-	private long lastCheck = 0;
+	private int xDelta = 0, yDelta = 0;
+	private BufferedImage img;
 
 	public GamePanel() {
 		
 		mouseInputs = new MouseInputs(this);
+		importImg();
+		setPanelSize();
 		addKeyListener(new KeyboardInputs(this));
 		addMouseListener(mouseInputs);
 		addMouseMotionListener(mouseInputs);
 	}
 	
+	private void importImg() {
+		InputStream is = getClass().getResourceAsStream("/All_medium.png");
+		try {
+			img = ImageIO.read(is);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void setPanelSize() {
+		Dimension size = new Dimension(1280,720);
+		setPreferredSize(size);
+	}
+
 	public void changeXDelta(int xDelta) {
 		this.xDelta += xDelta;
 	}
@@ -32,17 +59,13 @@ public class GamePanel extends JPanel {
 		xDelta = x;
 		yDelta = y;
 	}
+	
+	public void updateGame() {
+		
+	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
-		g.fillRect(xDelta, yDelta, 200, 50);
-		
-		frames++;
-		if (System.currentTimeMillis() - lastCheck >= 1000) {
-			lastCheck = System.currentTimeMillis();
-			System.out.println("FPS: " + frames);
-			frames = 0;
-		}
+		g.drawImage(img, xDelta, yDelta, null);
 	}
 }
