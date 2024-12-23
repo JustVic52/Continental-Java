@@ -1,18 +1,64 @@
 package cardTreatment;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import utilz.Constants;
+
 public class Carta {
 	
-	private int value, palo, number;
-	public boolean comodin, seleccionada, resguardada;
-	public static final int PICAS = 1, CORAZONES = 2, TREVOLES = 3, DIAMANTES = 4;
+	private int value, palo, number, x, y;
+	private boolean comodin, seleccionada, resguardada, enBaraja;
+	public static final int PICAS = 3, CORAZONES = 4, TREVOLES = 1, DIAMANTES = 2;
+	public static final int CARD_WIDTH = Constants.CardConstants.CARD_WIDTH, CARD_HEIGHT = Constants.CardConstants.CARD_HEIGHT;
 	public static final int ACE = 1, JACK = 11, QUEEN = 12, KING = 13;
+	private Rectangle hitbox;
 	
-	public Carta(int n, int p) { //Crea una carta de un valor X y un palo Y
+	public Carta(int n, int p, int x, int y) { //Crea una carta de un valor N y un palo P, en una posición X e Y
 		number = n;
 		adjustValue(number);
 		palo = p;
 		seleccionada = false;
 		resguardada = false;
+		this.x = x;
+		this.y = y;
+		initHitbox(x, y, 2 * CARD_WIDTH, 2 * CARD_HEIGHT);
+	}
+	
+	public Carta(int x, int y) { //Crea un comodín en X e Y
+		number = 14;
+		adjustValue(number);
+		comodin = true;
+		palo = 5;
+		seleccionada = false;
+		resguardada = false;
+		this.x = x;
+		this.y = y;
+		initHitbox(this.x, this.y, 2 * CARD_WIDTH, 2 * CARD_HEIGHT);
+	}
+	
+	private void initHitbox(int x, int y, int w, int h) {
+		hitbox = new Rectangle(x, y, w, h);
+	}
+	
+	public void updateHitbox() {
+		hitbox.x = x;
+		hitbox.y = y;
+		
+	}
+	
+	public void updatePos() {
+		
+	}
+
+	public boolean getEnBaraja() {
+		return enBaraja;
+	}
+	
+	public void setEnBaraja(boolean b) {
+		enBaraja = b;
 	}
 	
 	public boolean isResguardada() {
@@ -22,14 +68,14 @@ public class Carta {
 	public void setResguardada(boolean r) {
 		resguardada = r;
 	}
-
-	public Carta() { //Crea un comodín
-		number = 14;
-		adjustValue(number);
-		comodin = true;
-		palo = 5;
-		seleccionada = false;
-		resguardada = false;
+	
+	public Rectangle getHitbox() {
+		return hitbox;
+	}
+	
+	public void drawHitbox(Graphics g, int wmult, int hmult) {
+		g.setColor(Color.pink);
+		g.drawRect(hitbox.x, hitbox.y, wmult * CARD_WIDTH, hmult * CARD_HEIGHT);
 	}
 	
 	private void adjustValue(int n) {
@@ -47,6 +93,18 @@ public class Carta {
 			value = n;
 			break;
 		}
+	}
+	
+	public void render(Graphics g, BufferedImage img, int wmult, int hmult) {
+//		x = xD;
+//		y = yD;
+		updateHitbox();
+		if (isComodin()) {
+			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, wmult * CARD_WIDTH , hmult * CARD_HEIGHT, null);
+		} else {
+			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, wmult * CARD_WIDTH , hmult * CARD_HEIGHT, null);
+		}
+		drawHitbox(g, wmult, hmult);
 	}
 	
 	public boolean isSeleccionada() { return seleccionada; }

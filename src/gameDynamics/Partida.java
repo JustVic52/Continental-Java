@@ -3,9 +3,11 @@ package gameDynamics;
 import java.util.List;
 import java.util.Scanner;
 
+import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 public class Partida {
@@ -17,10 +19,12 @@ public class Partida {
 	private boolean endRound, taken;
 	private Scanner teclat;
 	private Player playerLadron;
+	private Baraja baraja;
 	
 	public Partida(int nJ) {
 		round = new Round();
 		jugadores = new ArrayList<>();
+		baraja = new Baraja();
 		createPlayers(nJ);
 		descartes = new Descartes();
 		numJugadores = nJ;
@@ -30,12 +34,24 @@ public class Partida {
 	
 	private void createPlayers(int nJ) {
 		for (int i = 0; i < nJ; i++) {
-			jugadores.add(new Player(i + 1));
+			jugadores.add(new Player(i + 1, baraja));
 		}
 	}
 	
 	public List<Player> getJugadores() {
 		return jugadores;
+	}
+	
+	public void render(Graphics g) {
+		baraja.render(g);
+		descartes.render(g);
+		drawPlayers(g);
+	}
+
+	private void drawPlayers(Graphics g) {
+		for (Player p : jugadores) {
+			p.render(g);
+		}
 	}
 
 	public void run() {

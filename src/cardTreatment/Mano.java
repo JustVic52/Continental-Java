@@ -1,8 +1,16 @@
 package cardTreatment;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
+
+import utilz.LoadSave;
 
 //Esto es tu mano personal. Aquí se acumulan las cartas que tengas en la mano y se eliminan una vez las descartes.
 
@@ -17,17 +25,40 @@ public class Mano extends Combinaciones {
 	private Baraja baraja;
 	private Carta ultimaCartaEliminada; //para el retake
 	private boolean canRetake = false;
+	private BufferedImage img;
 	
-	public Mano() {
+	public Mano(Baraja b) {
 		mano = new ArrayList<>();
 		bajadaTrios = new ArrayList<>();
 		bajadaEscalera = new ArrayList<>();
 		selection = new ArrayList<>();
-		baraja = new Baraja();
+		baraja = b;
 		resguardoTrios = new ArrayList<>();
 		resguardoEscaleras = new ArrayList<>();
+		importCards();
 	}
 	
+	private void importCards() {
+		img = LoadSave.GetSpriteAtlas(LoadSave.CARD_ATLAS);
+	}
+	
+	public void updateMano() {
+		for (Carta c : mano) {
+			c.updateHitbox();
+		}
+	}
+	
+	public void renderMano(Graphics g) {
+		ArrayList<Carta> aux = new ArrayList<>(mano);
+		for (Carta c : aux) {
+			c.render(g, getImage(), 1, 1);
+		}
+	}
+	
+	public BufferedImage getImage() {
+		return img;
+	}
+
 	public void give() {
 		Random random = new Random();
 		int num = random.nextInt(baraja.getSize()); //genera un número aleatorio para la baraja (52 cartas y 6 comodines)

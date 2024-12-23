@@ -1,7 +1,11 @@
 package mainGame;
 
+import java.awt.Graphics;
+
+import gameDynamics.Partida;
 import gameGraphics.GamePanel;
 import gameGraphics.GameWindow;
+import utilz.Constants;
 
 public class Game implements Runnable {
 	
@@ -10,9 +14,14 @@ public class Game implements Runnable {
 	private Thread gameThread;
 	private final int FPS_SET = 120;
 	private final int UPS_SET = 200;
+	public static final float SCALE = 1.0f;
+	public static final int GAME_WIDTH = (int) (Constants.TableroConstants.TABLERO_WIDTH * SCALE);
+	public static final int GAME_HEIGHT = (int) (Constants.TableroConstants.TABLERO_HEIGHT * SCALE);
+	private Partida partida;
 
 	public Game() {
-		gamePanel = new GamePanel();
+		gamePanel = new GamePanel(this);
+		partida = new Partida(1);
 		gameWindow = new GameWindow(gamePanel);
 		gamePanel.requestFocus();
 		startGameLoop();
@@ -21,10 +30,15 @@ public class Game implements Runnable {
 	private void startGameLoop() {
 		gameThread = new Thread(this);
 		gameThread.start();
+		partida.run();
 	}
 	
 	public void update() {
-		gamePanel.updateGame();
+		
+	}
+	
+	public void render(Graphics g) {	
+		partida.render(g);
 	}
 	
 	@Override
@@ -59,7 +73,7 @@ public class Game implements Runnable {
 			
 			if (System.currentTimeMillis() - lastCheck >= 1000) {
 				lastCheck = System.currentTimeMillis();
-				System.out.println("FPS: " + frames + " | " + "UPS: " + updates);
+//				System.out.println("FPS: " + frames + " | " + "UPS: " + updates);
 				frames = 0;
 				updates = 0;
 			}

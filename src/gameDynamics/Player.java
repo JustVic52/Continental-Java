@@ -1,7 +1,9 @@
 package gameDynamics;
 
+import java.awt.Graphics;
 import java.util.List;
 
+import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Escalera;
 import cardTreatment.Mano;
@@ -13,11 +15,11 @@ public class Player extends Round {
 	private Mano mano;
 	private boolean roundWinner, gameWinner;
 	
-	public Player(int t) {
+	public Player(int t, Baraja baraja) {
 		points = 0;
 		turno = t;
 		ciclo = 1;
-		mano = new Mano();
+		mano = new Mano(baraja);
 		roundWinner = false;
 		gameWinner = false;
 	}
@@ -177,5 +179,9 @@ public class Player extends Round {
 		mano.getSelection().clear();
 		mano.getBajadaTrios().clear();
 		mano.getBajadaEscaleras().clear();
+	}
+
+	public void render(Graphics g) {
+		mano.renderMano(g);
 	}
 }

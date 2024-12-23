@@ -3,47 +3,34 @@ package gameGraphics;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
+import mainGame.Game;
+import utilz.Constants;
+import utilz.LoadSave;
 
 public class GamePanel extends JPanel {
 	
 	private MouseInputs mouseInputs;
-	private int xDelta = 0, yDelta = 0;
+	private int xDelta = 24, yDelta = 35;
 	private BufferedImage img;
+	private Game game;
 
-	public GamePanel() {
-		
+	public GamePanel(Game g) {
 		mouseInputs = new MouseInputs(this);
-		importImg();
+		game = g;
 		setPanelSize();
+		importTablero();
 		addKeyListener(new KeyboardInputs(this));
 		addMouseListener(mouseInputs);
 		addMouseMotionListener(mouseInputs);
 	}
-	
-	private void importImg() {
-		InputStream is = getClass().getResourceAsStream("/All_medium.png");
-		try {
-			img = ImageIO.read(is);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	private void setPanelSize() {
-		Dimension size = new Dimension(1280,720);
+		Dimension size = new Dimension(game.GAME_WIDTH, game.GAME_HEIGHT);
 		setPreferredSize(size);
 	}
 
@@ -60,12 +47,17 @@ public class GamePanel extends JPanel {
 		yDelta = y;
 	}
 	
-	public void updateGame() {
+	private void importTablero() {
+		img = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
+	}
+	
+	public void update() {
 		
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(img, xDelta, yDelta, null);
+		g.drawImage(img, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+		game.render(g);
 	}
 }

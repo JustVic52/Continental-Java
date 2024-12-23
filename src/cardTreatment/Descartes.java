@@ -1,18 +1,45 @@
 package cardTreatment;
 
 import java.util.List;
+
+import utilz.LoadSave;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Descartes {
 	
 	private List<Carta> descartes;
+	private Rectangle hitbox;
+	private BufferedImage img;
 	
 	public Descartes() {
 		descartes = new ArrayList<>();
+		initHitbox();
+		loadImg();
 	}
 	
 	public void take(Carta carta) {
 		descartes.add(carta);
+	}
+	
+	private void initHitbox() {
+		hitbox = new Rectangle(28, 293, 148, 208);
+	}
+	
+	private void loadImg() {
+		img = LoadSave.GetSpriteAtlas(LoadSave.CARD_ATLAS);
+	}
+	
+	public void render(Graphics g) {
+		if (!descartes.isEmpty()) {
+			getCarta().render(g, img, 2, 2); // 28, 293
+		}
+//		g.setColor(Color.PINK);
+//		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 	}
 	
 	public void remove() {
