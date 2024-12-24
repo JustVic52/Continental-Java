@@ -182,6 +182,6 @@ public class Player extends Round {
 	}
 
 	public void render(Graphics g) {
-		mano.renderMano(g);
+		mano.renderSlots(g);
 	}
 }

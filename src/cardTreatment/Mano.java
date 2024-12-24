@@ -17,6 +17,7 @@ import utilz.LoadSave;
 public class Mano extends Combinaciones {
 	
 	private List<Carta> mano;
+	private List<Slot> manoSlot;
 	private List<Trio> bajadaTrios;
 	private List<Escalera> bajadaEscalera;
 	private List<Carta> selection;
@@ -29,6 +30,8 @@ public class Mano extends Combinaciones {
 	
 	public Mano(Baraja b) {
 		mano = new ArrayList<>();
+		manoSlot = new ArrayList<>();
+		initSlot();
 		bajadaTrios = new ArrayList<>();
 		bajadaEscalera = new ArrayList<>();
 		selection = new ArrayList<>();
@@ -38,20 +41,32 @@ public class Mano extends Combinaciones {
 		importCards();
 	}
 	
+	private void initSlot() {
+		int x = 227;
+		int y = 474;
+		for (int i = 0; i < 22; i++) {
+			manoSlot.add(new Slot(x, y));
+			if (x == 1027) {
+				x = 227;
+				y = 584;
+			} else { x += 80; }
+		} 
+	}
+
 	private void importCards() {
 		img = LoadSave.GetSpriteAtlas(LoadSave.CARD_ATLAS);
 	}
 	
 	public void updateMano() {
-		for (Carta c : mano) {
-			c.updateHitbox();
+		for (Slot s : manoSlot) {
+			s.getCarta().updateHitbox();
 		}
 	}
 	
-	public void renderMano(Graphics g) {
-		ArrayList<Carta> aux = new ArrayList<>(mano);
-		for (Carta c : aux) {
-			c.render(g, getImage(), 1, 1);
+	public void renderSlots(Graphics g) {
+		ArrayList<Slot> aux = new ArrayList<>(manoSlot);
+		for (Slot s : aux) {
+			s.render(g, img);
 		}
 	}
 	
@@ -62,16 +77,52 @@ public class Mano extends Combinaciones {
 	public void give() {
 		Random random = new Random();
 		int num = random.nextInt(baraja.getSize()); //genera un número aleatorio para la baraja (52 cartas y 6 comodines)
-		mano.add(baraja.getCard(num)); //añade una carta de la baraja y la elimina de la lista. Si después de eso la baraja queda vacía, genera una nueva
+		Carta c = baraja.getCard(num);
+		mano.add(c); //añade una carta de la baraja y la elimina de la lista.
+		addToSlot(c); //añade la carta al slot
+		System.out.println("Added 1 card");
 	}
 	
+	private void addToSlot(Carta c) {
+		int i = 0;
+		boolean added = false;
+		while (i < manoSlot.size() && !added) {
+			if (manoSlot.get(i).getCarta() == null) {
+				manoSlot.get(i).add(c);
+				added = true;
+			}
+			i++;
+		}
+	}
+
 	public void discard(Carta carta) {
 		mano.remove(carta);
+		removeFromSlots(carta);
 		ultimaCartaEliminada = carta;
 	}
 	
+	private void removeFromSlots(Carta carta) {
+		int i = 0;
+		boolean removed = false;
+		while (i < manoSlot.size() && !removed) {
+			if (manoSlot.get(i).getCarta().equals(carta)) {
+				manoSlot.get(i).remove();
+				updateSlots(i);
+				removed = true;
+			}
+			i++;
+		}
+	}
+
+	private void updateSlots(int pos) {
+		for (int i = pos; i < manoSlot.size() - 1; i++) {
+			manoSlot.get(i).add(manoSlot.get(i + 1).getCarta());
+		}
+	}
+
 	public void take(Carta carta) {
 		mano.add(carta);
+		addToSlot(carta);
 	}
 	
 	public void retake() {

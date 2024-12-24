@@ -24,7 +24,7 @@ public class Carta {
 		resguardada = false;
 		this.x = x;
 		this.y = y;
-		initHitbox(x, y, 2 * CARD_WIDTH, 2 * CARD_HEIGHT);
+		initHitbox();
 	}
 	
 	public Carta(int x, int y) { //Crea un comodín en X e Y
@@ -36,11 +36,11 @@ public class Carta {
 		resguardada = false;
 		this.x = x;
 		this.y = y;
-		initHitbox(this.x, this.y, 2 * CARD_WIDTH, 2 * CARD_HEIGHT);
+		initHitbox();
 	}
 	
-	private void initHitbox(int x, int y, int w, int h) {
-		hitbox = new Rectangle(x, y, w, h);
+	private void initHitbox() {
+		hitbox = new Rectangle(x, y, CARD_WIDTH, CARD_HEIGHT);
 	}
 	
 	public void updateHitbox() {
@@ -49,8 +49,9 @@ public class Carta {
 		
 	}
 	
-	public void updatePos() {
-		
+	public void setCardDimensions(int mult) {
+		hitbox.width = mult * CARD_WIDTH;
+		hitbox.height = mult * CARD_HEIGHT;
 	}
 
 	public boolean getEnBaraja() {
@@ -73,9 +74,9 @@ public class Carta {
 		return hitbox;
 	}
 	
-	public void drawHitbox(Graphics g, int wmult, int hmult) {
+	public void drawHitbox(Graphics g, int mult) {
 		g.setColor(Color.pink);
-		g.drawRect(hitbox.x, hitbox.y, wmult * CARD_WIDTH, hmult * CARD_HEIGHT);
+//		g.drawRect(hitbox.x, hitbox.y, mult * CARD_WIDTH, mult * CARD_HEIGHT);
 	}
 	
 	private void adjustValue(int n) {
@@ -95,16 +96,16 @@ public class Carta {
 		}
 	}
 	
-	public void render(Graphics g, BufferedImage img, int wmult, int hmult) {
-//		x = xD;
-//		y = yD;
+	public void render(Graphics g, BufferedImage img, int x, int y, int mult) {
+		this.x = x;
+		this.y = y;
 		updateHitbox();
 		if (isComodin()) {
-			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, wmult * CARD_WIDTH , hmult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
 		} else {
-			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, wmult * CARD_WIDTH , hmult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
 		}
-		drawHitbox(g, wmult, hmult);
+		drawHitbox(g, mult);
 	}
 	
 	public boolean isSeleccionada() { return seleccionada; }

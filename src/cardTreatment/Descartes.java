@@ -36,7 +36,7 @@ public class Descartes {
 	
 	public void render(Graphics g) {
 		if (!descartes.isEmpty()) {
-			getCarta().render(g, img, 2, 2); // 28, 293
+			getCarta().render(g, img, 24, 285, 2); // 28, 293
 		}
 //		g.setColor(Color.PINK);
 //		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);

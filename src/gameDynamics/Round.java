@@ -52,10 +52,10 @@ public class Round {
 		//10. 2 escaleras y 2 tríos - 14 || Cartas Mínimas: 14
 		switch (num) {
 		case 1:
-			trios = 1;
-			escaleras = 0;
-			numCartas = 5;
-			cartasMin = 3;
+			trios = 0;
+			escaleras = 1;
+			numCartas = 7;
+			cartasMin = 4;
 			break;
 		case 2:
 			trios = 2;
