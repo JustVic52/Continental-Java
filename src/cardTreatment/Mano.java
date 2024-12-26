@@ -10,6 +10,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import gameDynamics.Partida;
 import utilz.LoadSave;
 
 //Esto es tu mano personal. Aquí se acumulan las cartas que tengas en la mano y se eliminan una vez las descartes.
@@ -23,19 +24,17 @@ public class Mano extends Combinaciones {
 	private List<Carta> selection;
 	private List<Trio> resguardoTrios;
 	private List<Escalera> resguardoEscaleras;
-	private Baraja baraja;
 	private Carta ultimaCartaEliminada; //para el retake
 	private boolean canRetake = false;
 	private BufferedImage img;
 	
-	public Mano(Baraja b) {
+	public Mano() {
 		mano = new ArrayList<>();
 		manoSlot = new ArrayList<>();
 		initSlot();
 		bajadaTrios = new ArrayList<>();
 		bajadaEscalera = new ArrayList<>();
 		selection = new ArrayList<>();
-		baraja = b;
 		resguardoTrios = new ArrayList<>();
 		resguardoEscaleras = new ArrayList<>();
 		importCards();
@@ -76,8 +75,8 @@ public class Mano extends Combinaciones {
 
 	public void give() {
 		Random random = new Random();
-		int num = random.nextInt(baraja.getSize()); //genera un número aleatorio para la baraja (52 cartas y 6 comodines)
-		Carta c = baraja.getCard(num);
+		int num = random.nextInt(Partida.baraja.getSize()); //genera un número aleatorio para la baraja (52 cartas y 6 comodines)
+		Carta c = Partida.baraja.getCard(num);
 		mano.add(c); //añade una carta de la baraja y la elimina de la lista.
 		addToSlot(c); //añade la carta al slot
 		System.out.println("Added 1 card");

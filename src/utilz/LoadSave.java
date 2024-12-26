@@ -10,6 +10,8 @@ public class LoadSave {
 	
 	public static final String CARD_ATLAS = "All_medium.png";
 	public static final String TABLERO = "FondoPartida.png";
+	public static final String RADIO = "radio.png";
+	public static final String MARCO = "medium_marco.png";
 
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

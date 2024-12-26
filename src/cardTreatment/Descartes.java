@@ -14,7 +14,8 @@ public class Descartes {
 	
 	private List<Carta> descartes;
 	private Rectangle hitbox;
-	private BufferedImage img;
+	private BufferedImage img, marco;
+	private boolean selected = false;
 	
 	public Descartes() {
 		descartes = new ArrayList<>();
@@ -32,11 +33,19 @@ public class Descartes {
 	
 	private void loadImg() {
 		img = LoadSave.GetSpriteAtlas(LoadSave.CARD_ATLAS);
+		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
 	}
+	
+	public void setSelected() { selected = !selected; }
+	
+	public boolean isSelected() { return selected; }
 	
 	public void render(Graphics g) {
 		if (!descartes.isEmpty()) {
 			getCarta().render(g, img, 24, 285, 2); // 28, 293
+		}
+		if (selected) {
+			g.drawImage(marco, 24, 289, 2 * Carta.MARCO_WIDTH, 2 * Carta.MARCO_HEIGHT, null);
 		}
 //		g.setColor(Color.PINK);
 //		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);

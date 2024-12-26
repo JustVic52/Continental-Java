@@ -19,7 +19,7 @@ public class Partida {
 	private boolean endRound, taken;
 	private Scanner teclat;
 	private Player playerLadron;
-	private Baraja baraja;
+	public static Baraja baraja;
 	
 	public Partida(int nJ) {
 		round = new Round();

@@ -19,7 +19,7 @@ public class Player extends Round {
 		points = 0;
 		turno = t;
 		ciclo = 1;
-		mano = new Mano(baraja);
+		mano = new Mano();
 		roundWinner = false;
 		gameWinner = false;
 	}

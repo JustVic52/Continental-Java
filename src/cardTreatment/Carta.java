@@ -13,6 +13,7 @@ public class Carta {
 	private boolean comodin, seleccionada, resguardada, enBaraja;
 	public static final int PICAS = 3, CORAZONES = 4, TREVOLES = 1, DIAMANTES = 2;
 	public static final int CARD_WIDTH = Constants.CardConstants.CARD_WIDTH, CARD_HEIGHT = Constants.CardConstants.CARD_HEIGHT;
+	public static final int MARCO_WIDTH = Constants.CardConstants.MARCO_WIDTH, MARCO_HEIGHT = Constants.CardConstants.MARCO_HEIGHT;
 	public static final int ACE = 1, JACK = 11, QUEEN = 12, KING = 13;
 	private Rectangle hitbox;
 	
@@ -105,7 +106,7 @@ public class Carta {
 		} else {
 			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
 		}
-		drawHitbox(g, mult);
+//		drawHitbox(g, mult);
 	}
 	
 	public boolean isSeleccionada() { return seleccionada; }
