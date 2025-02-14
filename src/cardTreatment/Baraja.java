@@ -17,7 +17,7 @@ public class Baraja {
 	private Rectangle hitbox;
 	private boolean selected = false;
 	
-	public Baraja() { //Crea una baraja con 52 + 6 = 58 cartas para aleatorizar cuál extrae. Es una baraja con comodín
+	public Baraja() { //Crea una baraja con 52 + 2 = 54 cartas para aleatorizar cuál extrae. Es una baraja con comodín
 		baraja = new ArrayList<>();
 		newBaraja();
 		initHitbox();
@@ -52,7 +52,7 @@ public class Baraja {
 				baraja.add(new Carta(j + 1, i + 1, 24, 285));
 			}
 		}
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 2; i++) {
 			baraja.add(new Carta(24, 285));
 		}
 	}

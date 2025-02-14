@@ -79,7 +79,6 @@ public class Mano extends Combinaciones {
 		Carta c = Partida.baraja.getCard(num);
 		mano.add(c); //añade una carta de la baraja y la elimina de la lista.
 		addToSlot(c); //añade la carta al slot
-		System.out.println("Added 1 card");
 	}
 	
 	private void addToSlot(Carta c) {

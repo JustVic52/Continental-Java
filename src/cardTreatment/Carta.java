@@ -3,19 +3,24 @@ package cardTreatment;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 import utilz.Constants;
+import utilz.LoadSave;
 
 public class Carta {
 	
 	private int value, palo, number, x, y;
-	private boolean comodin, seleccionada, resguardada, enBaraja;
+	private boolean comodin, seleccionada, resguardada;
 	public static final int PICAS = 3, CORAZONES = 4, TREVOLES = 1, DIAMANTES = 2;
 	public static final int CARD_WIDTH = Constants.CardConstants.CARD_WIDTH, CARD_HEIGHT = Constants.CardConstants.CARD_HEIGHT;
 	public static final int MARCO_WIDTH = Constants.CardConstants.MARCO_WIDTH, MARCO_HEIGHT = Constants.CardConstants.MARCO_HEIGHT;
 	public static final int ACE = 1, JACK = 11, QUEEN = 12, KING = 13;
 	private Rectangle hitbox;
+	private BufferedImage marco;
 	
 	public Carta(int n, int p, int x, int y) { //Crea una carta de un valor N y un palo P, en una posición X e Y
 		number = n;
@@ -26,8 +31,13 @@ public class Carta {
 		this.x = x;
 		this.y = y;
 		initHitbox();
+		loadMarco();
 	}
 	
+	private void loadMarco() {
+		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
+	}
+
 	public Carta(int x, int y) { //Crea un comodín en X e Y
 		number = 14;
 		adjustValue(number);
@@ -38,6 +48,7 @@ public class Carta {
 		this.x = x;
 		this.y = y;
 		initHitbox();
+		loadMarco();
 	}
 	
 	private void initHitbox() {
@@ -55,14 +66,6 @@ public class Carta {
 		hitbox.height = mult * CARD_HEIGHT;
 	}
 
-	public boolean getEnBaraja() {
-		return enBaraja;
-	}
-	
-	public void setEnBaraja(boolean b) {
-		enBaraja = b;
-	}
-	
 	public boolean isResguardada() {
 		return resguardada;
 	}
@@ -101,10 +104,13 @@ public class Carta {
 		this.x = x;
 		this.y = y;
 		updateHitbox();
-		if (isComodin()) {
+		if (comodin) {
 			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
 		} else {
 			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
+		}
+		if (seleccionada) {
+			g.drawImage(marco, x, y + 2, mult * MARCO_WIDTH, mult * MARCO_HEIGHT, null);
 		}
 //		drawHitbox(g, mult);
 	}
