@@ -19,9 +19,10 @@ public class Mano extends Combinaciones {
 	
 	private List<Carta> mano;
 	private List<Slot> manoSlot;
+	private List<Slot> selectSlot;
 	private List<Trio> bajadaTrios;
 	private List<Escalera> bajadaEscalera;
-	private List<Carta> selection;
+	private Carta selection;
 	private List<Trio> resguardoTrios;
 	private List<Escalera> resguardoEscaleras;
 	private Carta ultimaCartaEliminada; //para el retake
@@ -31,10 +32,10 @@ public class Mano extends Combinaciones {
 	public Mano() {
 		mano = new ArrayList<>();
 		manoSlot = new ArrayList<>();
+		selectSlot = new ArrayList<>();
 		initSlot();
 		bajadaTrios = new ArrayList<>();
 		bajadaEscalera = new ArrayList<>();
-		selection = new ArrayList<>();
 		resguardoTrios = new ArrayList<>();
 		resguardoEscaleras = new ArrayList<>();
 		importCards();
@@ -81,7 +82,7 @@ public class Mano extends Combinaciones {
 		addToSlot(c); //añade la carta al slot
 	}
 	
-	private void addToSlot(Carta c) {
+	public void addToSlot(Carta c) {
 		int i = 0;
 		boolean added = false;
 		while (i < manoSlot.size() && !added) {
@@ -93,17 +94,18 @@ public class Mano extends Combinaciones {
 		}
 	}
 
-	public void discard(Carta carta) {
-		mano.remove(carta);
-		removeFromSlots(carta);
-		ultimaCartaEliminada = carta;
+	public void discard() {
+		removeFromSlots(selection);
+		mano.remove(selection);
+		ultimaCartaEliminada = selection;
+		deselect();
 	}
 	
 	private void removeFromSlots(Carta carta) {
 		int i = 0;
 		boolean removed = false;
 		while (i < manoSlot.size() && !removed) {
-			if (manoSlot.get(i).getCarta().equals(carta)) {
+			if (manoSlot.get(i).getCarta() != null && manoSlot.get(i).getCarta().equals(carta)) {
 				manoSlot.get(i).remove();
 				updateSlots(i);
 				removed = true;
@@ -111,10 +113,35 @@ public class Mano extends Combinaciones {
 			i++;
 		}
 	}
+	
+	private void removeWithoutUpdate(Carta carta) {
+		int i = 0;
+		boolean removed = false;
+		while (i < manoSlot.size() && !removed) {
+			if (manoSlot.get(i).getCarta() != null && manoSlot.get(i).getCarta().equals(carta)) {
+				manoSlot.get(i).remove();
+				removed = true;
+			}
+			i++;
+		}
+	}
+	
+	public void moveBetweenSlots(int i) {
+		if (manoSlot.get(i).getCarta() == null) {
+			removeWithoutUpdate(selection);
+			manoSlot.get(i).add(selection);
+		}
+	}
 
 	private void updateSlots(int pos) {
-		for (int i = pos; i < manoSlot.size() - 1; i++) {
-			manoSlot.get(i).add(manoSlot.get(i + 1).getCarta());
+		if (mano.size() != 0) {
+			int i = pos;
+			while (i < manoSlot.size() - 1 && manoSlot.get(i + 1).getCarta() != null) {
+				manoSlot.get(i).remove();
+				manoSlot.get(i).add(manoSlot.get(i + 1).getCarta());
+				i++;
+			}
+			manoSlot.get(i).remove();
 		}
 	}
 
@@ -129,14 +156,25 @@ public class Mano extends Combinaciones {
 	
 	public void select(int num) {
 		if (!mano.get(num).isResguardada()) {
-			selection.add(mano.get(num));
+			selection = mano.get(num);
 			mano.get(num).setSeleccionada(true);
 		}
 	}
 	
-	public void deselect(int num) {
-		selection.get(num).setSeleccionada(false);
-		selection.remove(num);
+	public void select(Carta carta) {
+		if (!carta.isResguardada()) {
+			selection = carta;
+			carta.setSeleccionada(true);
+		}
+	}
+	
+	public void deselect() {
+		for (Carta c : mano) {
+			if (c == selection) {
+				c.setSeleccionada(false);
+			}
+		}
+		selection = null;
 	}
 	
 	public void setRetake(boolean retake) {
@@ -157,10 +195,6 @@ public class Mano extends Combinaciones {
 				}
 			}
 		}
-		for (int i = 0; i < selection.size(); i++) {
-			selection.get(i).setSeleccionada(false);
-		}
-		if (!selection.isEmpty()) { selection.clear(); }
 		updateManoTrios();
 	}
 	
@@ -174,10 +208,6 @@ public class Mano extends Combinaciones {
 				}
 			}
 		}
-		for (int i = 0; i < selection.size(); i++) {
-			selection.get(i).setSeleccionada(false);
-		}
-		if (!selection.isEmpty()) { selection.clear(); }
 		updateManoEscaleras();
 	}
 	
@@ -233,7 +263,7 @@ public class Mano extends Combinaciones {
 		return mano;
 	}
 	
-	public List<Carta> getSelection() {
+	public Carta getSelection() {
 		return selection;
 	}
 	
@@ -249,7 +279,7 @@ public class Mano extends Combinaciones {
 		String res = "Cartas en la mano: " + mano.toString() + "\n";
 		if (!bajadaEscalera.isEmpty()) { res += "Cartas bajadas (Escaleras): " + bajadaEscalera + "\n"; }
 		if (!bajadaTrios.isEmpty()) { res += "Cartas bajadas (Tríos): " + bajadaTrios + "\n"; }
-		if (!selection.isEmpty()) { res += "Cartas seleccionadas: " + selection + "\n"; }
+		if (selection != null) { res += "Carta seleccionada: " + selection + "\n"; }
 		if (!resguardoEscaleras.isEmpty()) { res += "Resguardo (Escaleras): " + resguardoEscaleras + "\n"; }
 		if (!resguardoTrios.isEmpty()) { res += "Resguardo (Tríos): " + resguardoTrios + "\n"; }
 		return res;
@@ -264,7 +294,7 @@ public class Mano extends Combinaciones {
 	
 	public String selectionToString() {
 		String res = "";
-		if (!selection.isEmpty()) { res += "Cartas seleccionadas: " + selection + "\n"; }
+		if (selection != null) { res += "Carta seleccionada: " + selection + "\n"; }
 		return res;
 	}
 
@@ -278,5 +308,13 @@ public class Mano extends Combinaciones {
 	
 	public List<Trio> getResguardoTrios() {
 		return resguardoTrios;
+	}
+	
+	public List<Slot> getSlots() {
+		return manoSlot;
+	}
+
+	public void setSelection(Carta carta) {
+		selection = carta;
 	}
 }

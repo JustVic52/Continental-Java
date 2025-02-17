@@ -64,4 +64,8 @@ public class GamePanel extends JPanel {
 		radio.render(g);
 		game.render(g);
 	}
+
+	public Game getGame() {
+		return game;
+	}
 }

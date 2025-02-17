@@ -33,7 +33,7 @@ public class Baraja {
 		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
 	}
 	
-	public void setSelected() { selected = !selected; }
+	public void setSelected(boolean s) { selected = s; }
 	
 	public boolean isSelected() { return selected; }
 	
@@ -69,5 +69,9 @@ public class Baraja {
 	
 	public int getSize() {
 		return baraja.size();
+	}
+
+	public Rectangle getHitbox() {
+		return hitbox;
 	}
 }

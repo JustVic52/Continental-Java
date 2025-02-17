@@ -15,7 +15,7 @@ public class Player extends Round {
 	private Mano mano;
 	private boolean roundWinner, gameWinner;
 	
-	public Player(int t, Baraja baraja) {
+	public Player(int t) {
 		points = 0;
 		turno = t;
 		ciclo = 1;
@@ -37,7 +37,7 @@ public class Player extends Round {
 	}
 	
 	public void discard(Carta carta) {
-		mano.discard(carta);
+		mano.discard();
 	}
 	
 	public void take(Carta carta) {
@@ -116,8 +116,8 @@ public class Player extends Round {
 		mano.select(num);
 	}
 	
-	public void deselect(int num) { //quita una carta de la selección
-		mano.deselect(num);
+	public void deselect() { //quita una carta de la selección
+		mano.deselect();
 	}
 	
 	public int getPoints() {
@@ -158,17 +158,13 @@ public class Player extends Round {
 		return mano.getBajadaEscaleras();
 	}
 	
-	public List<Carta> getSelection() {
+	public Carta getSelection() {
 		return mano.getSelection();
 	}
 	
 	public void setPoints(int p) {
 		points = p;
 	}
-	
-//	public void put(int num, Carta carta) { //añade una carta a las cartas bajadas
-//		mano.put(num, carta);
-//	}
 
 	public Carta getUltimaCarta() {
 		return mano.getUltimaCarta();
@@ -176,7 +172,7 @@ public class Player extends Round {
 
 	public void clearMano() {
 		mano.getMano().clear();
-		mano.getSelection().clear();
+		mano.setSelection(null);
 		mano.getBajadaTrios().clear();
 		mano.getBajadaEscaleras().clear();
 	}

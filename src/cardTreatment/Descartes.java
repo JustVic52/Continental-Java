@@ -25,6 +25,8 @@ public class Descartes {
 	
 	public void take(Carta carta) {
 		descartes.add(carta);
+		carta.setX(24);
+		carta.setY(285);
 	}
 	
 	private void initHitbox() {
@@ -36,13 +38,13 @@ public class Descartes {
 		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
 	}
 	
-	public void setSelected() { selected = !selected; }
+	public void setSelected(boolean s) { selected = s; }
 	
 	public boolean isSelected() { return selected; }
 	
 	public void render(Graphics g) {
 		if (!descartes.isEmpty()) {
-			getCarta().render(g, img, 24, 285, 2); // 28, 293
+			getCarta().render(g, img, 2); // 28, 293
 		}
 		if (selected) {
 			g.drawImage(marco, 24, 289, 2 * Carta.MARCO_WIDTH, 2 * Carta.MARCO_HEIGHT, null);
@@ -75,6 +77,10 @@ public class Descartes {
 
 	public void clear() {
 		descartes.clear();
+	}
+
+	public Rectangle getHitbox() {
+		return hitbox;
 	}
 	
 }

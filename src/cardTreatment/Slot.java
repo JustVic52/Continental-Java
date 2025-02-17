@@ -27,6 +27,8 @@ public class Slot {
 	
 	public void add(Carta c) {
 		carta = c;
+		carta.setX(x);
+		carta.setY(y);
 	}
 	
 	public void remove() {
@@ -41,8 +43,15 @@ public class Slot {
 		g.setColor(Color.GREEN);
 //		g.drawRect(x, y, width, height);
 		if (carta != null) {
-			carta.render(g, img, x, y, 1);
+			carta.render(g, img, 1);
 		}
 	}
 	
+	public int getX() { return x; }
+	
+	public int getY() { return y; }
+
+	public Rectangle getHitbox() {
+		return hitbox;
+	}
 }

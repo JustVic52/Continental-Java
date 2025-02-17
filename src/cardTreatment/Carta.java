@@ -80,7 +80,7 @@ public class Carta {
 	
 	public void drawHitbox(Graphics g, int mult) {
 		g.setColor(Color.pink);
-//		g.drawRect(hitbox.x, hitbox.y, mult * CARD_WIDTH, mult * CARD_HEIGHT);
+		g.drawRect(hitbox.x, hitbox.y, mult * CARD_WIDTH, mult * CARD_HEIGHT);
 	}
 	
 	private void adjustValue(int n) {
@@ -100,9 +100,7 @@ public class Carta {
 		}
 	}
 	
-	public void render(Graphics g, BufferedImage img, int x, int y, int mult) {
-		this.x = x;
-		this.y = y;
+	public void render(Graphics g, BufferedImage img, int mult) {
 		updateHitbox();
 		if (comodin) {
 			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
@@ -134,6 +132,14 @@ public class Carta {
 	public int getNumber() {
 		return number;
 	}
+	
+	public int getX() { return x; }
+
+	public int getY() { return y; }
+	
+	public void setX(int dani) { x = dani; }
+
+	public void setY(int furro) { y = furro; }
 	
 	public void setNumber (int n) { value = n; }
 	

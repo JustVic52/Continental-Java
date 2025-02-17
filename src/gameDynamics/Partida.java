@@ -34,13 +34,15 @@ public class Partida {
 	
 	private void createPlayers(int nJ) {
 		for (int i = 0; i < nJ; i++) {
-			jugadores.add(new Player(i + 1, baraja));
+			jugadores.add(new Player(i + 1));
 		}
 	}
 	
 	public List<Player> getJugadores() {
 		return jugadores;
 	}
+	
+	public Descartes getDescartes() { return descartes; }
 	
 	public void render(Graphics g) {
 		baraja.render(g);
@@ -223,32 +225,30 @@ public class Partida {
 	    				boolean added = false;
 	    				if (select == 1) {
 	    					while (i < jugadores.get(jug - 1).getBajadaTrios().size() && !added) {
-	    						jugadores.get(jug - 1).getFullMano().comprobarTrio(jugadores.get(jug - 1).getSelection().get(0), jugadores.get(jug - 1).getBajadaTrios().get(i));
+	    						jugadores.get(jug - 1).getFullMano().comprobarTrio(jugadores.get(jug - 1).getSelection(), jugadores.get(jug - 1).getBajadaTrios().get(i));
 	    						added = jugadores.get(jug - 1).getFullMano().getAdded();
 	    						i++;
 	    					}
 	    					if (added) {
 	    						System.out.println("Carta añadida!\n");
 	    						System.out.println(jugadores.get(jug - 1).bajadaToString());
-	    						player.getMano().remove(player.getSelection().get(0));
+	    						player.getMano().remove(player.getSelection());
 	    					} else { System.out.println("No se pudo añadir la carta\n"); }
 	    				} else {
 	    					while (i < jugadores.get(jug - 1).getBajadaEscaleras().size() && !added) {
-	    						jugadores.get(jug - 1).getFullMano().comprobarEscalera(jugadores.get(jug - 1).getSelection().get(0), jugadores.get(jug - 1).getBajadaEscaleras().get(i));
+	    						jugadores.get(jug - 1).getFullMano().comprobarEscalera(jugadores.get(jug - 1).getSelection(), jugadores.get(jug - 1).getBajadaEscaleras().get(i));
 	    						added = jugadores.get(jug - 1).getFullMano().getAdded();
 	    						i++;
 	    					}
 	    					if (added) {
 	    						System.out.println("Carta añadida!\n");
 	    						System.out.println(jugadores.get(jug - 1).bajadaToString());
-	    						player.getMano().remove(player.getSelection().get(0));
+	    						player.getMano().remove(player.getSelection());
 	    					} else { System.out.println("No se pudo añadir la carta\n"); }
 	    				}
 	    			}
-	    			for (int i = 0; i < player.getSelection().size(); i++) {
-	    				player.getSelection().get(i).setSeleccionada(false);
-	    			}
-	    			player.getSelection().clear();
+	    			player.getSelection().setSeleccionada(false);
+	    			player.getFullMano().setSelection(null);
 	    		}
 	    		else { System.out.println("No puedes jugar cartas aún\n"); }
 	    		break;
@@ -295,7 +295,7 @@ public class Partida {
 				    case 2:
 				 	    System.out.println("selecciona una carta: ");
 				 	    select = teclat.nextInt();
-				 	    player.deselect(select - 1);
+				 	    player.deselect();
 				    	break;
 				    case 3:
 				    	System.out.println("Combinaciones para verificar: ");
@@ -312,7 +312,7 @@ public class Partida {
 				    			System.out.println("Ya has verificado todas las escaleras\n"); 
 				    		}
 				    		else {
-				    			player.getFullMano().sacarEscaleras(player.getSelection());
+				    			player.getFullMano().sacarEscaleras(null);
 				    			if (player.getFullMano().getCanEscalera()) {
 				    				player.getFullMano().resguardarEscaleras();
 				    				System.out.println("Escalera verificada!\n");
@@ -325,7 +325,7 @@ public class Partida {
 				    			System.out.println("Ya has verificado todas los Tríos\n"); 
 				    		}
 				    		else {
-				    			player.getFullMano().sacarTrios(player.getSelection());
+				    			player.getFullMano().sacarTrios(null);
 				    			if (player.getFullMano().getCanTrio()) {
 				    				player.getFullMano().resguardarTrios();
 				    				System.out.println("Trío verificado!\n");
@@ -345,16 +345,14 @@ public class Partida {
 					    		endSelection = true;
 				    		}
 				    	} else {
-				    		for (int i = 0; i < player.getSelection().size(); i++) {
-				    			player.getSelection().get(i).setSeleccionada(false);
-				    		}
-				    		player.getSelection().clear();
+				    		player.getFullMano().getSelection().setSeleccionada(false);
+				    		player.getFullMano().setSelection(null);
 				    		System.out.println("No te puedes bajar aún \n");
 				    		endSelection = true;
 				    	}
 				    	break;
 				    default:
-				    	player.getSelection().clear();
+				    	player.getFullMano().setSelection(null);
 				    	System.out.println("No juegas cartas este turno\n");
 				    	endSelection = true;
 		    		}
