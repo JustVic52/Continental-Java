@@ -51,6 +51,8 @@ public class Playing extends State implements Statemethods {
 			if (c != null && c.getHitbox().contains(e.getX(), e.getY())) {
 				c.setSeleccionada(true);
 				c.setY(c.getY() - 20);
+				c.setOffsetX(e.getX() - c.getX());
+				c.setOffsetY(e.getY() - c.getY());
 				player.getFullMano().select(c);
 			}
 		}
@@ -110,10 +112,8 @@ public class Playing extends State implements Statemethods {
 	public void mouseDragged(MouseEvent e) {
 		for (Carta c : player.getMano()) {
 			if (c.isSeleccionada()) {
-				int x = e.getX() - c.getX();
-				c.setX(e.getX());
-				int y = e.getY() - c.getY();
-				c.setY(e.getY());
+				c.setX(e.getX() - c.getOffsetX());
+				c.setY(e.getY() - c.getOffsetY());
 			}
 		}
 	}

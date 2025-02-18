@@ -13,7 +13,7 @@ import utilz.LoadSave;
 
 public class Carta {
 	
-	private int value, palo, number, x, y;
+	private int value, palo, number, x, y, offsetX = 0, offsetY = 0;
 	private boolean comodin, seleccionada, resguardada;
 	public static final int PICAS = 3, CORAZONES = 4, TREVOLES = 1, DIAMANTES = 2;
 	public static final int CARD_WIDTH = Constants.CardConstants.CARD_WIDTH, CARD_HEIGHT = Constants.CardConstants.CARD_HEIGHT;
@@ -142,6 +142,14 @@ public class Carta {
 	public void setY(int furro) { y = furro; }
 	
 	public void setNumber (int n) { value = n; }
+	
+	public int getOffsetX() { return offsetX; }
+	
+	public int getOffsetY() { return offsetY; }
+	
+	public void setOffsetX(int o) { offsetX = o;}
+	
+	public void setOffsetY(int o) { offsetY = o;}
 	
 	public void setValue(int v) { value = v; }
 	

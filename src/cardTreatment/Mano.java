@@ -65,9 +65,13 @@ public class Mano extends Combinaciones {
 	
 	public void renderSlots(Graphics g) {
 		ArrayList<Slot> aux = new ArrayList<>(manoSlot);
+		Slot auxS = null;
 		for (Slot s : aux) {
-			s.render(g, img);
+			if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img); }
+			else { auxS = s; }
 		}
+		if (auxS != null) { auxS.render(g, img); }
+		
 	}
 	
 	public BufferedImage getImage() {
