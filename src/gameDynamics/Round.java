@@ -40,15 +40,15 @@ public class Round {
 	}
 
 	private void setRound(int num) {
-		//1.  1 escalera - 7 || Cartas Mínimas: 4
-		//2.  2 tríos - 8 || Cartas Mínimas: 6
-		//3.  1 trío 1 escalera - 8 || Cartas Mínimas: 7
-		//4.  2 escaleras - 12 || Cartas Mínimas: 8
-		//5.  3 tríos - 12 || Cartas Mínimas: 9
-		//6.  2 tríos 1 escalera - 12 || Cartas Mínimas: 10
-		//7.  2 escaleras 1 trío - 12 || Cartas Mínimas: 11
-		//8.  4 tríos - 12 || Cartas Mínimas: 12
-		//9.  3 escaleras - 12 || Cartas Mínimas: 12
+		//1.  1 escalera            - 7  || Cartas Mínimas: 4
+		//2.  2 tríos               - 8  || Cartas Mínimas: 6
+		//3.  1 trío 1 escalera     - 8  || Cartas Mínimas: 7
+		//4.  2 escaleras 		    - 12 || Cartas Mínimas: 8
+		//5.  3 tríos 			    - 12 || Cartas Mínimas: 9
+		//6.  2 tríos 1 escalera    - 12 || Cartas Mínimas: 10
+		//7.  2 escaleras 1 trío    - 12 || Cartas Mínimas: 11
+		//8.  4 tríos 			    - 12 || Cartas Mínimas: 12
+		//9.  3 escaleras		    - 12 || Cartas Mínimas: 12
 		//10. 2 escaleras y 2 tríos - 14 || Cartas Mínimas: 14
 		switch (num) {
 		case 1:

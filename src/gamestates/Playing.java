@@ -3,26 +3,42 @@ package gamestates;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 import cardTreatment.Carta;
 import cardTreatment.Slot;
 import gameDynamics.Partida;
 import gameDynamics.Player;
 import mainGame.Game;
+import ui.GameButton;
+import utilz.Constants;
+import utilz.LoadSave;
+import widgets.Radio;
 
 public class Playing extends State implements Statemethods {
 	
 	//Playing necesita el player, los botones de retake y bajar, el botón de pausa, y la radio
 
 	private Partida partida;
+	private BufferedImage tablero;
 	private Player player;
+	private GameButton[] buttons = new GameButton[2];
+	private Radio radio;
 	
 	public Playing(Game g) {
 		super(g);
+		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
 		partida = new Partida(1);
 		player = partida.getJugadores().get(0);
+		radio = new Radio();
+		iniButtons();
 	}
 	
+	private void iniButtons() {
+		buttons[0] = new GameButton(1182, 481, 1);
+		buttons[1] = new GameButton(1182, 629, 0);
+	}
+
 	public Partida getPartida() {
 		return partida;
 	}
@@ -34,6 +50,11 @@ public class Playing extends State implements Statemethods {
 
 	@Override
 	public void draw(Graphics g) {
+		g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+		for (GameButton gb : buttons) {
+			gb.draw(g);
+		}
+		radio.render(g);
 		partida.render(g);
 	}
 
@@ -46,6 +67,11 @@ public class Playing extends State implements Statemethods {
 	public void mousePressed(MouseEvent e) {
 		if (partida.baraja.getHitbox().contains(e.getX(), e.getY())) { partida.baraja.setSelected(true); }
 		if (partida.getDescartes().getHitbox().contains(e.getX(), e.getY()) && !partida.getDescartes().isEmpty()) { partida.getDescartes().setSelected(true); }
+		if (radio.getHitbox().contains(e.getX(), e.getY())) {
+			if (radio.isMuted()) {
+				radio.setRadioState(3);
+			} else { radio.setRadioState(1); }
+		}
 		for (int i = 0; i < player.getFullMano().getSlots().size(); i++) {
 			Carta c = player.getFullMano().getSlots().get(i).getCarta();
 			if (c != null && c.getHitbox().contains(e.getX(), e.getY())) {
@@ -54,6 +80,13 @@ public class Playing extends State implements Statemethods {
 				c.setOffsetX(e.getX() - c.getX());
 				c.setOffsetY(e.getY() - c.getY());
 				player.getFullMano().select(c);
+			}
+		}
+		for (GameButton gb : buttons) {
+			if (gb.getHitbox().contains(e.getX(), e.getY())) {
+				if (gb.getHitbox().contains(e.getX(), e.getY())) {
+					gb.setIndex(gb.getIndex() + 1);			
+				}
 			}
 		}
 	}
@@ -69,11 +102,26 @@ public class Playing extends State implements Statemethods {
 				c.setY(player.getFullMano().getSlots().get(i).getY());
 			}
 		}
+		if (radio.getHitbox().contains(e.getX(), e.getY())) {
+			if (radio.isMuted()) {
+				radio.setRadioState(0);
+				radio.setMuted(false);
+			} else {
+				radio.setRadioState(2);
+				radio.setMuted(true);
+			}
+		}
 		for (i = 0; i < player.getFullMano().getSlots().size(); i++) {
 			Slot s = player.getFullMano().getSlots().get(i);
 			if (s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 				player.getFullMano().moveBetweenSlots(i);
 				player.deselect();
+			}
+		}
+		for (GameButton gb : buttons) {
+			if (gb.getHitbox().contains(e.getX(), e.getY())) {
+				if (gb.getIndex() < 2) { gb.setIndex(gb.getIndex() + 1); }
+				else { gb.setIndex(0); }				
 			}
 		}
 		if (partida.baraja.isSelected()) {
@@ -120,11 +168,13 @@ public class Playing extends State implements Statemethods {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }

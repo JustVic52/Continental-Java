@@ -58,7 +58,6 @@ public class Carta {
 	public void updateHitbox() {
 		hitbox.x = x;
 		hitbox.y = y;
-		
 	}
 	
 	public void setCardDimensions(int mult) {

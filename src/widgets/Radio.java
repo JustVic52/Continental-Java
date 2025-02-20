@@ -16,6 +16,7 @@ public class Radio {
 	private Thread radioTh;
 	private BufferedImage img;
 	private int state = 0;
+	private boolean muted = false;
 	
 	public Radio() {
 		hitbox = new Rectangle(x, y, width, height);
@@ -30,6 +31,8 @@ public class Radio {
 	private void initThread() {
 		
 	}
+	
+	public Rectangle getHitbox() { return hitbox; }
 	
 	public void setRadioState(int s) { state = s; }
 	
@@ -53,6 +56,12 @@ public class Radio {
 			break;
 		}
 	}
-	
-	
+
+	public boolean isMuted() {
+		return muted;
+	}
+
+	public void setMuted(boolean muted) {
+		this.muted = muted;
+	}
 }

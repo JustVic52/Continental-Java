@@ -1,6 +1,17 @@
 package utilz;
 
+import mainGame.Game;
+
 public class Constants {
+	
+	public static class UI {
+		public static class Buttons {
+			public static final int B_WIDTH_DEFAULT = 139;
+			public static final int B_HEIGHT_DEFAULT = 56;
+			public static final int BUTTON_WIDTH = (int) (B_WIDTH_DEFAULT * Game.SCALE);
+			public static final int BUTTON_HEIGHT = (int) (B_HEIGHT_DEFAULT * Game.SCALE);
+		}
+	}
 
 	public static class CardConstants {
 		public static final int CARD_WIDTH = 78;

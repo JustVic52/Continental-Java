@@ -45,8 +45,10 @@ public class Game implements Runnable {
 	public void update() {
 		switch (Gamestate.state) {
 		case MENU:
+			playing.update();
 			break;
 		case PLAYING:
+			playing.update();
 			break;
 		default:
 			break;
