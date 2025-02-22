@@ -6,6 +6,7 @@ import java.util.Scanner;
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
+import ui.ResguardoOverlay;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -44,9 +45,10 @@ public class Partida {
 	
 	public Descartes getDescartes() { return descartes; }
 	
-	public void render(Graphics g) {
+	public void render(Graphics g, ResguardoOverlay resguardo) {
 		baraja.render(g);
 		descartes.render(g);
+		resguardo.draw(g);
 		drawPlayers(g);
 	}
 

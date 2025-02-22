@@ -5,7 +5,7 @@ public class Round {
 	private int numRound, trios, escaleras, numCartas, cartasMin;
 	
 	public Round() {
-		numRound = 1;
+		numRound = 2;
 		setRound(numRound);
 	}
 	

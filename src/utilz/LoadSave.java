@@ -13,6 +13,7 @@ public class LoadSave {
 	public static final String RADIO = "radio.png";
 	public static final String MARCO = "medium_marco.png";
 	public static final String BAJAR_BUTTON = "ES_actions_atlas.png";
+	public static final String RESGUARDO = "resguardo_ronda_";
 
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

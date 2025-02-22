@@ -13,6 +13,7 @@ public class GameButton {
 	private int xOffset = (BUTTON_WIDTH / 2);
 	private Rectangle hitbox;
 	private BufferedImage[] imgs;
+	private static final int UPPER_Y = 0, MIDDLE_Y = 0, DOWN_Y = 0;
 
 	public GameButton(int xPos, int yPos, int rowI) {
 		x = xPos;

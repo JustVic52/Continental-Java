@@ -11,6 +11,7 @@ import gameDynamics.Partida;
 import gameDynamics.Player;
 import mainGame.Game;
 import ui.GameButton;
+import ui.ResguardoOverlay;
 import utilz.Constants;
 import utilz.LoadSave;
 import widgets.Radio;
@@ -24,6 +25,7 @@ public class Playing extends State implements Statemethods {
 	private Player player;
 	private GameButton[] buttons = new GameButton[2];
 	private Radio radio;
+	private ResguardoOverlay resguardo;
 	
 	public Playing(Game g) {
 		super(g);
@@ -31,6 +33,7 @@ public class Playing extends State implements Statemethods {
 		partida = new Partida(1);
 		player = partida.getJugadores().get(0);
 		radio = new Radio();
+		resguardo = new ResguardoOverlay();
 		iniButtons();
 	}
 	
@@ -55,7 +58,8 @@ public class Playing extends State implements Statemethods {
 			gb.draw(g);
 		}
 		radio.render(g);
-		partida.render(g);
+		partida.render(g, resguardo);
+		
 	}
 
 	@Override
@@ -82,12 +86,18 @@ public class Playing extends State implements Statemethods {
 				player.getFullMano().select(c);
 			}
 		}
-		for (GameButton gb : buttons) {
-			if (gb.getHitbox().contains(e.getX(), e.getY())) {
-				if (gb.getHitbox().contains(e.getX(), e.getY())) {
-					gb.setIndex(gb.getIndex() + 1);			
-				}
+		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
+			if (!resguardo.isActivated()) {
+				buttons[0].setIndex(buttons[0].getIndex() + 1);
 			}
+		}
+		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
+			if (!resguardo.isActivated()) {
+				buttons[1].setIndex(1);
+			} else { buttons[1].setIndex(3); }
+		}
+		if (resguardo.isActivated() && resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
+			resguardo.getButton().setIndex(1);
 		}
 	}
 
@@ -118,11 +128,22 @@ public class Playing extends State implements Statemethods {
 				player.deselect();
 			}
 		}
-		for (GameButton gb : buttons) {
-			if (gb.getHitbox().contains(e.getX(), e.getY())) {
-				if (gb.getIndex() < 2) { gb.setIndex(gb.getIndex() + 1); }
-				else { gb.setIndex(0); }				
+		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
+			if (!resguardo.isActivated()) {
+				if (buttons[0].getIndex() == 1) { buttons[0].setIndex(2); }
+				if (buttons[0].getIndex() == 3) { buttons[0].setIndex(0); }
 			}
+		}
+		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
+			if (!resguardo.isActivated()) {
+				resguardo.setActivated(true);
+				buttons[1].setIndex(2);
+			} else { buttons[1].setIndex(2); }	
+		}
+		if (resguardo.isActivated() && resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
+			resguardo.getButton().setIndex(0);
+			buttons[1].setIndex(0);
+			resguardo.setActivated(false);
 		}
 		if (partida.baraja.isSelected()) {
 			player.give();
