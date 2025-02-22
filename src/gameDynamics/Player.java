@@ -37,7 +37,8 @@ public class Player extends Round {
 	}
 	
 	public void discard(Carta carta) {
-		mano.discard();
+		boolean res = false;
+		mano.discard(res);
 	}
 	
 	public void take(Carta carta) {

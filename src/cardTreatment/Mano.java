@@ -43,12 +43,12 @@ public class Mano extends Combinaciones {
 	
 	private void initSlot() {
 		int x = 227;
-		int y = 474;
+		int y = 475;
 		for (int i = 0; i < 22; i++) {
-			manoSlot.add(new Slot(x, y));
+			manoSlot.add(new Slot(x, y, false));
 			if (x == 1027) {
 				x = 227;
-				y = 584;
+				y = 585;
 			} else { x += 80; }
 		} 
 	}
@@ -80,7 +80,7 @@ public class Mano extends Combinaciones {
 
 	public void give() {
 		Random random = new Random();
-		int num = random.nextInt(Partida.baraja.getSize()); //genera un número aleatorio para la baraja (52 cartas y 6 comodines)
+		int num = random.nextInt(Partida.baraja.getSize()); //genera un número aleatorio para la baraja (52 cartas y 2 comodines)
 		Carta c = Partida.baraja.getCard(num);
 		mano.add(c); //añade una carta de la baraja y la elimina de la lista.
 		addToSlot(c); //añade la carta al slot
@@ -98,8 +98,10 @@ public class Mano extends Combinaciones {
 		}
 	}
 
-	public void discard() {
-		removeFromSlots(selection);
+	public void discard(boolean in) {
+		if (!in) {
+			removeFromSlots(selection);
+		}
 		mano.remove(selection);
 		ultimaCartaEliminada = selection;
 		deselect();

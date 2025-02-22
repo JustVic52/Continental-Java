@@ -10,14 +10,20 @@ public class Slot {
 	private Carta carta;
 	private Rectangle hitbox;
 	private int x, y, width = 78, height = 108;
+	private boolean inResguardo;
 	
-	public Slot(int x, int y) {
+	public Slot(int x, int y, boolean in) {
 		this.x = x;
 		this.y = y;
+		inResguardo = in;
 		carta = null;
 		hitbox = new Rectangle(x, y, width, height);
 	}
 	
+	public boolean isIn() {
+		return inResguardo;
+	}
+
 	public void setSlotPos(int x, int y) {
 		this.x = x;
 		this.y = y;

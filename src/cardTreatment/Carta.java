@@ -102,12 +102,12 @@ public class Carta {
 	public void render(Graphics g, BufferedImage img, int mult) {
 		updateHitbox();
 		if (comodin) {
-			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
 		} else {
-			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, y, mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
 		}
 		if (seleccionada) {
-			g.drawImage(marco, x, y + 2, mult * MARCO_WIDTH, mult * MARCO_HEIGHT, null);
+			g.drawImage(marco, x, y + 1, mult * MARCO_WIDTH, mult * MARCO_HEIGHT, null);
 		}
 //		drawHitbox(g, mult);
 	}

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import cardTreatment.Carta;
 import cardTreatment.Slot;
 import gameDynamics.Round;
 import utilz.LoadSave;
@@ -16,7 +17,8 @@ public class ResguardoOverlay extends Round {
 	private int x, y = 0, width, height;
 	private boolean activated = false;
 	private GameButton cancel;
-	private static final int UPPER_Y = 0, MIDDLE_Y = 0, DOWN_Y = 0;
+	private static final int UPPER_Y = 37, MIDDLE_Y = 154, DOWN_Y = 271;
+	private static final int ESCALERA_X = 215, TRIO_X = 935, ROUND8_X = 581;	
 
 	public ResguardoOverlay() {
 		slots = new ArrayList<>();
@@ -24,26 +26,38 @@ public class ResguardoOverlay extends Round {
 		loadTablero();
 	}
 	
-	public void draw(Graphics g) {
+	public void draw(Graphics g, BufferedImage img) {
 		if (activated) {
 			g.drawImage(tablero, x, y, width, height, null);
 			cancel.draw(g);
+			renderSlots(g, img);
 		}
 	}
 	
+	private void renderSlots(Graphics g, BufferedImage img) {
+		Slot aux = null;
+		for (Slot[] ss : slots) {
+			for (Slot s : ss) {
+				if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img); }
+				else { aux = s; }
+			}
+		}
+		if (aux != null) { aux.render(g, img); }
+	}
+
 	private void loadTablero() {
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.RESGUARDO + getNumRound() + ".png");
 		width = tablero.getWidth();
 		height = tablero.getHeight();
 		switch (getNumRound()) {
-	    case 1: case 3: case 4: case 6: case 7: case 9: case 10:
-	        x = 188;
-	        break;
 	    case 2: case 5:
 	        x = 908;
 	        break;
 	    case 8:
 	        x = 554;
+	        break;
+	    default:
+	    	x = 188;
 	        break;
 		}
 		loadSlots();
@@ -52,40 +66,118 @@ public class ResguardoOverlay extends Round {
 	private void loadSlots() {
 		switch (getNumRound()) {
 		case 1:
-			
+			slots.add(new Slot[13]);
 			break;
 		case 2:
-			
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
 			break;
 		case 3:
-			
+			slots.add(new Slot[13]);
+			slots.add(new Slot[4]);
 			break;
 		case 4:
-			
+			slots.add(new Slot[13]);
+			slots.add(new Slot[13]);
 			break;
 		case 5:
-			
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
 			break;
 		case 6:
-			
+			slots.add(new Slot[13]);
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
 			break;
 		case 7:
-			
+			slots.add(new Slot[13]);
+			slots.add(new Slot[13]);
+			slots.add(new Slot[4]);
 			break;
 		case 8:
-			
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
 			break;
 		case 9:
-			
+			slots.add(new Slot[13]);
+			slots.add(new Slot[13]);
+			slots.add(new Slot[13]);
 			break;
 		case 10:
-			
+			slots.add(new Slot[13]);
+			slots.add(new Slot[13]);
+			slots.add(new Slot[4]);
+			slots.add(new Slot[4]);
 			break;
+		}
+		createSlots();
+	}
+
+	private void createSlots() {
+		ArrayList<Slot[]> aux = new ArrayList<>(slots);
+		int x = 0;
+		int y = UPPER_Y;
+		
+		for (Slot[] ss : aux) {
+			
+			if (ss.length == 4) { 
+				if (getNumRound() == 8) { x = ROUND8_X; }
+				else { x = TRIO_X; }
+			}
+			else { x = ESCALERA_X; }
+			
+			switch (getNumRound()) {
+			case 6: case 10:
+				
+				if (ss.length != 4) {
+					for (int i = 0; i < ss.length; i++) {
+						ss[i] = new Slot(x, y, true);
+						x += 80;
+					}
+					if (y == MIDDLE_Y) { y = DOWN_Y; }
+					if (y == UPPER_Y) { y = MIDDLE_Y; }
+				} else {
+					if (ss.equals(aux.get(aux.size() - 1))) { x = TRIO_X; }
+					else { x = ROUND8_X; }
+					for (int i = 0; i < ss.length; i++) {
+						ss[i] = new Slot(x, y, true);
+						x += 80;
+					}
+				}
+				
+				break;
+			case 8:
+				
+				if (ss.equals(aux.get(1)) || ss.equals(aux.get(3))) { x = TRIO_X; }
+				for (int i = 0; i < ss.length; i++) {
+					ss[i] = new Slot(x, y, true);
+					x += 80;
+				}
+				if (x == 1255 && y == UPPER_Y) { y = MIDDLE_Y; }
+				break;
+			default:
+				
+				for (int i = 0; i < ss.length; i++) {
+					ss[i] = new Slot(x, y, true);
+					x += 80;
+				}
+				if (y == MIDDLE_Y) { y = DOWN_Y; }
+				if (y == UPPER_Y) { y = MIDDLE_Y; }
+				
+				break;
+			}
 		}
 	}
 
 	public GameButton getButton() {
 		return cancel;
+	}
+	
+	public List<Slot[]> getSlots() {
+		return slots;
 	}
 	
 	public boolean isActivated() {
@@ -94,5 +186,9 @@ public class ResguardoOverlay extends Round {
 
 	public void setActivated(boolean activated) {
 		this.activated = activated;
+	}
+
+	public void discard(int i, int j) {
+		slots.get(i)[j].remove();
 	}
 }
