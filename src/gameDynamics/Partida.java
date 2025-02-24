@@ -6,6 +6,7 @@ import java.util.Scanner;
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
+import cardTreatment.Slot;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -44,15 +45,15 @@ public class Partida {
 	
 	public Descartes getDescartes() { return descartes; }
 	
-	public void render(Graphics g) {
+	public void render(Graphics g, List<Slot[]> slots, boolean active) {
 		baraja.render(g);
 		descartes.render(g);
-		drawPlayers(g);
+		drawPlayers(g, slots, active);
 	}
 
-	private void drawPlayers(Graphics g) {
+	private void drawPlayers(Graphics g, List<Slot[]> slots, boolean active) {
 		for (Player p : jugadores) {
-			p.render(g);
+			p.render(g, slots, active);
 		}
 	}
 

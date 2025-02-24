@@ -61,7 +61,7 @@ public class Playing extends State implements Statemethods {
 		}
 		radio.render(g);
 		resguardo.draw(g, player.getFullMano().getImage());
-		partida.render(g);
+		partida.render(g, resguardo.getSlots(), resguardo.isActivated());
 	}
 
 	@Override
@@ -75,12 +75,6 @@ public class Playing extends State implements Statemethods {
 		if (partida.baraja.getHitbox().contains(e.getX(), e.getY())) { partida.baraja.setSelected(true); }
 		
 		if (partida.getDescartes().getHitbox().contains(e.getX(), e.getY()) && !partida.getDescartes().isEmpty()) { partida.getDescartes().setSelected(true); }
-		
-		if (radio.getHitbox().contains(e.getX(), e.getY())) {
-			if (radio.isMuted()) {
-				radio.setRadioState(3);
-			} else { radio.setRadioState(1); }
-		}
 		
 		for (int i = 0; i < player.getFullMano().getSlots().size(); i++) {
 			Carta c = player.getFullMano().getSlots().get(i).getCarta();
@@ -124,6 +118,11 @@ public class Playing extends State implements Statemethods {
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
 				buttons[1].setIndex(1);
 			}
+			if (radio.getHitbox().contains(e.getX(), e.getY())) {
+				if (radio.isMuted()) {
+					radio.setRadioState(3);
+				} else { radio.setRadioState(1); }
+			}
 		}
 	}
 
@@ -137,16 +136,6 @@ public class Playing extends State implements Statemethods {
 				c.setSeleccionada(false);
 				c.setX(player.getFullMano().getSlots().get(i).getX());
 				c.setY(player.getFullMano().getSlots().get(i).getY());
-			}
-		}
-		
-		if (radio.getHitbox().contains(e.getX(), e.getY())) {
-			if (radio.isMuted()) {
-				radio.setRadioState(0);
-				radio.setMuted(false);
-			} else {
-				radio.setRadioState(2);
-				radio.setMuted(true);
 			}
 		}
 		
@@ -185,7 +174,7 @@ public class Playing extends State implements Statemethods {
 			for (i = 0; i < resguardo.getSlots().size(); i++) {
 				for (int j = 0; j < resguardo.getSlots().get(i).length; j++) {
 					Slot s = resguardo.getSlots().get(i)[j];
-					if (s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+					if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 						if (slot.isIn()) {
 							resguardo.getSlots().get(posI)[posJ].remove();
 						} else {
@@ -204,6 +193,15 @@ public class Playing extends State implements Statemethods {
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
 				resguardo.setActivated(true);
 				buttons[1].setIndex(0);
+			}
+			if (radio.getHitbox().contains(e.getX(), e.getY())) {
+				if (radio.isMuted()) {
+					radio.setRadioState(0);
+					radio.setMuted(false);
+				} else {
+					radio.setRadioState(2);
+					radio.setMuted(true);
+				}
 			}
 		}
 		

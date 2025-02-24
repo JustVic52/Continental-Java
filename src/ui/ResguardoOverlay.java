@@ -30,7 +30,7 @@ public class ResguardoOverlay extends Round {
 		if (activated) {
 			g.drawImage(tablero, x, y, width, height, null);
 			cancel.draw(g);
-			renderSlots(g, img);
+//			renderSlots(g, img);
 		}
 	}
 	

@@ -63,15 +63,22 @@ public class Mano extends Combinaciones {
 		}
 	}
 	
-	public void renderSlots(Graphics g) {
+	public void renderSlots(Graphics g, List<Slot[]> slots, boolean active) {
 		ArrayList<Slot> aux = new ArrayList<>(manoSlot);
 		Slot auxS = null;
 		for (Slot s : aux) {
 			if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img); }
 			else { auxS = s; }
 		}
+		if (active) {
+			for (Slot[] ss : slots) {
+				for (Slot s : ss) {
+					if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img); }
+					else { auxS = s; }
+				}
+			}
+		}
 		if (auxS != null) { auxS.render(g, img); }
-		
 	}
 	
 	public BufferedImage getImage() {

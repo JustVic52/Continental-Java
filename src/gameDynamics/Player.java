@@ -1,12 +1,14 @@
 package gameDynamics;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.List;
 
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Escalera;
 import cardTreatment.Mano;
+import cardTreatment.Slot;
 import cardTreatment.Trio;
 
 public class Player extends Round {
@@ -178,7 +180,7 @@ public class Player extends Round {
 		mano.getBajadaEscaleras().clear();
 	}
 
-	public void render(Graphics g) {
-		mano.renderSlots(g);
+	public void render(Graphics g, List<Slot[]> slots, boolean active) {
+		mano.renderSlots(g, slots, active);
 	}
 }
