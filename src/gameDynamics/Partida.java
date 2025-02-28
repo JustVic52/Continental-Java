@@ -7,6 +7,7 @@ import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
 import cardTreatment.Slot;
+import net.Client;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class Partida {
 
 	private Round round;
 	private List<Player> jugadores;
+	private List<Client> players;
 	private int numJugadores;
 	private Descartes descartes;
 	private boolean endRound, taken;
@@ -22,20 +24,21 @@ public class Partida {
 	private Player playerLadron;
 	public static Baraja baraja;
 	
-	public Partida(int nJ) {
+	public Partida(List<Client> lp) {
 		round = new Round();
 		jugadores = new ArrayList<>();
+		players = lp;
 		baraja = new Baraja();
-		createPlayers(nJ);
+		createPlayers(lp.size());
 		descartes = new Descartes();
-		numJugadores = nJ;
+		numJugadores = lp.size();
 		endRound = false;
 		teclat = new Scanner(System.in);
 	}
 	
 	private void createPlayers(int nJ) {
-		for (int i = 0; i < nJ; i++) {
-			jugadores.add(new Player(i + 1));
+		for (Client cl : players) {
+			jugadores.add(cl.getPlayer());
 		}
 	}
 	

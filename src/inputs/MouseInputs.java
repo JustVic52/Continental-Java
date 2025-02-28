@@ -4,7 +4,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import cardTreatment.Baraja;
 import gameGraphics.GamePanel;
 import gamestates.Gamestate;
 
@@ -39,21 +38,26 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 		case PLAYING:
 			gamePanel.getGame().getPlaying().mouseMoved(e);
 			break;
+		case HOST:
+			gamePanel.getGame().getHost().mouseMoved(e);
+			break;
+		case JOIN:
+			gamePanel.getGame().getJoin().mouseMoved(e);
+			break;
 		default:
 			break;
 		}
+//		System.out.println("X: " + e.getX() + " | Y: " + e.getY());
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		switch (Gamestate.state) {
-		case MENU:
-			gamePanel.getGame().getMenu().mouseClicked(e);
+		case HOST:
+			gamePanel.getGame().getHost().mouseClicked(e);
 			break;
-		case PLAYING:
-			gamePanel.getGame().getPlaying().mouseClicked(e);
-			break;
-		default:
+		case JOIN:
+			gamePanel.getGame().getJoin().mouseClicked(e);
 			break;
 		}
 	}
@@ -66,6 +70,12 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 			break;
 		case PLAYING:
 			gamePanel.getGame().getPlaying().mousePressed(e);
+			break;
+		case HOST:
+			gamePanel.getGame().getHost().mousePressed(e);
+			break;
+		case JOIN:
+			gamePanel.getGame().getJoin().mousePressed(e);
 			break;
 		default:
 			break;
@@ -81,6 +91,12 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 		case PLAYING:
 			gamePanel.getGame().getPlaying().mouseReleased(e);
 			break;
+		case HOST:
+			gamePanel.getGame().getHost().mouseReleased(e);
+			break;
+		case JOIN:
+			gamePanel.getGame().getJoin().mouseReleased(e);
+			break;
 		default:
 			break;
 		}
@@ -88,30 +104,12 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		switch (Gamestate.state) {
-		case MENU:
-			gamePanel.getGame().getMenu().mouseEntered(e);
-			break;
-		case PLAYING:
-			gamePanel.getGame().getPlaying().mouseEntered(e);
-			break;
-		default:
-			break;
-		}
+		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		switch (Gamestate.state) {
-		case MENU:
-			gamePanel.getGame().getMenu().mouseExited(e);
-			break;
-		case PLAYING:
-			gamePanel.getGame().getPlaying().mouseExited(e);
-			break;
-		default:
-			break;
-		}
+		
 	}
 
 }

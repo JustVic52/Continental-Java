@@ -38,6 +38,7 @@ public class Baraja {
 	public boolean isSelected() { return selected; }
 	
 	public void render(Graphics g) {
+		//funny one: 2 * Carta.CARD_WIDTH;
 		g.drawImage(img.getSubimage(0, 4 * Carta.CARD_HEIGHT, Carta.CARD_WIDTH, Carta.CARD_HEIGHT), 24, 35, 2 * Carta.CARD_WIDTH, 2 * Carta.CARD_HEIGHT, null);
 		if (selected) {
 			g.drawImage(marco, 24, 39, 2 * Carta.MARCO_WIDTH, 2 * Carta.MARCO_HEIGHT, null);

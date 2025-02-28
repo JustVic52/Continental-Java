@@ -10,11 +10,11 @@ import static utilz.Constants.UI.Buttons.*;
 
 public class MenuButton {
 	private int xPos, yPos, rowIndex, index;
-	private int xOffsetCenter = BUTTON_WIDTH / 2;
+	private int xOffsetCenter = B_WIDTH / 2;
 	private Gamestate state;
 	private BufferedImage[] imgs;
 	private boolean mouseOver, mousePressed;
-	private Rectangle bounds;
+	private Rectangle hitbox;
 
 	public MenuButton(int xPos, int yPos, int rowIndex, Gamestate state) {
 		this.xPos = xPos;
@@ -26,28 +26,25 @@ public class MenuButton {
 	}
 
 	private void initBounds() {
-		bounds = new Rectangle(xPos - xOffsetCenter, yPos, BUTTON_WIDTH, BUTTON_HEIGHT);
-
+		hitbox = new Rectangle(xPos - xOffsetCenter, yPos, B_WIDTH, B_HEIGHT);
 	}
 
 	private void loadImgs() {
 		imgs = new BufferedImage[3];
-//		BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.MENU_BUTTONS);
+		BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.MENU_BUTTONS);
 		for (int i = 0; i < imgs.length; i++) {
-//			imgs[i] = temp.getSubimage(i * B_WIDTH_DEFAULT, rowIndex * B_HEIGHT_DEFAULT, B_WIDTH_DEFAULT, B_HEIGHT_DEFAULT);
+			imgs[i] = temp.getSubimage(i * B_WIDTH, rowIndex * B_HEIGHT, B_WIDTH, B_HEIGHT);
 		}
 	}
 
 	public void draw(Graphics g) {
-		g.drawImage(imgs[index], xPos - xOffsetCenter, yPos, BUTTON_WIDTH, BUTTON_HEIGHT, null);
-	}
-
-	public void update() {
 		index = 0;
 		if (mouseOver)
 			index = 1;
 		if (mousePressed)
 			index = 2;
+		
+		g.drawImage(imgs[index], xPos - xOffsetCenter, yPos, B_WIDTH, B_HEIGHT, null);
 	}
 
 	public boolean isMouseOver() {
@@ -66,8 +63,8 @@ public class MenuButton {
 		this.mousePressed = mousePressed;
 	}
 
-	public Rectangle getBounds() {
-		return bounds;
+	public Rectangle getHitbox() {
+		return hitbox;
 	}
 
 	public void applyGamestate() {
@@ -79,4 +76,7 @@ public class MenuButton {
 		mousePressed = false;
 	}
 
+	public Gamestate getState() {
+		return state;
+	}
 }

@@ -10,7 +10,7 @@ import static utilz.Constants.UI.Buttons.*;
 public class GameButton {
 	
 	private int x, y, rowIndex, index = 0;
-	private int xOffset = (BUTTON_WIDTH / 2);
+	private int xOffset = (B_WIDTH / 2);
 	private Rectangle hitbox;
 	private BufferedImage[] imgs;
 
@@ -23,19 +23,19 @@ public class GameButton {
 	}
 
 	private void iniHitbox() {
-		hitbox = new Rectangle(x - xOffset, y, BUTTON_WIDTH, BUTTON_HEIGHT);
+		hitbox = new Rectangle(x - xOffset, y, B_WIDTH, B_HEIGHT);
 	}
 
 	private void loadImgs() {
 		imgs = new BufferedImage[4];
 		BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BAJAR_BUTTON);
 		for (int i = 0; i < imgs.length; i++) {
-			imgs[i] = temp.getSubimage(i * B_WIDTH_DEFAULT, rowIndex * B_HEIGHT_DEFAULT, B_WIDTH_DEFAULT, B_HEIGHT_DEFAULT);
+			imgs[i] = temp.getSubimage(i * B_WIDTH, rowIndex * B_HEIGHT, B_WIDTH, B_HEIGHT);
 		}
 	}
 	
 	public void draw(Graphics g) {
-		g.drawImage(imgs[index], x - xOffset, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
+		g.drawImage(imgs[index], x - xOffset, y, B_WIDTH, B_HEIGHT, null);
 	}
 	
 	public void setIndex(int i) { index = i; }

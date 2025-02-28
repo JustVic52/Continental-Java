@@ -6,6 +6,8 @@ import gameDynamics.Partida;
 import gameGraphics.GamePanel;
 import gameGraphics.GameWindow;
 import gamestates.Gamestate;
+import gamestates.Host;
+import gamestates.Join;
 import gamestates.Menu;
 import gamestates.Playing;
 import utilz.Constants;
@@ -22,6 +24,8 @@ public class Game implements Runnable {
 	public static final int GAME_HEIGHT = (int) (Constants.TableroConstants.TABLERO_HEIGHT * SCALE);
 	private Playing playing;
 	private Menu menu;
+	private Host host;
+	private Join join;
 
 	public Game() {
 		initStates();
@@ -34,6 +38,8 @@ public class Game implements Runnable {
 	private void initStates() {
 		playing = new Playing(this);
 		menu = new Menu(this);
+		host = new Host(this);
+		join = new Join(this);
 	}
 
 	private void startGameLoop() {
@@ -44,11 +50,8 @@ public class Game implements Runnable {
 	
 	public void update() {
 		switch (Gamestate.state) {
-		case MENU:
-			playing.update();
-			break;
-		case PLAYING:
-			playing.update();
+		case QUIT:
+			System.exit(0);
 			break;
 		default:
 			break;
@@ -62,6 +65,12 @@ public class Game implements Runnable {
 			break;
 		case PLAYING:
 			playing.draw(g);
+			break;
+		case HOST:
+			host.draw(g);
+			break;
+		case JOIN:
+			join.draw(g);
 			break;
 		default:
 			break;
@@ -113,5 +122,13 @@ public class Game implements Runnable {
 	
 	public Menu getMenu() {
 		return menu;
+	}
+
+	public Host getHost() {
+		return host;
+	}
+	
+	public Join getJoin() {
+		return join;
 	}
 }

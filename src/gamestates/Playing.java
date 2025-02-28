@@ -32,7 +32,7 @@ public class Playing extends State implements Statemethods {
 	public Playing(Game g) {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
-		partida = new Partida(1);
+//		partida = new Partida(1);
 		player = partida.getJugadores().get(0);
 		radio = new Radio();
 		resguardo = new ResguardoOverlay();
@@ -49,24 +49,13 @@ public class Playing extends State implements Statemethods {
 	}
 
 	@Override
-	public void update() {
-		
-	}
-
-	@Override
 	public void draw(Graphics g) {
 		g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
-		for (GameButton gb : buttons) {
-			gb.draw(g);
-		}
+		if (!resguardo.isActivated()) { buttons[0].draw(g); }
+		buttons[1].draw(g);
 		radio.render(g);
 		resguardo.draw(g, player.getFullMano().getImage());
 		partida.render(g, resguardo.getSlots(), resguardo.isActivated());
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		
 	}
 
 	@Override
@@ -237,11 +226,6 @@ public class Playing extends State implements Statemethods {
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		
-	}
-
-	@Override
 	public void mouseDragged(MouseEvent e) {
 		for (Carta c : player.getMano()) {
 			if (c.isSeleccionada()) {
@@ -249,17 +233,5 @@ public class Playing extends State implements Statemethods {
 				c.setY(e.getY() - c.getOffsetY());
 			}
 		}
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 }
