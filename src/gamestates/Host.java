@@ -1,26 +1,13 @@
 package gamestates;
 
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.TextField;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
-import gameGraphics.GameWindow;
 import mainGame.Game;
-import net.Client;
 import net.Server;
 import ui.ComboButton;
-import ui.MenuButton;
 import ui.URMButton;
 import utilz.CuadroTexto;
 import utilz.LoadSave;
@@ -28,7 +15,6 @@ import utilz.LoadSave;
 public class Host extends State implements Statemethods {
 
 	private static Server server;
-	private Client client;
 	private BufferedImage overlay, background;
 	private URMButton[] buttons = new URMButton[2];
 	private ComboButton[] comboButtons = new ComboButton[2];
@@ -106,9 +92,13 @@ public class Host extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
-				SwingUtilities.invokeLater(() -> { Gamestate.state = Gamestate.PLAYING; });
-				server = new Server(numOfPlayers);
-				server.run();
+				if (!texto.getTexto().equals("")) {
+					server = new Server(numOfPlayers, texto.getTexto());
+					Thread elServer = new Thread(server);
+					elServer.start();
+					while (server.getClient() == null) { }
+					Gamestate.state = Gamestate.PLAYING;
+				}
 			}
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
@@ -163,6 +153,7 @@ public class Host extends State implements Statemethods {
 	
 	public void keyTyped(KeyEvent e) {
 		texto.keyTyped(e);
+		System.out.println(texto.getTexto());
 	}
 	
 	public static Server getServer() { return server; }

@@ -9,14 +9,14 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import gamestates.Gamestate;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 import mainGame.Game;
 
 public class GamePanel extends JPanel {
+	
+	private static final long serialVersionUID = -6596848864696710719L;
 	
 	private MouseInputs mouseInputs;
 	private Game game;
@@ -33,7 +33,7 @@ public class GamePanel extends JPanel {
 	}
 
 	private void setPanelSize() {
-		Dimension size = new Dimension(game.GAME_WIDTH, game.GAME_HEIGHT);
+		Dimension size = new Dimension(Game.GAME_WIDTH, Game.GAME_HEIGHT);
 		setPreferredSize(size);
 	}
 

@@ -59,6 +59,8 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 		case JOIN:
 			gamePanel.getGame().getJoin().mouseClicked(e);
 			break;
+		default:
+			break;
 		}
 	}
 

@@ -11,8 +11,6 @@ import java.net.UnknownHostException;
 
 import mainGame.Game;
 import net.Client;
-import net.Server;
-import ui.ComboButton;
 import ui.URMButton;
 import utilz.CuadroTexto;
 import utilz.LoadSave;
@@ -84,15 +82,18 @@ public class Join extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
-				try {
-					Socket s = new Socket(InetAddress.getLocalHost(), 6020);
-					client = new Client(s);
-					client.run();
-					Gamestate.state = Gamestate.PLAYING;
-				} catch (UnknownHostException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				if (!texto.getTexto().equals("")) {
+					try {
+						Socket s = new Socket(InetAddress.getLocalHost(), 6020);
+						client = new Client(s, texto.getTexto());
+						Thread elCliente = new Thread(client);
+						elCliente.start();
+						Gamestate.state = Gamestate.PLAYING;
+					} catch (UnknownHostException e1) {
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}

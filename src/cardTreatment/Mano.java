@@ -2,15 +2,9 @@ package cardTreatment;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import javax.imageio.ImageIO;
-
-import gameDynamics.Partida;
 import utilz.LoadSave;
 
 //Esto es tu mano personal. Aquí se acumulan las cartas que tengas en la mano y se eliminan una vez las descartes.
@@ -19,7 +13,6 @@ public class Mano extends Combinaciones {
 	
 	private List<Carta> mano;
 	private List<Slot> manoSlot;
-	private List<Slot> selectSlot;
 	private List<Trio> bajadaTrios;
 	private List<Escalera> bajadaEscalera;
 	private Carta selection;
@@ -34,7 +27,6 @@ public class Mano extends Combinaciones {
 	public Mano() {
 		mano = new ArrayList<>();
 		manoSlot = new ArrayList<>();
-		selectSlot = new ArrayList<>();
 		initSlot();
 		bajadaTrios = new ArrayList<>();
 		bajadaEscalera = new ArrayList<>();

@@ -1,20 +1,12 @@
 package net;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
 
 import cardTreatment.Carta;
-import cardTreatment.Mano;
-import gameDynamics.Partida;
 import gameDynamics.Player;
-import gamestates.Gamestate;
-import utilz.Pair;
 
 public class Client extends Thread {
 
@@ -26,8 +18,9 @@ public class Client extends Thread {
 	ObjectOutputStream out;
 	ObjectInputStream in;
 	
-	public Client(Socket s) {
+	public Client(Socket s, String name) {
 		socket = s;
+		nombre = name;
 	}
 
 	@Override
@@ -49,7 +42,6 @@ public class Client extends Thread {
 			
 			in.close();
 			out.close();
-			Gamestate.state = Gamestate.MENU;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -117,10 +109,12 @@ public class Client extends Thread {
 //			e.printStackTrace();
 //		}
 			catch (IOException e) {
-			System.out.println("se ralla");
-			if (player.getMano().isEmpty()) {
-				System.out.println("Si");
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
+			
 		}
 	}
 
@@ -135,4 +129,6 @@ public class Client extends Thread {
 	public ObjectOutputStream getOutputStream() {
 		return out;
 	}
+	
+	public String getNombre() { return nombre; }
 }

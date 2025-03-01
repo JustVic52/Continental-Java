@@ -1,20 +1,12 @@
 package gameDynamics;
 
 import java.util.List;
-import java.util.Scanner;
 
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
-import cardTreatment.Mano;
-import cardTreatment.Slot;
-import gamestates.Gamestate;
 import net.Client;
-import utilz.Pair;
 
-import java.awt.Graphics;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

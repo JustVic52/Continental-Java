@@ -9,11 +9,8 @@ import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
 import cardTreatment.Slot;
-import gameDynamics.Partida;
 import gameDynamics.Player;
 import mainGame.Game;
-import net.Client;
-import net.Server;
 import ui.GameButton;
 import ui.ResguardoOverlay;
 import utilz.Constants;
@@ -56,15 +53,15 @@ public class Playing extends State implements Statemethods {
 			} else {
 				player = Host.getServer().getClient().getPlayer();
 			}
+		} else {
+			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+			if (!resguardo.isActivated()) { buttons[0].draw(g); }
+			buttons[1].draw(g);
+			radio.render(g);
+			resguardo.draw(g, player.getFullMano().getImage());
+			descartes.render(g);
+			player.render(g, resguardo.getSlots(), resguardo.isActivated());
 		}
-		
-		g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
-		if (!resguardo.isActivated()) { buttons[0].draw(g); }
-		buttons[1].draw(g);
-		radio.render(g);
-		resguardo.draw(g, player.getFullMano().getImage());
-		descartes.render(g);
-		player.render(g, resguardo.getSlots(), resguardo.isActivated());
 	}
 
 	@Override

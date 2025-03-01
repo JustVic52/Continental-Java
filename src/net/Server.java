@@ -1,7 +1,5 @@
 package net;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -12,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gameDynamics.Partida;
-import gameDynamics.Player;
-import gamestates.Gamestate;
 
 public class Server implements Runnable {
 	
@@ -21,10 +17,12 @@ public class Server implements Runnable {
 	private Partida partida;
 	private Client client;
 	private int numPlayers;
+	private String nombre = "";
 	private List<Socket> listaPlayers;
 
-	public Server(int np) {
+	public Server(int np, String name) {
 		numPlayers = np;
+		nombre = name;
 		listaPlayers = new ArrayList<>();
 		try {
 			this.server = new ServerSocket(6020);
@@ -43,8 +41,9 @@ public class Server implements Runnable {
 			s = new Socket(InetAddress.getLocalHost(), 6020);
 			Socket s2 = server.accept();
 			listaPlayers.add(s2);
-			client = new Client(s2);
-			client.start();
+			client = new Client(s2, nombre);
+			Thread elCliente = new Thread(client);
+			elCliente.start();
 			listaOut.add(new ObjectOutputStream(s.getOutputStream()));
 			listaOut.get(0).writeInt(0);
 			listaOut.get(0).flush();
@@ -68,7 +67,6 @@ public class Server implements Runnable {
 		}
 		System.out.println("empieza la partida");
 		partida = new Partida(listaPlayers, listaOut, client);
-		System.out.println(Gamestate.state);
 		partida.playGame();
 		closeServer();
 	}
@@ -79,7 +77,6 @@ public class Server implements Runnable {
         } catch (final IOException e) {
         	
         }
-        Gamestate.state = Gamestate.HOST;
     }
 
     public ServerSocket getServerSocket() {

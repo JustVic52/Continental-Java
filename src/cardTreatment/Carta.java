@@ -3,14 +3,10 @@ package cardTreatment;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 import utilz.Constants;
-import utilz.LoadSave;
 
 public class Carta implements Serializable {
 	

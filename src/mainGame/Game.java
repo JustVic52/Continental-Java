@@ -2,7 +2,6 @@ package mainGame;
 
 import java.awt.Graphics;
 
-import gameDynamics.Partida;
 import gameGraphics.GamePanel;
 import gameGraphics.GameWindow;
 import gamestates.Gamestate;
@@ -81,8 +80,6 @@ public class Game implements Runnable {
 		double timePerFrame = 1000000000.0 / FPS_SET;
 		double timePerUpdate = 1000000000.0 / UPS_SET;
 		long previousTime = System.nanoTime();
-		int frames = 0;
-		int updates = 0;
 		long lastCheck = System.currentTimeMillis();
 		double deltaU = 0;
 		double deltaF = 0;
@@ -96,21 +93,16 @@ public class Game implements Runnable {
 			
 			if (deltaU >= 1) {
 				update();
-				updates++;
 				deltaU--;
 			}
 			
 			if (deltaF >= 1) {
 				gamePanel.repaint();
-				frames++;
 				deltaF--;
 			}
 			
 			if (System.currentTimeMillis() - lastCheck >= 1000) {
 				lastCheck = System.currentTimeMillis();
-//				System.out.println("FPS: " + frames + " | " + "UPS: " + updates);
-				frames = 0;
-				updates = 0;
 			}
 		}
 	}

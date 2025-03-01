@@ -5,8 +5,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import utilz.Constants;
-
 public class Slot {
 	
 	private Carta carta;
