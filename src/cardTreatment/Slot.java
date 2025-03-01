@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import utilz.Constants;
+
 public class Slot {
 	
 	private Carta carta;
@@ -45,11 +47,11 @@ public class Slot {
 		return carta;
 	}
 
-	public void render(Graphics g, BufferedImage img) {
+	public void render(Graphics g, BufferedImage img, BufferedImage marco) {
 		g.setColor(Color.GREEN);
 //		g.drawRect(x, y, width, height);
 		if (carta != null) {
-			carta.render(g, img, 1);
+			carta.render(g, img, marco, 1);
 		}
 	}
 	

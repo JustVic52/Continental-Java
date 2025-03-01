@@ -44,7 +44,7 @@ public class Descartes {
 	
 	public void render(Graphics g) {
 		if (!descartes.isEmpty()) {
-			getCarta().render(g, img, 2); // 28, 293
+			getCarta().render(g, img, marco, 2); // 28, 293
 		}
 		if (selected) {
 			g.drawImage(marco, 24, 289, 2 * Carta.MARCO_WIDTH, 2 * Carta.MARCO_HEIGHT, null);

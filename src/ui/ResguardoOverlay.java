@@ -30,19 +30,7 @@ public class ResguardoOverlay extends Round {
 		if (activated) {
 			g.drawImage(tablero, x, y, width, height, null);
 			cancel.draw(g);
-//			renderSlots(g, img);
 		}
-	}
-	
-	private void renderSlots(Graphics g, BufferedImage img) {
-		Slot aux = null;
-		for (Slot[] ss : slots) {
-			for (Slot s : ss) {
-				if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img); }
-				else { aux = s; }
-			}
-		}
-		if (aux != null) { aux.render(g, img); }
 	}
 
 	private void loadTablero() {

@@ -23,11 +23,13 @@ public class Mano extends Combinaciones {
 	private List<Trio> bajadaTrios;
 	private List<Escalera> bajadaEscalera;
 	private Carta selection;
+	private Carta cartaEscogida = null;
 	private List<Trio> resguardoTrios;
 	private List<Escalera> resguardoEscaleras;
 	private Carta ultimaCartaEliminada; //para el retake
 	private boolean canRetake = false;
-	private BufferedImage img;
+	private BufferedImage img, marco;
+	private Baraja baraja;
 	
 	public Mano() {
 		mano = new ArrayList<>();
@@ -38,6 +40,7 @@ public class Mano extends Combinaciones {
 		bajadaEscalera = new ArrayList<>();
 		resguardoTrios = new ArrayList<>();
 		resguardoEscaleras = new ArrayList<>();
+		baraja = new Baraja();
 		importCards();
 	}
 	
@@ -55,6 +58,7 @@ public class Mano extends Combinaciones {
 
 	private void importCards() {
 		img = LoadSave.GetSpriteAtlas(LoadSave.CARD_ATLAS);
+		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
 	}
 	
 	public void updateMano() {
@@ -67,28 +71,28 @@ public class Mano extends Combinaciones {
 		ArrayList<Slot> aux = new ArrayList<>(manoSlot);
 		Slot auxS = null;
 		for (Slot s : aux) {
-			if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img); }
+			if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img, marco); }
 			else { auxS = s; }
 		}
 		if (active) {
 			for (Slot[] ss : slots) {
 				for (Slot s : ss) {
-					if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img); }
+					if (s.getCarta() == null || !s.getCarta().isSeleccionada()) { s.render(g, img, marco); }
 					else { auxS = s; }
 				}
 			}
 		}
-		if (auxS != null) { auxS.render(g, img); }
+		if (auxS != null) { auxS.render(g, img, marco); }
 	}
 	
 	public BufferedImage getImage() {
 		return img;
 	}
 
-	public void give() {
-		Random random = new Random();
-		int num = random.nextInt(Partida.baraja.getSize()); //genera un número aleatorio para la baraja (52 cartas y 2 comodines)
-		Carta c = Partida.baraja.getCard(num);
+	public void give(Baraja b) {
+//		baraja = b;
+		Carta c = baraja.give();
+		cartaEscogida = c;
 		mano.add(c); //añade una carta de la baraja y la elimina de la lista.
 		addToSlot(c); //añade la carta al slot
 	}
@@ -329,5 +333,17 @@ public class Mano extends Combinaciones {
 
 	public void setSelection(Carta carta) {
 		selection = carta;
+	}
+	
+	public Carta getCartaEscogida() {
+		return cartaEscogida;
+	}
+
+	public Baraja getBaraja() {
+		return baraja;
+	}
+
+	public void setMano(ArrayList<Carta> m) {
+		mano = m;
 	}
 }

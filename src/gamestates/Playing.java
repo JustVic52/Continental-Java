@@ -5,11 +5,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import cardTreatment.Baraja;
 import cardTreatment.Carta;
+import cardTreatment.Descartes;
 import cardTreatment.Slot;
 import gameDynamics.Partida;
 import gameDynamics.Player;
 import mainGame.Game;
+import net.Client;
+import net.Server;
 import ui.GameButton;
 import ui.ResguardoOverlay;
 import utilz.Constants;
@@ -20,22 +24,21 @@ public class Playing extends State implements Statemethods {
 	
 	//Playing necesita el player, los botones de retake y bajar, el botón de pausa, y la radio
 
-	private Partida partida;
 	private BufferedImage tablero;
-	private Player player;
+	private Player player = null;
 	private GameButton[] buttons = new GameButton[2];
 	private Radio radio;
 	private ResguardoOverlay resguardo;
 	private Slot slot = null;
 	private int posI = 0, posJ = 0;
+	private Descartes descartes;
 	
 	public Playing(Game g) {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
-//		partida = new Partida(1);
-		player = partida.getJugadores().get(0);
 		radio = new Radio();
 		resguardo = new ResguardoOverlay();
+		descartes = new Descartes();
 		iniButtons();
 	}
 	
@@ -44,26 +47,34 @@ public class Playing extends State implements Statemethods {
 		buttons[1] = new GameButton(1182, 629, 0);
 	}
 
-	public Partida getPartida() {
-		return partida;
-	}
-
 	@Override
 	public void draw(Graphics g) {
+		
+		if (player == null) {
+			if (Join.getClient() != null) {
+				player = Join.getClient().getPlayer();
+			} else {
+				player = Host.getServer().getClient().getPlayer();
+			}
+		}
+		
 		g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 		if (!resguardo.isActivated()) { buttons[0].draw(g); }
 		buttons[1].draw(g);
 		radio.render(g);
 		resguardo.draw(g, player.getFullMano().getImage());
-		partida.render(g, resguardo.getSlots(), resguardo.isActivated());
+		descartes.render(g);
+		player.render(g, resguardo.getSlots(), resguardo.isActivated());
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		
-		if (partida.baraja.getHitbox().contains(e.getX(), e.getY())) { partida.baraja.setSelected(true); }
+		Baraja baraja = player.getFullMano().getBaraja();
 		
-		if (partida.getDescartes().getHitbox().contains(e.getX(), e.getY()) && !partida.getDescartes().isEmpty()) { partida.getDescartes().setSelected(true); }
+		if (baraja.getHitbox().contains(e.getX(), e.getY())) { baraja.setSelected(true); }
+		
+		if (descartes.getHitbox().contains(e.getX(), e.getY()) && !descartes.isEmpty()) { descartes.setSelected(true); }
 		
 		for (int i = 0; i < player.getFullMano().getSlots().size(); i++) {
 			Carta c = player.getFullMano().getSlots().get(i).getCarta();
@@ -117,6 +128,9 @@ public class Playing extends State implements Statemethods {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		
+		Baraja baraja = player.getFullMano().getBaraja();
+		
 		int i;
 		
 		for (i = 0; i < player.getFullMano().getSlots().size(); i++) {
@@ -194,22 +208,22 @@ public class Playing extends State implements Statemethods {
 			}
 		}
 		
-		if (partida.baraja.isSelected()) {
-			player.give();
-			partida.baraja.setSelected(false);
+		if (baraja.isSelected()) {
+			player.give(baraja);
+			baraja.setSelected(false);
 		}
 		
-		if (partida.getDescartes().isSelected()) {
-			player.take(partida.getDescartes().getCarta());
-    		partida.getDescartes().remove();
-    		partida.getDescartes().setSelected(false);
+		if (descartes.isSelected()) {
+			player.take(descartes.getCarta());
+    		descartes.remove();
+    		descartes.setSelected(false);
 		}
-		if (partida.getDescartes().getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+		if (descartes.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 			if (slot.isIn()) {
 				resguardo.getSlots().get(posI)[posJ].remove();
 			}
 			player.getFullMano().discard(slot.isIn());
-			partida.getDescartes().take(player.getUltimaCarta());
+			descartes.take(player.getUltimaCarta());
 		} else {
 			player.deselect();
 		}

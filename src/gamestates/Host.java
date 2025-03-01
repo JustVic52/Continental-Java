@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import gameGraphics.GameWindow;
 import mainGame.Game;
@@ -26,7 +27,7 @@ import utilz.LoadSave;
 
 public class Host extends State implements Statemethods {
 
-	private Server server;
+	private static Server server;
 	private Client client;
 	private BufferedImage overlay, background;
 	private URMButton[] buttons = new URMButton[2];
@@ -105,9 +106,9 @@ public class Host extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
+				SwingUtilities.invokeLater(() -> { Gamestate.state = Gamestate.PLAYING; });
 				server = new Server(numOfPlayers);
 				server.run();
-				Gamestate.state = Gamestate.PLAYING;
 			}
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
@@ -162,5 +163,7 @@ public class Host extends State implements Statemethods {
 	
 	public void keyTyped(KeyEvent e) {
 		texto.keyTyped(e);
-	}	
+	}
+	
+	public static Server getServer() { return server; }
 }

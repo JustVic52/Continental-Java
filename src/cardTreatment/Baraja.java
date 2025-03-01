@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import utilz.Constants;
 import utilz.LoadSave;
@@ -58,14 +59,19 @@ public class Baraja {
 		}
 	}
 	
-	public Carta getCard(int num) {
+	public Carta give() {
+		Random random = new Random();
+		int num = random.nextInt(baraja.size());
 		Carta carta = baraja.get(num);
 		baraja.remove(num);
 		if (baraja.size() == 0) {
 			newBaraja();
 		}
 		return carta;
-		
+	}
+	
+	public void remove(Carta carta) {
+		baraja.remove(carta);
 	}
 	
 	public int getSize() {

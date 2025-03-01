@@ -7,11 +7,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 import utilz.Constants;
 import utilz.LoadSave;
 
-public class Carta {
+public class Carta implements Serializable {
+	
+	private static final long serialVersionUID = 7866246894823092992L;
 	
 	private int value, palo, number, x, y, offsetX = 0, offsetY = 0;
 	private boolean comodin, seleccionada, resguardada;
@@ -20,7 +23,6 @@ public class Carta {
 	public static final int MARCO_WIDTH = Constants.CardConstants.MARCO_WIDTH, MARCO_HEIGHT = Constants.CardConstants.MARCO_HEIGHT;
 	public static final int ACE = 1, JACK = 11, QUEEN = 12, KING = 13;
 	private Rectangle hitbox;
-	private BufferedImage marco;
 	
 	public Carta(int n, int p, int x, int y) { //Crea una carta de un valor N y un palo P, en una posición X e Y
 		number = n;
@@ -31,11 +33,6 @@ public class Carta {
 		this.x = x;
 		this.y = y;
 		initHitbox();
-		loadMarco();
-	}
-	
-	private void loadMarco() {
-		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
 	}
 
 	public Carta(int x, int y) { //Crea un comodín en X e Y
@@ -48,7 +45,6 @@ public class Carta {
 		this.x = x;
 		this.y = y;
 		initHitbox();
-		loadMarco();
 	}
 	
 	private void initHitbox() {
@@ -99,7 +95,7 @@ public class Carta {
 		}
 	}
 	
-	public void render(Graphics g, BufferedImage img, int mult) {
+	public void render(Graphics g, BufferedImage img, BufferedImage marco, int mult) {
 		updateHitbox();
 		if (comodin) {
 			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), mult * CARD_WIDTH , mult * CARD_HEIGHT, null);

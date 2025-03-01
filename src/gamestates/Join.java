@@ -19,7 +19,7 @@ import utilz.LoadSave;
 
 public class Join extends State implements Statemethods {
 
-	private Client client;
+	private static Client client = null;
 	private BufferedImage overlay, background;
 	private URMButton[] buttons = new URMButton[2];
 	private int x, y, width, height;
@@ -85,7 +85,8 @@ public class Join extends State implements Statemethods {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
 				try {
-					client = new Client(new Socket(InetAddress.getLocalHost(), 6020), 0);
+					Socket s = new Socket(InetAddress.getLocalHost(), 6020);
+					client = new Client(s);
 					client.run();
 					Gamestate.state = Gamestate.PLAYING;
 				} catch (UnknownHostException e1) {
@@ -129,5 +130,7 @@ public class Join extends State implements Statemethods {
 	
 	public void keyTyped(KeyEvent e) {
 		texto.keyTyped(e);
-	}	
+	}
+	
+	public static Client getClient() { return client; }
 }

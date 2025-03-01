@@ -15,7 +15,7 @@ public class Player extends Round {
 	
 	private int points, turno, ciclo;
 	private Mano mano;
-	private boolean roundWinner, gameWinner;
+	private boolean roundWinner, gameWinner, isDescartes, isBaraja, descartado;
 	
 	public Player(int t) {
 		points = 0;
@@ -24,10 +24,13 @@ public class Player extends Round {
 		mano = new Mano();
 		roundWinner = false;
 		gameWinner = false;
+		isDescartes = false;
+		isBaraja = false;
+		descartado = false;
 	}
 	
-	public void give() {
-		mano.give();
+	public void give(Baraja baraja) {
+		mano.give(baraja);
 	}
 	
 	public void setTurno(int t) {
@@ -181,6 +184,35 @@ public class Player extends Round {
 	}
 
 	public void render(Graphics g, List<Slot[]> slots, boolean active) {
+		mano.getBaraja().render(g);
 		mano.renderSlots(g, slots, active);
+	}
+
+	public void setMano(ArrayList<Carta> m) {
+		mano.setMano(m);
+	}
+
+	public boolean isDescartes() {
+		return isDescartes;
+	}
+
+	public void setDescartes(boolean isDescartes) {
+		this.isDescartes = isDescartes;
+	}
+
+	public boolean isBaraja() {
+		return isBaraja;
+	}
+
+	public void setBaraja(boolean isBaraja) {
+		this.isBaraja = isBaraja;
+	}
+
+	public boolean isDescartado() {
+		return descartado;
+	}
+
+	public void setDescartado(boolean descartado) {
+		this.descartado = descartado;
 	}
 }
