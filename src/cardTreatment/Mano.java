@@ -81,7 +81,7 @@ public class Mano extends Combinaciones {
 		return img;
 	}
 
-	public void give(Baraja b) {
+	public void give() {
 //		baraja = b;
 		Carta c = baraja.give();
 		cartaEscogida = c;
@@ -337,5 +337,8 @@ public class Mano extends Combinaciones {
 
 	public void setMano(ArrayList<Carta> m) {
 		mano = m;
+		for (Carta c : mano) {
+			addToSlot(c);
+		}
 	}
 }

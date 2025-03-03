@@ -11,6 +11,7 @@ import cardTreatment.Descartes;
 import cardTreatment.Slot;
 import gameDynamics.Player;
 import mainGame.Game;
+import net.Client;
 import ui.GameButton;
 import ui.ResguardoOverlay;
 import utilz.Constants;
@@ -27,7 +28,7 @@ public class Playing extends State implements Statemethods {
 	private Radio radio;
 	private ResguardoOverlay resguardo;
 	private Slot slot = null;
-	private int posI = 0, posJ = 0;
+	private int posI = 0, posJ = 0, numActions = 0;
 	private Descartes descartes;
 	
 	public Playing(Game g) {
@@ -69,9 +70,11 @@ public class Playing extends State implements Statemethods {
 		
 		Baraja baraja = player.getFullMano().getBaraja();
 		
-		if (baraja.getHitbox().contains(e.getX(), e.getY())) { baraja.setSelected(true); }
+		if (baraja.getHitbox().contains(e.getX(), e.getY()) 
+				&& numActions == 0 && player.isYourTurn()) { baraja.setSelected(true); }
 		
-		if (descartes.getHitbox().contains(e.getX(), e.getY()) && !descartes.isEmpty()) { descartes.setSelected(true); }
+		if (descartes.getHitbox().contains(e.getX(), e.getY()) && !descartes.isEmpty() 
+				&& numActions == 0 && player.isYourTurn()) { descartes.setSelected(true); }
 		
 		for (int i = 0; i < player.getFullMano().getSlots().size(); i++) {
 			Carta c = player.getFullMano().getSlots().get(i).getCarta();
@@ -206,13 +209,14 @@ public class Playing extends State implements Statemethods {
 		}
 		
 		if (baraja.isSelected()) {
-			player.give(baraja);
+			player.setBaraja(true);
+			numActions = 1;
 			baraja.setSelected(false);
 		}
 		
 		if (descartes.isSelected()) {
-			player.take(descartes.getCarta());
-    		descartes.remove();
+			player.setDescartes(true);
+			numActions = 1;
     		descartes.setSelected(false);
 		}
 		if (descartes.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {

@@ -26,7 +26,6 @@ public class Server implements Runnable {
 		listaPlayers = new ArrayList<>();
 		try {
 			this.server = new ServerSocket(6020);
-			System.out.println("Servidor iniciado");
 			server.setReuseAddress(true);
 		} catch (final IOException e) {
 			
@@ -38,9 +37,9 @@ public class Server implements Runnable {
 		ArrayList<ObjectOutputStream> listaOut = new ArrayList<>();
 		Socket s;
 		try {
-			s = new Socket(InetAddress.getLocalHost(), 6020);
-			Socket s2 = server.accept();
-			listaPlayers.add(s2);
+			Socket s2 = new Socket(InetAddress.getLocalHost(), 6020);
+			s = server.accept();
+			listaPlayers.add(s);
 			client = new Client(s2, nombre);
 			Thread elCliente = new Thread(client);
 			elCliente.start();
@@ -50,9 +49,7 @@ public class Server implements Runnable {
 			if (numPlayers > 1) {
 				int i = 1;
 				while (i < numPlayers) {
-					System.out.println("cliente " + (i + 1) + " esperando conexión...");
 					s = server.accept();
-					System.out.println("cliente " + (i + 1) + " conectado");
 					listaPlayers.add(s);
 					listaOut.add(new ObjectOutputStream(s.getOutputStream()));
 					listaOut.get(i).writeInt(i);
@@ -65,8 +62,7 @@ public class Server implements Runnable {
 		} catch (IOException e) {
 			closeServer();
 		}
-		System.out.println("empieza la partida");
-		partida = new Partida(listaPlayers, listaOut, client);
+		partida = new Partida(listaPlayers, listaOut);
 		partida.playGame();
 		closeServer();
 	}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import cardTreatment.Carta;
 import gameDynamics.Player;
@@ -53,15 +54,21 @@ public class Client extends Thread {
 			while (!endRound) {
 				while (!yourTurn) {
 					yourTurn = in.readBoolean();
+					player.setYourTurn(yourTurn);
 				}
 				//fase 1: robar
-				while (!player.isBaraja() || !player.isDescartes()) { }
+				boolean baraja = false, descartes = false;
+				while (!baraja && !descartes) {
+					baraja = player.isBaraja();
+					descartes = player.isDescartes();
+				}
 				if (player.isBaraja()) { action = 1; }
 				if (player.isDescartes()) { action = 2; }
-				player.setBaraja(false);
-				player.setDescartes(false);
+				System.out.println(action);
 				out.writeInt(action);
 				out.flush();
+				player.setBaraja(false);
+				player.setDescartes(false);
 				recieveCard();
 				//fase 2: bajarse (opcional)
 				
@@ -84,7 +91,9 @@ public class Client extends Thread {
 
 	private void recieveCard() {
 		try {
-			player.getFullMano().take((Carta) in.readObject());
+			Carta carta = (Carta) in.readObject();
+			player.getFullMano().take(carta);
+			System.out.println("Mi carta es: " + carta);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -94,27 +103,24 @@ public class Client extends Thread {
 
 	private void recieveMano() {
 		try {
-			int num = in.readInt();
-			for (int i = 0; i < num; i++) {
-				player.give(null);
-			}
-//			ArrayList<Carta> aux = null;
-//			Object o = in.readObject();
-//			if (o instanceof ArrayList<?>) { 
-//				player.setMano((ArrayList<Carta>) o);
+//			int num = -1;
+//			while (num == -1) {
+//				num = in.readInt();
 //			}
+			ArrayList<Carta> aux = (ArrayList<Carta>) in.readObject();
+			player.setMano(aux);
 			System.out.println(player.getFullMano().toString());
-		} 
-//			catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-			catch (IOException e) {
+//			for (int i = 0; i < num; i++) {
+//				player.give();
+//			}
+		} catch (IOException e) {
 			try {
 				socket.close();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 

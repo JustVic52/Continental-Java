@@ -15,7 +15,8 @@ public class Player extends Round {
 	
 	private int points, turno, ciclo;
 	private Mano mano;
-	private boolean roundWinner, gameWinner, isDescartes, isBaraja, descartado;
+	private boolean roundWinner, gameWinner, yourTurn = false;
+	private volatile boolean isDescartes, isBaraja, descartado;
 	
 	public Player(int t) {
 		points = 0;
@@ -29,8 +30,8 @@ public class Player extends Round {
 		descartado = false;
 	}
 	
-	public void give(Baraja baraja) {
-		mano.give(baraja);
+	public void give() {
+		mano.give();
 	}
 	
 	public void setTurno(int t) {
@@ -214,5 +215,11 @@ public class Player extends Round {
 
 	public void setDescartado(boolean descartado) {
 		this.descartado = descartado;
+	}
+
+	public void setYourTurn(boolean alejandroChan) {yourTurn = alejandroChan; }
+	
+	public boolean isYourTurn() {
+		return yourTurn;
 	}
 }

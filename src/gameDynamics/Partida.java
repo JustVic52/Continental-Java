@@ -29,26 +29,22 @@ public class Partida implements Serializable {
 	List<ObjectOutputStream> out;
 	List <ObjectInputStream> in;
 	
-	public Partida(List<Socket> sp, ArrayList<ObjectOutputStream> listaOut, Client client) {
+	public Partida(List<Socket> sp, ArrayList<ObjectOutputStream> listaOut) {
 		round = new Round();
 		socketPlayers = sp;
 		baraja = new Baraja();
 		descartes = new Descartes();
 		numJugadores = sp.size();
 		endRound = false;
-		crearOutIn(listaOut, client);
+		crearOutIn(listaOut);
 	}
 	
-	private void crearOutIn(ArrayList<ObjectOutputStream> listaOut, Client client) {
+	private void crearOutIn(ArrayList<ObjectOutputStream> listaOut) {
 		out = listaOut;
 		in = new ArrayList<>();
 		for (int i = 0; i < numJugadores; i++) {
 			try {
-				if (i == 0) {
-					in.add(client.getInputStream());
-				} else {
-					in.add(new ObjectInputStream(socketPlayers.get(i).getInputStream()));
-				}
+				in.add(new ObjectInputStream(socketPlayers.get(i).getInputStream()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -71,6 +67,7 @@ public class Partida implements Serializable {
 					int action = -1;
 					while (action == -1) {
 						action = inS.readInt();
+						System.out.println(action);
 					}
 					if (action == 1) {
 						sendCard(baraja.give(), outS);
@@ -126,11 +123,12 @@ public class Partida implements Serializable {
 	private void giveCards() {
 		List<Carta> cartas = new ArrayList<>();
 		for (ObjectOutputStream out : out) {
-//			for (int j = 0; j < round.getNumCartas(); j++) {
-//				cartas.add(baraja.give());
-//			}
+			for (int j = 0; j < round.getNumCartas(); j++) {
+				cartas.add(baraja.give());
+			}
 			try {
-				out.writeInt(round.getNumCartas());
+				out.writeObject(cartas);
+				System.out.println("donskies");
 				out.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

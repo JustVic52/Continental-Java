@@ -153,7 +153,6 @@ public class Host extends State implements Statemethods {
 	
 	public void keyTyped(KeyEvent e) {
 		texto.keyTyped(e);
-		System.out.println(texto.getTexto());
 	}
 	
 	public static Server getServer() { return server; }
