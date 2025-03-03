@@ -23,6 +23,7 @@ public class Mano extends Combinaciones {
 	private boolean canRetake = false;
 	private BufferedImage img, marco;
 	private Baraja baraja;
+	private Descartes descartes;
 	
 	public Mano() {
 		mano = new ArrayList<>();
@@ -33,6 +34,7 @@ public class Mano extends Combinaciones {
 		resguardoTrios = new ArrayList<>();
 		resguardoEscaleras = new ArrayList<>();
 		baraja = new Baraja();
+		descartes = new Descartes();
 		importCards();
 	}
 	
@@ -340,5 +342,13 @@ public class Mano extends Combinaciones {
 		for (Carta c : mano) {
 			addToSlot(c);
 		}
+	}
+
+	public void setDescartes(ArrayList<Carta> albaChan) {
+		descartes.setDescartes(albaChan);		
+	}
+
+	public Descartes getDescartes() {
+		return descartes;
 	}
 }

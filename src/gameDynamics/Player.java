@@ -6,6 +6,7 @@ import java.util.List;
 
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
+import cardTreatment.Descartes;
 import cardTreatment.Escalera;
 import cardTreatment.Mano;
 import cardTreatment.Slot;
@@ -185,6 +186,7 @@ public class Player extends Round {
 	}
 
 	public void render(Graphics g, List<Slot[]> slots, boolean active) {
+		mano.getDescartes().render(g);
 		mano.getBaraja().render(g);
 		mano.renderSlots(g, slots, active);
 	}
@@ -221,5 +223,9 @@ public class Player extends Round {
 	
 	public boolean isYourTurn() {
 		return yourTurn;
+	}
+
+	public void setFullDescartes(ArrayList<Carta> albaChan) {
+		mano.setDescartes(albaChan);
 	}
 }

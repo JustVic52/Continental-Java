@@ -82,4 +82,12 @@ public class Descartes {
 		return hitbox;
 	}
 	
+	public void setDescartes(ArrayList<Carta> albaChan) {
+		descartes = albaChan;
+	}
+
+	public ArrayList<Carta> getDescartes() {
+		return (ArrayList<Carta>) descartes;
+	}
+	
 }

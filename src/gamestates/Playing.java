@@ -29,14 +29,12 @@ public class Playing extends State implements Statemethods {
 	private ResguardoOverlay resguardo;
 	private Slot slot = null;
 	private int posI = 0, posJ = 0, numActions = 0;
-	private Descartes descartes;
 	
 	public Playing(Game g) {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
 		radio = new Radio();
 		resguardo = new ResguardoOverlay();
-		descartes = new Descartes();
 		iniButtons();
 	}
 	
@@ -60,7 +58,6 @@ public class Playing extends State implements Statemethods {
 			buttons[1].draw(g);
 			radio.render(g);
 			resguardo.draw(g, player.getFullMano().getImage());
-			descartes.render(g);
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());
 		}
 	}
@@ -69,6 +66,7 @@ public class Playing extends State implements Statemethods {
 	public void mousePressed(MouseEvent e) {
 		
 		Baraja baraja = player.getFullMano().getBaraja();
+		Descartes descartes = player.getFullMano().getDescartes();
 		
 		if (baraja.getHitbox().contains(e.getX(), e.getY()) 
 				&& numActions == 0 && player.isYourTurn()) { baraja.setSelected(true); }
@@ -130,6 +128,7 @@ public class Playing extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		
 		Baraja baraja = player.getFullMano().getBaraja();
+		Descartes descartes = player.getFullMano().getDescartes();
 		
 		int i;
 		
@@ -219,15 +218,18 @@ public class Playing extends State implements Statemethods {
 			numActions = 1;
     		descartes.setSelected(false);
 		}
-		if (descartes.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+		if (descartes.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null && numActions == 1) {
 			if (slot.isIn()) {
 				resguardo.getSlots().get(posI)[posJ].remove();
 			}
 			player.getFullMano().discard(slot.isIn());
 			descartes.take(player.getUltimaCarta());
+			player.setDescartado(true);
 		} else {
 			player.deselect();
 		}
+		
+		if (player.isDescartado()) { numActions = 0; }
 	}
 
 	@Override

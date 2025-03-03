@@ -64,21 +64,20 @@ public class Partida implements Serializable {
 					//decir que es tu turno
 					sendTurns(s);
 					//fase 1: robar
-					int action = -1;
-					while (action == -1) {
-						action = inS.readInt();
-						System.out.println(action);
-					}
+					int action = inS.readInt();
 					if (action == 1) {
 						sendCard(baraja.give(), outS);
 					}
 					if (action == 2) {
 						sendCard(descartes.getCarta(), outS);
+						descartes.remove();
+//						updateDescartes();
 					}
 					//fase 2: bajarse (opcional)
 					
 					//fase 3: descartar
 					descartes.take((Carta) inS.readObject());
+					updateDescartes();
 					
 					endRound = inS.readBoolean();
 				} catch (IOException e) {
@@ -94,16 +93,23 @@ public class Partida implements Serializable {
 		endRound = false;
 	}
 	
+	private void updateDescartes() {
+		for (ObjectOutputStream out : out) {
+			try {
+				out.writeObject(descartes.getDescartes());
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void sendTurns(Socket actual) {
 		for (int i = 0; i < socketPlayers.size(); i++) {
 			Socket s = socketPlayers.get(i);
 			ObjectOutputStream outS = out.get(i);
 			try {
-				if (s != actual) {
-					outS.writeBoolean(false);
-				} else {
-					outS.writeBoolean(true);
-				}
+				outS.writeBoolean(s == actual);
 				outS.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -128,7 +134,6 @@ public class Partida implements Serializable {
 			}
 			try {
 				out.writeObject(cartas);
-				System.out.println("donskies");
 				out.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

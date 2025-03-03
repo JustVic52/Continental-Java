@@ -53,6 +53,7 @@ public class Client extends Thread {
 		try {
 			while (!endRound) {
 				while (!yourTurn) {
+//					player.setFullDescartes((ArrayList<Carta>) in.readObject());
 					yourTurn = in.readBoolean();
 					player.setYourTurn(yourTurn);
 				}
@@ -64,7 +65,6 @@ public class Client extends Thread {
 				}
 				if (player.isBaraja()) { action = 1; }
 				if (player.isDescartes()) { action = 2; }
-				System.out.println(action);
 				out.writeInt(action);
 				out.flush();
 				player.setBaraja(false);
@@ -73,18 +73,19 @@ public class Client extends Thread {
 				//fase 2: bajarse (opcional)
 				
 				//fase 3: descartar
-				while (!player.isDescartado()) { }
+				boolean descartado = false;
+				while (!descartado) { descartado = player.isDescartado(); }
 				out.writeObject(player.getUltimaCarta());
 				out.flush();
-				if (player.getMano().size() == 0) {
-					out.writeBoolean(true);
-				} else {
-					out.writeBoolean(false);
-				}
+				player.setFullDescartes((ArrayList<Carta>) in.readObject());
+				out.writeBoolean(player.getMano().size() == 0);
 				out.flush();
 				yourTurn = false;
+				endRound = player.getMano().size() == 0;
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -93,7 +94,6 @@ public class Client extends Thread {
 		try {
 			Carta carta = (Carta) in.readObject();
 			player.getFullMano().take(carta);
-			System.out.println("Mi carta es: " + carta);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -103,16 +103,7 @@ public class Client extends Thread {
 
 	private void recieveMano() {
 		try {
-//			int num = -1;
-//			while (num == -1) {
-//				num = in.readInt();
-//			}
-			ArrayList<Carta> aux = (ArrayList<Carta>) in.readObject();
-			player.setMano(aux);
-			System.out.println(player.getFullMano().toString());
-//			for (int i = 0; i < num; i++) {
-//				player.give();
-//			}
+			player.setMano((ArrayList<Carta>) in.readObject());
 		} catch (IOException e) {
 			try {
 				socket.close();
