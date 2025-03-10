@@ -11,7 +11,7 @@ import java.util.List;
 
 import gameDynamics.Partida;
 
-public class Server implements Runnable {
+public class Server extends Thread {
 	
 	private ServerSocket server;
 	private Partida partida;
@@ -37,12 +37,12 @@ public class Server implements Runnable {
 		ArrayList<ObjectOutputStream> listaOut = new ArrayList<>();
 		Socket s;
 		try {
-			Socket s2 = new Socket(InetAddress.getLocalHost(), 6020);
+			Socket sC = new Socket(InetAddress.getLocalHost(), 6020);
 			s = server.accept();
 			listaPlayers.add(s);
-			client = new Client(s2, nombre);
-			Thread elCliente = new Thread(client);
-			elCliente.start();
+			client = new Client(sC, nombre);
+			//Mención especial a mi novia por ver en directo cómo modificaba esto y funcionaba.
+			client.start();
 			listaOut.add(new ObjectOutputStream(s.getOutputStream()));
 			listaOut.get(0).writeInt(0);
 			listaOut.get(0).flush();

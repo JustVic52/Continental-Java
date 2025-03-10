@@ -11,7 +11,6 @@ import cardTreatment.Descartes;
 import cardTreatment.Slot;
 import gameDynamics.Player;
 import mainGame.Game;
-import net.Client;
 import ui.GameButton;
 import ui.ResguardoOverlay;
 import utilz.Constants;
@@ -215,6 +214,7 @@ public class Playing extends State implements Statemethods {
 		
 		if (descartes.isSelected()) {
 			player.setDescartes(true);
+			descartes.remove();
 			numActions = 1;
     		descartes.setSelected(false);
 		}
@@ -229,7 +229,10 @@ public class Playing extends State implements Statemethods {
 			player.deselect();
 		}
 		
-		if (player.isDescartado()) { numActions = 0; }
+		if (player.isDescartado()) {
+			numActions = 0;
+			player.setDescartado(false);
+		}
 	}
 
 	@Override

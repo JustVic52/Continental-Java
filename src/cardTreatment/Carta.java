@@ -91,15 +91,15 @@ public class Carta implements Serializable {
 		}
 	}
 	
-	public void render(Graphics g, BufferedImage img, BufferedImage marco, int mult) {
+	public void render(Graphics g, BufferedImage img, BufferedImage marco, double mult) {
 		updateHitbox();
 		if (comodin) {
-			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), (int) mult * CARD_WIDTH , (int) mult * CARD_HEIGHT, null);
 		} else {
-			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), mult * CARD_WIDTH , mult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), (int) mult * CARD_WIDTH , (int) mult * CARD_HEIGHT, null);
 		}
 		if (seleccionada) {
-			g.drawImage(marco, x, y + 1, mult * MARCO_WIDTH, mult * MARCO_HEIGHT, null);
+			g.drawImage(marco, x, y + 1, (int) mult * MARCO_WIDTH, (int) mult * MARCO_HEIGHT, null);
 		}
 //		drawHitbox(g, mult);
 	}

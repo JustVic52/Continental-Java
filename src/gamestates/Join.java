@@ -82,19 +82,27 @@ public class Join extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
-				if (!texto.getTexto().equals("")) {
+//				if (!texto.getTexto().equals("")) {
+					buttons[0].setMousePressed(false);
+					Socket s = null;
+					Thread elCliente = null;
 					try {
-						Socket s = new Socket(InetAddress.getLocalHost(), 6020);
+						s = new Socket(InetAddress.getLocalHost(), 6020);
 						client = new Client(s, texto.getTexto());
-						Thread elCliente = new Thread(client);
-						elCliente.start();
+						client.start();
 						Gamestate.state = Gamestate.PLAYING;
 					} catch (UnknownHostException e1) {
 						e1.printStackTrace();
+						System.out.println("AQUI");
 					} catch (IOException e1) {
-						e1.printStackTrace();
+						try {
+							if (s != null) { s.close(); }
+							if (elCliente != null && elCliente.isAlive()) { elCliente.interrupt(); }
+						} catch (IOException e2) {
+							e2.printStackTrace();
+						}
 					}
-				}
+//				}
 			}
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {

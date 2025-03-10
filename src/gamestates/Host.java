@@ -92,13 +92,12 @@ public class Host extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
-				if (!texto.getTexto().equals("")) {
+//				if (!texto.getTexto().equals("")) {
 					server = new Server(numOfPlayers, texto.getTexto());
-					Thread elServer = new Thread(server);
-					elServer.start();
+					server.start();
 					while (server.getClient() == null) { }
 					Gamestate.state = Gamestate.PLAYING;
-				}
+//				}
 			}
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {

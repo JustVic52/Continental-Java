@@ -11,6 +11,7 @@ import cardTreatment.Escalera;
 import cardTreatment.Mano;
 import cardTreatment.Slot;
 import cardTreatment.Trio;
+import ui.ResguardoOverlay;
 
 public class Player extends Round {
 	
@@ -18,6 +19,7 @@ public class Player extends Round {
 	private Mano mano;
 	private boolean roundWinner, gameWinner, yourTurn = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
+	private ResguardoOverlay resguardo;
 	
 	public Player(int t) {
 		points = 0;
@@ -29,6 +31,7 @@ public class Player extends Round {
 		isDescartes = false;
 		isBaraja = false;
 		descartado = false;
+		resguardo = new ResguardoOverlay();
 	}
 	
 	public void give() {
@@ -50,12 +53,6 @@ public class Player extends Round {
 	
 	public void take(Carta carta) {
 		mano.take(carta);
-	}
-	
-	public String bajadaToString() {
-		String res = "Jugador " + turno + ": \n";
-		res += mano.bajadaToString();
-		return res;
 	}
 	
 	public void setRoundWinner(boolean w) {
@@ -93,31 +90,11 @@ public class Player extends Round {
 	}
 	
 	public boolean canBajarse(int numTrios, int numEscaleras) {
-		return mano.canBajarse(numTrios, numEscaleras);
+		return true;
 	}
 	
 	public void bajarse() {
-		mano.bajarEscaleras();
-		mano.setEscaleras(0);
-		mano.bajarTrios();
-		mano.setTrios(0);
-	}
-	
-	public String getStringCombos(List<Escalera> escaleras, List<Trio> trios) {
-		String res = "";
-		if (!escaleras.isEmpty()) {
-			for (int i = 0; i < escaleras.size(); i++) {
-				res += (escaleras.size() == 1) ? "Escalera: " : "Escalera " + (i + 1) + ": ";
-				res += escaleras.get(i) + " ";
-			}	
-		}
-		if (!trios.isEmpty()) {
-			for (int i = 0; i < trios.size(); i++) {
-				res += (trios.size() == 1) ? "Trío: " : "Trío " + (i + 1) + ": ";
-				res += trios.get(i) + " ";
-			}
-		}
-		return res;
+		
 	}
 	
 	public void select(int num) { //añade una carta a la selección
@@ -130,12 +107,6 @@ public class Player extends Round {
 	
 	public int getPoints() {
 		return points;
-	}
-	
-	public String toString() {
-		String res = "Jugador: " + turno + " || Puntuación: " + points;
-		res += "\n" + mano.toString();
-		return res;
 	}
 
 	public Mano getFullMano() {
@@ -158,14 +129,6 @@ public class Player extends Round {
 		return mano.getMano();
 	}
 	
-	public List<Trio> getBajadaTrios() {
-		return mano.getBajadaTrios();
-	}
-	
-	public List<Escalera> getBajadaEscaleras() {
-		return mano.getBajadaEscaleras();
-	}
-	
 	public Carta getSelection() {
 		return mano.getSelection();
 	}
@@ -181,13 +144,12 @@ public class Player extends Round {
 	public void clearMano() {
 		mano.getMano().clear();
 		mano.setSelection(null);
-		mano.getBajadaTrios().clear();
-		mano.getBajadaEscaleras().clear();
 	}
 
 	public void render(Graphics g, List<Slot[]> slots, boolean active) {
 		mano.getDescartes().render(g);
 		mano.getBaraja().render(g);
+		resguardo.setSlots(slots);
 		mano.renderSlots(g, slots, active);
 	}
 
@@ -227,5 +189,13 @@ public class Player extends Round {
 
 	public void setFullDescartes(ArrayList<Carta> albaChan) {
 		mano.setDescartes(albaChan);
+	}
+
+	public ResguardoOverlay getResguardo() {
+		return resguardo;
+	}
+
+	public void setResguardo(ResguardoOverlay resguardo) {
+		this.resguardo = resguardo;
 	}
 }

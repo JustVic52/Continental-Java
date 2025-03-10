@@ -25,7 +25,7 @@ public class Descartes {
 	public void take(Carta carta) {
 		descartes.add(carta);
 		carta.setX(24);
-		carta.setY(285);
+		carta.setY(286);
 	}
 	
 	private void initHitbox() {
@@ -71,7 +71,9 @@ public class Descartes {
 	}
 	
 	public String toString() {
-		return "Carta superior de descartes: " + getCarta().toString() + "\n";
+		String res = "Carta superior de descartes: ";
+		if (!descartes.isEmpty()) { res += getCarta().toString() + "\n"; }
+		return res;
 	}
 
 	public void clear() {

@@ -179,4 +179,8 @@ public class ResguardoOverlay extends Round {
 	public void discard(int i, int j) {
 		slots.get(i)[j].remove();
 	}
+
+	public void setSlots(List<Slot[]> lehanLin) {
+		slots = lehanLin;
+	}
 }

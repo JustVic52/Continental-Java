@@ -3,6 +3,8 @@ package cardTreatment;
 import java.util.ArrayList;
 import java.util.List;
 
+import ui.ResguardoOverlay;
+
 public class Combinaciones {
 	
 	private int trios, escaleras;

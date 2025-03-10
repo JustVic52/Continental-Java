@@ -14,20 +14,16 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Partida implements Serializable {
-
-	
-	private static final long serialVersionUID = 1L;
+public class Partida {
 	
 	private Round round;
 	private List<Socket> socketPlayers;
 	private int numJugadores;
 	private Descartes descartes;
 	private boolean endRound, taken;
-	private Player playerLadron;
 	private Baraja baraja;
 	List<ObjectOutputStream> out;
-	List <ObjectInputStream> in;
+	List<ObjectInputStream> in;
 	
 	public Partida(List<Socket> sp, ArrayList<ObjectOutputStream> listaOut) {
 		round = new Round();
@@ -71,12 +67,13 @@ public class Partida implements Serializable {
 					if (action == 2) {
 						sendCard(descartes.getCarta(), outS);
 						descartes.remove();
-//						updateDescartes();
 					}
+					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
+					updateDescartes();
 					//fase 2: bajarse (opcional)
 					
 					//fase 3: descartar
-					descartes.take((Carta) inS.readObject());
+					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
 					updateDescartes();
 					
 					endRound = inS.readBoolean();
@@ -87,17 +84,17 @@ public class Partida implements Serializable {
 				}
 			}
 		}
-		countPoints();
+//		countPoints();
 		round.updateRound();
 		descartes.clear();
 		endRound = false;
 	}
 	
 	private void updateDescartes() {
-		for (ObjectOutputStream out : out) {
+		for (ObjectOutputStream outS : out) {
 			try {
-				out.writeObject(descartes.getDescartes());
-				out.flush();
+				outS.writeObject(descartes.getDescartes());
+				outS.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -128,13 +125,13 @@ public class Partida implements Serializable {
 
 	private void giveCards() {
 		List<Carta> cartas = new ArrayList<>();
-		for (ObjectOutputStream out : out) {
+		for (ObjectOutputStream outS : out) {
 			for (int j = 0; j < round.getNumCartas(); j++) {
 				cartas.add(baraja.give());
 			}
 			try {
-				out.writeObject(cartas);
-				out.flush();
+				outS.writeObject(cartas);
+				outS.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

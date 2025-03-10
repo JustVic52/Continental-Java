@@ -50,36 +50,51 @@ public class Client extends Thread {
 	
 	private void runGame() {
 		int action = 0;
+		ArrayList<Carta> aux = new ArrayList<>();
 		try {
 			while (!endRound) {
-				while (!yourTurn) {
-//					player.setFullDescartes((ArrayList<Carta>) in.readObject());
-					yourTurn = in.readBoolean();
-					player.setYourTurn(yourTurn);
+				yourTurn = in.readBoolean();	
+				player.setYourTurn(yourTurn);
+				if (yourTurn) {
+					//fase 1: robar
+					boolean baraja = false, descartes = false;
+					while (!baraja && !descartes) {
+						baraja = player.isBaraja();
+						descartes = player.isDescartes();
+					}
+					if (player.isBaraja()) { action = 1; }
+					if (player.isDescartes()) { action = 2; }
+					out.writeInt(action);
+					out.flush();
+					player.setBaraja(false);
+					player.setDescartes(false);
+					recieveCard();
+					out.writeObject(player.getFullMano().getDescartes().getDescartes());
+					out.flush();
+					aux = (ArrayList<Carta>) in.readObject();
+					player.setFullDescartes(aux);
+//					System.out.println(player.getFullMano().getDescartes());
+					//fase 2: bajarse (opcional)
+//					out.writeBoolean(player.canBajarse());
+//					out.flush();
+					//fase 3: descartar
+					boolean descartado = false;
+					while (!descartado) { descartado = player.isDescartado(); }
+					out.writeObject(player.getFullMano().getDescartes().getDescartes());
+					out.flush();
+					aux = (ArrayList<Carta>) in.readObject();
+					player.setFullDescartes(aux);
+//					System.out.println(player.getFullMano().getDescartes());
+					out.writeBoolean(player.getMano().size() == 0);
+					out.flush();
+				} else {
+					aux = (ArrayList<Carta>) in.readObject();
+					player.setFullDescartes(aux);
+//					System.out.println(player.getFullMano().getDescartes());
+					aux = (ArrayList<Carta>) in.readObject();
+					player.setFullDescartes(aux);
+//					System.out.println(player.getFullMano().getDescartes());
 				}
-				//fase 1: robar
-				boolean baraja = false, descartes = false;
-				while (!baraja && !descartes) {
-					baraja = player.isBaraja();
-					descartes = player.isDescartes();
-				}
-				if (player.isBaraja()) { action = 1; }
-				if (player.isDescartes()) { action = 2; }
-				out.writeInt(action);
-				out.flush();
-				player.setBaraja(false);
-				player.setDescartes(false);
-				recieveCard();
-				//fase 2: bajarse (opcional)
-				
-				//fase 3: descartar
-				boolean descartado = false;
-				while (!descartado) { descartado = player.isDescartado(); }
-				out.writeObject(player.getUltimaCarta());
-				out.flush();
-				player.setFullDescartes((ArrayList<Carta>) in.readObject());
-				out.writeBoolean(player.getMano().size() == 0);
-				out.flush();
 				yourTurn = false;
 				endRound = player.getMano().size() == 0;
 			}

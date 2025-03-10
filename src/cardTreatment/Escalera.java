@@ -1,5 +1,6 @@
 package cardTreatment;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,12 +10,14 @@ public class Escalera {
 	private int paloOfEscalera;
 	private int[] numeros;
 	private List<Carta> comodines;
+	private Rectangle hitbox;
 	
 	public Escalera() {
 		escalera = new Carta[13];
 		paloOfEscalera = 0;
 		numeros = new int[13];
 		comodines = new ArrayList<>();
+		hitbox = new Rectangle(0, 0, 338, 52);
 	}
 	
 	public boolean canBeAdded(Carta carta) {
@@ -197,6 +200,10 @@ public class Escalera {
 				}
 			}
 		}
+	}
+
+	public Rectangle getHitbox() {
+		return hitbox;
 	}
 	
 }

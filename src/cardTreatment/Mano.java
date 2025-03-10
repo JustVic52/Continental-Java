@@ -9,16 +9,12 @@ import utilz.LoadSave;
 
 //Esto es tu mano personal. Aquí se acumulan las cartas que tengas en la mano y se eliminan una vez las descartes.
 
-public class Mano extends Combinaciones {
+public class Mano {
 	
 	private List<Carta> mano;
 	private List<Slot> manoSlot;
-	private List<Trio> bajadaTrios;
-	private List<Escalera> bajadaEscalera;
 	private Carta selection;
 	private Carta cartaEscogida = null;
-	private List<Trio> resguardoTrios;
-	private List<Escalera> resguardoEscaleras;
 	private Carta ultimaCartaEliminada; //para el retake
 	private boolean canRetake = false;
 	private BufferedImage img, marco;
@@ -29,10 +25,6 @@ public class Mano extends Combinaciones {
 		mano = new ArrayList<>();
 		manoSlot = new ArrayList<>();
 		initSlot();
-		bajadaTrios = new ArrayList<>();
-		bajadaEscalera = new ArrayList<>();
-		resguardoTrios = new ArrayList<>();
-		resguardoEscaleras = new ArrayList<>();
 		baraja = new Baraja();
 		descartes = new Descartes();
 		importCards();
@@ -196,76 +188,6 @@ public class Mano extends Combinaciones {
 		return canRetake;
 	}
 	
-	public void resguardarTrios() { //coge los tríos y los pasa al resguardo.
-		for (Trio t : getListaTrios()) {
-			resguardoTrios.add(t);
-			for (int i = 0; i < t.getTrio().length; i++) {
-				if (t.getTrio()[i] != null) {
-					t.getTrio()[i].setResguardada(true);
-					t.getTrio()[i].setSeleccionada(false);
-				}
-			}
-		}
-		updateManoTrios();
-	}
-	
-	public void resguardarEscaleras() { //coge las escaleras y las pasa al resguardo.
-		for (Escalera e : getListaEscaleras()) {
-			resguardoEscaleras.add(e);
-			for (int i = 0; i < e.getEscalera().length; i++) {
-				if (e.getEscalera()[i] != null) {
-					e.getEscalera()[i].setResguardada(true);
-					e.getEscalera()[i].setSeleccionada(true);
-				}
-			}
-		}
-		updateManoEscaleras();
-	}
-	
-	public void bajarTrios() {
-		if (!resguardoTrios.isEmpty()) {
-			for (Trio t : resguardoTrios) {
-				bajadaTrios.add(t);
-				for (int i = 0; i < t.getTrio().length; i++) {
-					if (t.getTrio()[i] != null) { t.getTrio()[i].setResguardada(false); }
-				}
-			}
-			if (getListaTrios() != null) { getListaTrios().clear(); }
-			if (resguardoTrios.size() > 0) { resguardoTrios.clear(); }
-		}
-	}
-	
-	public void bajarEscaleras() {
-		if (!resguardoEscaleras.isEmpty()) {
-			for (Escalera e : resguardoEscaleras) {
-				bajadaEscalera.add(e);
-				for (int i = 0; i < e.getEscalera().length; i++) {
-					if (e.getEscalera()[i] != null) { e.getEscalera()[i].setResguardada(false); }
-				}
-			}
-			if (getListaEscaleras() != null) { getListaEscaleras().clear(); }
-			if (resguardoEscaleras.size() > 0) { resguardoEscaleras.clear(); }
-		}
-	}
-
-	private void updateManoTrios() {
-		if (!resguardoTrios.isEmpty()) {
-			Trio t = resguardoTrios.get(resguardoTrios.size() - 1);
-			for (Carta c : t.getTrio()) {
-				mano.remove(c);
-			}
-		}
-	}
-	
-	private void updateManoEscaleras() {
-		if (!resguardoEscaleras.isEmpty()) {
-			Escalera e = resguardoEscaleras.get(resguardoEscaleras.size() - 1);
-			for (Carta c : e.getEscalera()) {
-				mano.remove(c);
-			}
-		}
-	}
-	
 	public int getSize() {
 		return mano.size();
 	}
@@ -278,28 +200,9 @@ public class Mano extends Combinaciones {
 		return selection;
 	}
 	
-	public List<Trio> getBajadaTrios() {
-		return bajadaTrios;
-	}
-	
-	public List<Escalera> getBajadaEscaleras() {
-		return bajadaEscalera;
-	}
-	
 	public String toString() {
 		String res = "Cartas en la mano: " + mano.toString() + "\n";
-		if (!bajadaEscalera.isEmpty()) { res += "Cartas bajadas (Escaleras): " + bajadaEscalera + "\n"; }
-		if (!bajadaTrios.isEmpty()) { res += "Cartas bajadas (Tríos): " + bajadaTrios + "\n"; }
 		if (selection != null) { res += "Carta seleccionada: " + selection + "\n"; }
-		if (!resguardoEscaleras.isEmpty()) { res += "Resguardo (Escaleras): " + resguardoEscaleras + "\n"; }
-		if (!resguardoTrios.isEmpty()) { res += "Resguardo (Tríos): " + resguardoTrios + "\n"; }
-		return res;
-	}
-	
-	public String bajadaToString() {
-		String res = "";
-		if (!bajadaEscalera.isEmpty()) { res += "Cartas bajadas (Escaleras): " + bajadaEscalera + "\n"; }
-		if (!bajadaTrios.isEmpty()) { res += "Cartas bajadas (Tríos): " + bajadaTrios + "\n"; }
 		return res;
 	}
 	
@@ -311,14 +214,6 @@ public class Mano extends Combinaciones {
 
 	public Carta getUltimaCarta() {
 		return ultimaCartaEliminada;
-	}
-
-	public List<Escalera> getResguardoEscaleras() {
-		return resguardoEscaleras;
-	}
-	
-	public List<Trio> getResguardoTrios() {
-		return resguardoTrios;
 	}
 	
 	public List<Slot> getSlots() {
