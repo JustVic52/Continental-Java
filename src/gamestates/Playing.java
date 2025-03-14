@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import cardTreatment.Bajada;
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
@@ -28,12 +29,14 @@ public class Playing extends State implements Statemethods {
 	private ResguardoOverlay resguardo;
 	private Slot slot = null;
 	private int posI = 0, posJ = 0, numActions = 0;
+	private Bajada bajada;
 	
 	public Playing(Game g) {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
 		radio = new Radio();
 		resguardo = new ResguardoOverlay();
+		bajada = new Bajada();
 		iniButtons();
 	}
 	
@@ -52,6 +55,7 @@ public class Playing extends State implements Statemethods {
 				player = Host.getServer().getClient().getPlayer();
 			}
 		} else {
+			if (bajada.isBajado()) { bajada.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco()); }
 			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 			if (!resguardo.isActivated()) { buttons[0].draw(g); }
 			buttons[1].draw(g);
@@ -91,7 +95,9 @@ public class Playing extends State implements Statemethods {
 				resguardo.getButton().setIndex(1);
 			}
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-				buttons[1].setIndex(1);
+				if (bajada.canBajarse(resguardo.getCartas())) {
+					buttons[1].setIndex(3);
+				} else { buttons[1].setIndex(1); }
 			}
 			for (int i = 0; i < resguardo.getSlots().size(); i++) {
 				for (int j = 0; j < resguardo.getSlots().get(i).length; j++) {
@@ -153,9 +159,28 @@ public class Playing extends State implements Statemethods {
 			}
 		}
 		
+		if (bajada.isBajado()) {
+			bajada.mouseReleased(e, player.getSelection());
+			if (bajada.isAdded()) {
+				if (slot.isIn()) {
+					resguardo.getSlots().get(posI)[posJ].remove();
+				} else {
+					player.getFullMano().getSlots().get(posI).remove();
+				}
+				bajada.setAdded(false);
+			}
+			player.deselect();
+		}
+		
 		if (resguardo.isActivated()) {
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-				buttons[1].setIndex(0);
+				if (bajada.canBajarse(resguardo.getCartas()) && !bajada.isBajado()) {
+					buttons[1].setIndex(2);
+					bajada.bajarse();
+					bajada.setBajado(true);
+					resguardo.bajarse();
+				}
+				else { buttons[1].setIndex(0); }
 			}
 			if (resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
 				resguardo.getButton().setIndex(0);

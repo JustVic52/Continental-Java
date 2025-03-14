@@ -4,13 +4,9 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import cardTreatment.Baraja;
 import cardTreatment.Carta;
-import cardTreatment.Descartes;
-import cardTreatment.Escalera;
 import cardTreatment.Mano;
 import cardTreatment.Slot;
-import cardTreatment.Trio;
 import ui.ResguardoOverlay;
 
 public class Player extends Round {
@@ -87,14 +83,6 @@ public class Player extends Round {
 	
 	public void retake() {
 		if (mano.getRetake()) { mano.retake(); }
-	}
-	
-	public boolean canBajarse(int numTrios, int numEscaleras) {
-		return true;
-	}
-	
-	public void bajarse() {
-		
 	}
 	
 	public void select(int num) { //añade una carta a la selección

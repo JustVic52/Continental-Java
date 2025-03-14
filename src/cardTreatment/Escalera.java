@@ -27,10 +27,7 @@ public class Escalera {
 	}
 	
 	public boolean canBeNewAdded(Carta carta) {
-		return (paloOfEscalera == carta.getPalo() || carta.getPalo() == 5 || paloOfEscalera == 0)
-				&& (carta.getNumber() == 14 || numeros[carta.getNumber() - 1] == 0 
-				|| (escalera[carta.getNumber() - 1] != null && escalera [carta.getNumber() - 1].getNumber() == 14))
-				&& (numeros[carta.getNumber() - 2] == 1 || numeros[carta.getNumber()] == 1);
+		return canBeAdded(carta) && (numeros[carta.getNumber() - 2] == 1 || numeros[carta.getNumber()] == 1);
 	}
 	
 	public void clear() {

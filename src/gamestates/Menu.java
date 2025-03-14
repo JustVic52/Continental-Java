@@ -33,7 +33,7 @@ public class Menu extends State implements Statemethods {
 	private void loadButtons() {
 		buttons[0] = new MenuButton(Game.GAME_WIDTH / 2, 266, 0, Gamestate.HOST);
 		buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, 332, 1, Gamestate.JOIN);
-		buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, 398, 2, Gamestate.PLAYING);
+		buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, 398, 2, Gamestate.HOST);
 		buttons[3] = new MenuButton(Game.GAME_WIDTH / 2, 464, 3, Gamestate.QUIT);
 	}
 

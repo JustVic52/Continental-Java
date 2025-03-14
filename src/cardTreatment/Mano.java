@@ -74,6 +74,10 @@ public class Mano {
 	public BufferedImage getImage() {
 		return img;
 	}
+	
+	public BufferedImage getMarco() {
+		return marco;
+	}
 
 	public void give() {
 //		baraja = b;

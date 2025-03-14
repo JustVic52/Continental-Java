@@ -159,6 +159,18 @@ public class ResguardoOverlay extends Round {
 			}
 		}
 	}
+	
+	public List<Carta[]> getCartas() {
+		List<Carta[]> aux = new ArrayList<>();
+		for (int i = 0; i < slots.size(); i++) {
+			Slot[] sA = slots.get(i);
+			aux.add(new Carta[sA.length]);
+			for (int j = 0; j < aux.get(i).length; j++) {
+				aux.get(i)[j] = sA[j].getCarta();
+			}
+		}
+		return aux;
+	}
 
 	public GameButton getButton() {
 		return cancel;
@@ -182,5 +194,9 @@ public class ResguardoOverlay extends Round {
 
 	public void setSlots(List<Slot[]> lehanLin) {
 		slots = lehanLin;
+	}
+
+	public void bajarse() {
+		loadSlots();
 	}
 }
