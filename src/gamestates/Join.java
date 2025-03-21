@@ -85,7 +85,6 @@ public class Join extends State implements Statemethods {
 //				if (!texto.getTexto().equals("")) {
 					buttons[0].setMousePressed(false);
 					Socket s = null;
-					Thread elCliente = null;
 					try {
 						s = new Socket(InetAddress.getLocalHost(), 6020);
 						client = new Client(s, texto.getTexto());
@@ -93,13 +92,12 @@ public class Join extends State implements Statemethods {
 						Gamestate.state = Gamestate.PLAYING;
 					} catch (UnknownHostException e1) {
 						e1.printStackTrace();
-						System.out.println("AQUI");
 					} catch (IOException e1) {
 						try {
 							if (s != null) { s.close(); }
-							if (elCliente != null && elCliente.isAlive()) { elCliente.interrupt(); }
+							if (client != null && client.isAlive()) { client.interrupt(); }
 						} catch (IOException e2) {
-							e2.printStackTrace();
+							
 						}
 					}
 //				}

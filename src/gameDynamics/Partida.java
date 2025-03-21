@@ -2,6 +2,7 @@ package gameDynamics;
 
 import java.util.List;
 
+import cardTreatment.Bajada;
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
@@ -22,6 +23,7 @@ public class Partida {
 	private Descartes descartes;
 	private boolean endRound, taken;
 	private Baraja baraja;
+	private ArrayList<Bajada> bajadas = new ArrayList<>();
 	List<ObjectOutputStream> out;
 	List<ObjectInputStream> in;
 	
@@ -50,6 +52,9 @@ public class Partida {
 	public Descartes getDescartes() { return descartes; }
 
 	public void run() {
+		for (Socket saux : socketPlayers) {
+			bajadas.add(new Bajada(0, 0));
+		}
 		while (!endRound) {
 			for (int i = 0; i < socketPlayers.size(); i++) {
 				Socket s = socketPlayers.get(i);
@@ -71,7 +76,16 @@ public class Partida {
 					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
 					updateDescartes();
 					//fase 2: bajarse (opcional)
-					
+					if (inS.readBoolean()) {
+						outS.writeBoolean(true);
+						outS.flush();
+						bajadas.remove(i);
+						bajadas.add(i, (Bajada) inS.readObject());
+					} else {
+						outS.writeBoolean(false);
+						outS.flush();
+					}
+					updateBajada();
 					//fase 3: descartar
 					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
 					updateDescartes();
@@ -87,9 +101,21 @@ public class Partida {
 //		countPoints();
 		round.updateRound();
 		descartes.clear();
+		bajadas.clear();
 		endRound = false;
 	}
 	
+	private void updateBajada() {
+		for (ObjectOutputStream outS : out) {
+			try {
+				outS.writeObject(bajadas);
+				outS.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void updateDescartes() {
 		for (ObjectOutputStream outS : out) {
 			try {

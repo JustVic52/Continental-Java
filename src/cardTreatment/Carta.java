@@ -44,17 +44,20 @@ public class Carta implements Serializable {
 	}
 	
 	private void initHitbox() {
-		hitbox = new Rectangle(x, y, CARD_WIDTH, CARD_HEIGHT);
+		hitbox = new Rectangle(x, y, CARD_WIDTH - 4, CARD_HEIGHT - 8);
 	}
 	
-	public void updateHitbox() {
-		hitbox.x = x;
-		hitbox.y = y;
+	public void updateHitbox(double mult) {
+		hitbox.x = x + 2;
+		hitbox.y = y + 2;
+		setCardDimensions(mult);
 	}
 	
-	public void setCardDimensions(int mult) {
-		hitbox.width = mult * CARD_WIDTH;
-		hitbox.height = mult * CARD_HEIGHT;
+	public void setCardDimensions(double mult) {
+		double multed = mult * (CARD_WIDTH - 4);
+		hitbox.width = (int) multed;
+		multed = mult * (CARD_HEIGHT - 8);
+		hitbox.height = (int) multed;
 	}
 
 	public boolean isResguardada() {
@@ -69,9 +72,9 @@ public class Carta implements Serializable {
 		return hitbox;
 	}
 	
-	public void drawHitbox(Graphics g, int mult) {
+	public void drawHitbox(Graphics g) {
 		g.setColor(Color.pink);
-		g.drawRect(hitbox.x, hitbox.y, mult * CARD_WIDTH, mult * CARD_HEIGHT);
+		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 	}
 	
 	private void adjustValue(int n) {
@@ -92,16 +95,18 @@ public class Carta implements Serializable {
 	}
 	
 	public void render(Graphics g, BufferedImage img, BufferedImage marco, double mult) {
-		updateHitbox();
+		double mW = mult * CARD_WIDTH;
+		double mH = mult * CARD_HEIGHT;
+		updateHitbox(mult);
 		if (comodin) {
-			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), (int) mult * CARD_WIDTH , (int) mult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage(CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), (int) mW , (int) mH, null);
 		} else {
-			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), (int) mult * CARD_WIDTH , (int) mult * CARD_HEIGHT, null);
+			g.drawImage(img.getSubimage((number - 1) * CARD_WIDTH, (palo - 1) * CARD_HEIGHT, CARD_WIDTH , CARD_HEIGHT), x, (y - 1), (int) mW , (int) mH, null);
 		}
 		if (seleccionada) {
 			g.drawImage(marco, x, y + 1, (int) mult * MARCO_WIDTH, (int) mult * MARCO_HEIGHT, null);
 		}
-//		drawHitbox(g, mult);
+//		drawHitbox(g);
 	}
 	
 	public boolean isSeleccionada() { return seleccionada; }

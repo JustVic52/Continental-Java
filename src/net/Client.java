@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import cardTreatment.Bajada;
 import cardTreatment.Carta;
 import gameDynamics.Player;
 
@@ -51,6 +52,7 @@ public class Client extends Thread {
 	private void runGame() {
 		int action = 0;
 		ArrayList<Carta> aux = new ArrayList<>();
+		ArrayList<Bajada> aux2 = new ArrayList<>();
 		try {
 			while (!endRound) {
 				yourTurn = in.readBoolean();	
@@ -73,10 +75,15 @@ public class Client extends Thread {
 					out.flush();
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-//					System.out.println(player.getFullMano().getDescartes());
 					//fase 2: bajarse (opcional)
-//					out.writeBoolean(player.canBajarse());
-//					out.flush();
+					out.writeBoolean(player.canBajarse());
+					out.flush();
+					if (in.readBoolean()) {
+						out.writeObject(player.getBajada());
+						out.flush();
+					}
+					aux2 = (ArrayList<Bajada>) in.readObject();
+					player.setListBajada(aux2);
 					//fase 3: descartar
 					boolean descartado = false;
 					while (!descartado) { descartado = player.isDescartado(); }
@@ -84,16 +91,15 @@ public class Client extends Thread {
 					out.flush();
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-//					System.out.println(player.getFullMano().getDescartes());
 					out.writeBoolean(player.getMano().size() == 0);
 					out.flush();
 				} else {
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-//					System.out.println(player.getFullMano().getDescartes());
+					aux2 = (ArrayList<Bajada>) in.readObject();
+					player.setListBajada(aux2);
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-//					System.out.println(player.getFullMano().getDescartes());
 				}
 				yourTurn = false;
 				endRound = player.getMano().size() == 0;

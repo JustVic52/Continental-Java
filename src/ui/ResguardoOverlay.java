@@ -197,6 +197,7 @@ public class ResguardoOverlay extends Round {
 	}
 
 	public void bajarse() {
+		slots = new ArrayList<>();
 		loadSlots();
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,62 +12,34 @@ import java.util.Map;
 
 import gameDynamics.Round;
 
-public class Bajada extends Round {
+public class Bajada extends Round implements Serializable {
+	
+	private static final long serialVersionUID = 2593544615184734293L;
 	
 	private List<Carta[]> slots, slotsBajados;
 	private Map<Carta[], Rectangle> hitboxList;
 	boolean bajado = false;
 	int[] palos;
 	private int x, y;
-	private boolean added;
+	private boolean added, canBajarse;
 	
-	public Bajada() {
-		x = 0;
-		y = 0;
+	public Bajada(int xPos, int yPos) {
+		x = xPos;
+		y = yPos;
 		slots = new ArrayList<>();
 		slotsBajados = new ArrayList<>();
 		hitboxList = new HashMap<>();
 	}
 	
 	public void draw(Graphics g, BufferedImage img, BufferedImage marco) {
-		int xPos = x;
-		int yPos = y;
 		if (bajado) {
 			for (Map.Entry<Carta[], Rectangle> entrada : hitboxList.entrySet()) {
-				System.out.println("he llegado");
-				g.drawRect((int) entrada.getValue().getX(), (int) entrada.getValue().getY(), 
-						(int) entrada.getValue().getWidth(), (int) entrada.getValue().getHeight());
+				g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
 			}
 			for (Carta[] cA : slotsBajados) {
-				if (getRoundEscaleras() > 0) {
-					if (cA.length == 13) {
-						for (int i = 0; i < cA.length; i++) {
-							if (cA[i] != null) {
-								cA[i].setX(xPos);
-								cA[i].setY(yPos);
-								cA[i].render(g, img, marco, 1);
-								x += 22;
-							}
-						}
-						y += 57;
-						x = xPos;
-					}
-				} else if (getRoundTrios() > 0) {
-					for (int j = 0; j < slotsBajados.size(); j++) {
-						if (cA.length == 4) {
-							for (int i = 0; i < cA.length; i++) {
-								if (cA[i] != null) {
-									cA[i].setX(xPos);
-									cA[i].setY(yPos);
-									cA[i].render(g, img, marco, 0.5);
-									x += 22;
-								}
-							}
-							if (j == 2) {
-								y += 57;
-								x = xPos;
-							} else { x += 5; }
-						}
+				for (Carta c : cA) {
+					if (c != null) {
+						c.render(g, img, marco, 1);
 					}
 				}
 			}
@@ -74,8 +47,7 @@ public class Bajada extends Round {
 	}
 	
 	public boolean canBajarse(List<Carta[]> bajada) {
-		slots.clear();
-		if (bajada.size() == 0 || bajada == null) { return false; }
+		if (bajado || bajada.size() == 0 || bajada == null) { return false; }
 		int numTrios = 0, numEscaleras = 0;
 		for (Carta[] cartas : bajada) {
 			if (cartas.length == 4) {
@@ -84,33 +56,75 @@ public class Bajada extends Round {
 				if (canBeEscalera(cartas)) { numEscaleras++; }
 			}
 		}
-		slots = bajada;
-		return numTrios == getRoundTrios() && numEscaleras == getRoundEscaleras();
+		if (numTrios == getRoundTrios() && numEscaleras == getRoundEscaleras()) {
+			slots.clear();
+			slots = bajada;
+			canBajarse = true;
+			return true;
+		} else { return false; }
+	}
+	
+	public boolean getCanBajarse() { return canBajarse; }
+	
+	private void positionCards() {
+		int xPos = x, yPos = y;
+		for (Carta[] cA : slotsBajados) {
+			if (getRoundEscaleras() > 0) {
+				if (cA.length == 13) {
+					for (int i = 0; i < cA.length; i++) {
+						if (cA[i] != null) {
+							cA[i].setX(xPos);
+							cA[i].setY(yPos);
+							xPos += 22;
+						}
+					}
+					yPos += 57;
+					xPos = x;
+				}
+			} else if (getRoundTrios() > 0) {
+				for (int j = 0; j < slotsBajados.size(); j++) {
+					if (cA.length == 4) {
+						for (int i = 0; i < cA.length; i++) {
+							if (cA[i] != null) {
+								cA[i].setX(xPos);
+								cA[i].setY(yPos);
+								xPos += 22;
+							}
+						}
+						if (j == 2) {
+							yPos += 57;
+							xPos = x;
+						} else { xPos += 5; }
+					}
+				}
+			}
+		}
 	}
 	
 	public void bajarse() {
 		slotsBajados = slots;
 		makeHitboxes();
+		positionCards();
 	}
 	
 	private void makeHitboxes() {
-		int cont = 0, width = 0, height = 52, xPos = x, yPos = y;
+		int cont = 0, width = 0, height = 104, xPos = x + 2, yPos = y + 2;
 		for (int i = 0; i < slotsBajados.size(); i++) {
 			Carta[] cA = slotsBajados.get(i);
 			for (Carta c : cA) {
 				if (c != null) { cont++; }
 			}
-			width = 11 * (cont - 1) + 37;
+			width = 22 * (cont - 1) + 74;
 			hitboxList.put(cA, new Rectangle(xPos, yPos, width, height));
 			if (getRoundEscaleras() > 0) {
-				y += 57;
+				yPos += 57;
 			} else if (getRoundTrios() > 0) {
 				for (int j = 0; j < slotsBajados.size(); j++) {
 					if (cA.length == 4) {
 						if (j == 2) {
-							y += 57;
-							x = xPos;
-						} else { x += 5; }
+							yPos += 57;
+							xPos = x;
+						} else { xPos += 5; }
 					}
 				}
 			}
@@ -211,5 +225,26 @@ public class Bajada extends Round {
 			}
 		}
 		return false;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setXY(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getSize() {
+		return slotsBajados.size();
+	}
+	
+	public String toString() {
+		return slotsBajados.toString();
 	}
 }

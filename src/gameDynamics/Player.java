@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+import cardTreatment.Bajada;
 import cardTreatment.Carta;
 import cardTreatment.Mano;
 import cardTreatment.Slot;
@@ -16,6 +17,8 @@ public class Player extends Round {
 	private boolean roundWinner, gameWinner, yourTurn = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
 	private ResguardoOverlay resguardo;
+	private Bajada bajada;
+	private ArrayList<Bajada> bajadaList;
 	
 	public Player(int t) {
 		points = 0;
@@ -28,6 +31,8 @@ public class Player extends Round {
 		isBaraja = false;
 		descartado = false;
 		resguardo = new ResguardoOverlay();
+		bajada = new Bajada(0, 0);
+		bajadaList = new ArrayList<>();
 	}
 	
 	public void give() {
@@ -137,6 +142,26 @@ public class Player extends Round {
 	public void render(Graphics g, List<Slot[]> slots, boolean active) {
 		mano.getDescartes().render(g);
 		mano.getBaraja().render(g);
+		for (int i = 0; i < bajadaList.size(); i++) {
+			Bajada b = bajadaList.get(i);
+			if (b.getSize() != 0) {
+				switch (i) {
+				case 0:
+					b.setXY(226, 270);
+					break;
+				case 1:
+					b.setXY(226, 29);
+					break;
+				case 2:
+					b.setXY(775, 29);
+					break;
+				case 3:
+					b.setXY(650, 270);
+					break;
+				}
+				bajada.draw(g, mano.getImage(), mano.getMarco());
+			}
+		}
 		resguardo.setSlots(slots);
 		mano.renderSlots(g, slots, active);
 	}
@@ -185,5 +210,25 @@ public class Player extends Round {
 
 	public void setResguardo(ResguardoOverlay resguardo) {
 		this.resguardo = resguardo;
+	}
+
+	public void setBajada(Bajada b) {
+		bajada = b;
+	}
+	
+	public Bajada getBajada() {
+		return bajada;
+	}
+
+	public boolean canBajarse() {
+		return bajada.getCanBajarse();
+	}
+
+	public void setListBajada(ArrayList<Bajada> mino) {
+		bajadaList = mino;
+	}
+
+	public ArrayList<Bajada> getListBajada() {
+		return bajadaList;
 	}
 }

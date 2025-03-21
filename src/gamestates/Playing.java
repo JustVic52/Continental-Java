@@ -30,13 +30,17 @@ public class Playing extends State implements Statemethods {
 	private Slot slot = null;
 	private int posI = 0, posJ = 0, numActions = 0;
 	private Bajada bajada;
+	private Baraja baraja;
+	private Descartes descartes;
 	
 	public Playing(Game g) {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
 		radio = new Radio();
 		resguardo = new ResguardoOverlay();
-		bajada = new Bajada();
+		bajada = new Bajada(250, 270);
+		baraja = new Baraja();
+		descartes = new Descartes();
 		iniButtons();
 	}
 	
@@ -55,11 +59,11 @@ public class Playing extends State implements Statemethods {
 				player = Host.getServer().getClient().getPlayer();
 			}
 		} else {
-			if (bajada.isBajado()) { bajada.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco()); }
 			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 			if (!resguardo.isActivated()) { buttons[0].draw(g); }
 			buttons[1].draw(g);
 			radio.render(g);
+			if (bajada.isBajado()) { bajada.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco()); }
 			resguardo.draw(g, player.getFullMano().getImage());
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());
 		}
@@ -68,8 +72,9 @@ public class Playing extends State implements Statemethods {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		
-		Baraja baraja = player.getFullMano().getBaraja();
-		Descartes descartes = player.getFullMano().getDescartes();
+		if (baraja != player.getFullMano().getBaraja()) { baraja = player.getFullMano().getBaraja(); }
+		if (descartes != player.getFullMano().getDescartes()){ descartes = player.getFullMano().getDescartes(); }
+		if (bajada != player.getBajada()) { player.setBajada(bajada); }
 		
 		if (baraja.getHitbox().contains(e.getX(), e.getY()) 
 				&& numActions == 0 && player.isYourTurn()) { baraja.setSelected(true); }
@@ -94,11 +99,6 @@ public class Playing extends State implements Statemethods {
 			if (resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
 				resguardo.getButton().setIndex(1);
 			}
-			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-				if (bajada.canBajarse(resguardo.getCartas())) {
-					buttons[1].setIndex(3);
-				} else { buttons[1].setIndex(1); }
-			}
 			for (int i = 0; i < resguardo.getSlots().size(); i++) {
 				for (int j = 0; j < resguardo.getSlots().get(i).length; j++) {
 					Carta c = resguardo.getSlots().get(i)[j].getCarta();
@@ -118,22 +118,22 @@ public class Playing extends State implements Statemethods {
 			if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 				buttons[0].setIndex(buttons[0].getIndex() + 1);
 			}
-			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-				buttons[1].setIndex(1);
-			}
 			if (radio.getHitbox().contains(e.getX(), e.getY())) {
 				if (radio.isMuted()) {
 					radio.setRadioState(3);
 				} else { radio.setRadioState(1); }
 			}
 		}
+		
+		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
+			if (!bajada.isBajado() && bajada.canBajarse(resguardo.getCartas())) {
+				buttons[1].setIndex(3);
+			} else { buttons[1].setIndex(1); }
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		
-		Baraja baraja = player.getFullMano().getBaraja();
-		Descartes descartes = player.getFullMano().getDescartes();
 		
 		int i;
 		
@@ -159,34 +159,19 @@ public class Playing extends State implements Statemethods {
 			}
 		}
 		
-		if (bajada.isBajado()) {
-			bajada.mouseReleased(e, player.getSelection());
-			if (bajada.isAdded()) {
-				if (slot.isIn()) {
-					resguardo.getSlots().get(posI)[posJ].remove();
-				} else {
-					player.getFullMano().getSlots().get(posI).remove();
-				}
-				bajada.setAdded(false);
-			}
-			player.deselect();
-		}
-		
 		if (resguardo.isActivated()) {
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-				if (bajada.canBajarse(resguardo.getCartas()) && !bajada.isBajado()) {
+				if (!bajada.isBajado() && bajada.canBajarse(resguardo.getCartas())) {
 					buttons[1].setIndex(2);
 					bajada.bajarse();
 					bajada.setBajado(true);
 					resguardo.bajarse();
-				}
-				else { buttons[1].setIndex(0); }
-			}
+				} else { buttons[1].setIndex(0); }
+			} else { buttons[1].setIndex(0); }
 			if (resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
 				resguardo.getButton().setIndex(0);
-				buttons[1].setIndex(0);
 				resguardo.setActivated(false);
-			}
+			} else { resguardo.getButton().setIndex(0); }
 			for (i = 0; i < resguardo.getSlots().size(); i++) {
 				for (int j = 0; j < resguardo.getSlots().get(i).length; j++) {
 					Carta c = resguardo.getSlots().get(i)[j].getCarta();
@@ -215,11 +200,16 @@ public class Playing extends State implements Statemethods {
 			if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 				if (buttons[0].getIndex() == 1) { buttons[0].setIndex(2); }
 				if (buttons[0].getIndex() == 3) { buttons[0].setIndex(0); }
+			} else { 
+				if (buttons[0].getIndex() == 1) { buttons[0].setIndex(0); }
+				if (buttons[0].getIndex() == 3) { buttons[0].setIndex(2); }
 			}
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
 				resguardo.setActivated(true);
-				buttons[1].setIndex(0);
-			}
+				if (player.canBajarse()) {
+					buttons[1].setIndex(2);
+				} else { buttons[1].setIndex(0); }
+			} else { buttons[1].setIndex(0); }
 			if (radio.getHitbox().contains(e.getX(), e.getY())) {
 				if (radio.isMuted()) {
 					radio.setRadioState(0);
@@ -228,6 +218,18 @@ public class Playing extends State implements Statemethods {
 					radio.setRadioState(2);
 					radio.setMuted(true);
 				}
+			}
+		}
+		
+		if (bajada.isBajado()) {
+			bajada.mouseReleased(e, player.getSelection());
+			if (bajada.isAdded()) {
+				if (slot.isIn()) {
+					resguardo.getSlots().get(posI)[posJ].remove();
+				} else {
+					player.getFullMano().getSlots().get(posI).remove();
+				}
+				bajada.setAdded(false);
 			}
 		}
 		

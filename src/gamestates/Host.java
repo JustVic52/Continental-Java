@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.ServerSocket;
 
 import mainGame.Game;
 import net.Server;
@@ -93,10 +95,23 @@ public class Host extends State implements Statemethods {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
 //				if (!texto.getTexto().equals("")) {
-					server = new Server(numOfPlayers, texto.getTexto());
-					server.start();
-					while (server.getClient() == null) { }
-					Gamestate.state = Gamestate.PLAYING;
+					buttons[0].setMousePressed(false);
+					ServerSocket ss = null;
+					try {
+						ss = new ServerSocket(6020);
+						server = new Server(ss, numOfPlayers, texto.getTexto());
+						server.start();
+						boolean clave = server.isAlive();
+						while (clave) { clave = server.getClient() == null; }
+						Gamestate.state = Gamestate.PLAYING;
+					} catch (IOException e1) {
+						try {
+							if (ss != null) { ss.close(); }
+							if (ss == null && server != null && server.isAlive()) { server.interrupt(); }
+						} catch (IOException e2) {
+							
+						}
+					}
 //				}
 			}
 		}

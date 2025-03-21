@@ -47,12 +47,6 @@ public class Mano {
 		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
 	}
 	
-	public void updateMano() {
-		for (Slot s : manoSlot) {
-			s.getCarta().updateHitbox();
-		}
-	}
-	
 	public void renderSlots(Graphics g, List<Slot[]> slots, boolean active) {
 		ArrayList<Slot> aux = new ArrayList<>(manoSlot);
 		Slot auxS = null;

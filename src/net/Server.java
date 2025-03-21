@@ -5,11 +5,13 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import gameDynamics.Partida;
+import gamestates.Gamestate;
 
 public class Server extends Thread {
 	
@@ -20,14 +22,14 @@ public class Server extends Thread {
 	private String nombre = "";
 	private List<Socket> listaPlayers;
 
-	public Server(int np, String name) {
+	public Server(ServerSocket ss, int np, String name) {
 		numPlayers = np;
 		nombre = name;
 		listaPlayers = new ArrayList<>();
+		server = ss;
 		try {
-			this.server = new ServerSocket(6020);
 			server.setReuseAddress(true);
-		} catch (final IOException e) {
+		} catch (SocketException e) {
 			
 		}
 	}
