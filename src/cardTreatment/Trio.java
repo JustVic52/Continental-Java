@@ -82,7 +82,7 @@ public class Trio {
 	public boolean canBeATrio(List<Carta> selection) { //verifica que el trío que le paso existe y lo almacena
 		clear();
 		//Si la selección está vacía devuelve false
-		if (selection.isEmpty()) { return false; }
+		if (selection.isEmpty() || selection == null) { return false; }
 		//Sino, Saco los comodines de la selección
 		comodines = new ArrayList<>();
 		List<Carta> temp = new ArrayList<>();
@@ -91,19 +91,17 @@ public class Trio {
 				comodines.add(selection.get(k));
 			} else { temp.add(selection.get(k)); }
 		}
-		selection.clear();
-		selection.addAll(temp);
 		//Compruebo si hay más de un número, si lo hay, no puedo hacer el trío
 		ArrayList<Integer> checked = new ArrayList<>();
-		for (Carta c : selection) {
+		for (Carta c : temp) {
 			if (!checked.contains(c.getNumber())) { checked.add(c.getNumber()); }
 		}
 		if (checked.size() != 1) { return false; }
 		//Formo el trío con las cartas que no son comodines
-		for (int i = 0; i < selection.size(); i++) {
-			if (canBeAdded(selection.get(i))) { add(selection.get(i)); }
+		for (int i = 0; i < temp.size(); i++) {
+			if (canBeAdded(temp.get(i))) { add(temp.get(i)); }
 			if (trio[2] != null && comodines.isEmpty()) {
-				updateComodines(selection);
+				updateComodines(temp);
 				return true;
 			}
 		}
@@ -112,12 +110,12 @@ public class Trio {
 			for (Carta c : comodines) {
 				add(c);
 				if (trio[3] != null) {
-					updateComodines(selection);
+					updateComodines(temp);
 					return true;
 				}
 			}
 			if (trio[2] != null) {
-				updateComodines(selection);
+				updateComodines(temp);
 				return true;
 			}
 		}
@@ -133,8 +131,9 @@ public class Trio {
 		}
 	}
 
-	public Carta[] getTrio() {
-		return trio;
+	public List<Carta> getTrio() {
+		List<Carta> t = new ArrayList<>(Arrays.asList(trio));
+		return t;
 	}
 	
 	public int[] getPalos() {

@@ -3,6 +3,7 @@ package ui;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cardTreatment.Carta;
@@ -160,14 +161,15 @@ public class ResguardoOverlay extends Round {
 		}
 	}
 	
-	public List<Carta[]> getCartas() {
-		List<Carta[]> aux = new ArrayList<>();
+	public List<List<Carta>> getCartas() {
+		List<List<Carta>> aux = new ArrayList<>();
 		for (int i = 0; i < slots.size(); i++) {
-			Slot[] sA = slots.get(i);
-			aux.add(new Carta[sA.length]);
-			for (int j = 0; j < aux.get(i).length; j++) {
-				aux.get(i)[j] = sA[j].getCarta();
+			ArrayList<Slot> sA = new ArrayList<>(Arrays.asList(slots.get(i)));
+			ArrayList<Carta> cA = new ArrayList<>();
+			for (Slot s : sA) {
+				if (s.getCarta() != null) { cA.add(s.getCarta()); }
 			}
+			aux.add(cA);
 		}
 		return aux;
 	}

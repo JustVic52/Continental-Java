@@ -26,6 +26,7 @@ public class Carta implements Serializable {
 		palo = p;
 		seleccionada = false;
 		resguardada = false;
+		comodin = false;
 		this.x = x;
 		this.y = y;
 		initHitbox();
@@ -34,8 +35,8 @@ public class Carta implements Serializable {
 	public Carta(int x, int y) { //Crea un comodín en X e Y
 		number = 14;
 		adjustValue(number);
-		comodin = true;
 		palo = 5;
+		comodin = true;
 		seleccionada = false;
 		resguardada = false;
 		this.x = x;
