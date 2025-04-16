@@ -25,7 +25,7 @@ public class Escalera {
 	public boolean canBeEscalera(List<Carta> selection) { //verifica la escalera que le paso y la almacena
 		clear();
 		//Si la selección está vacía o no tiene suficiente devuelve false
-		if (selection.isEmpty() || selection.size() < 4) { return false; }
+		if (selection.isEmpty() || selection.size() < 4 || selection.size() > 13) { return false; }
 		//Recorro selection. Si encuentro una sucesión de cartas/comodines que es una escalera, la guardo.
 		int cont = 0;
 		for (int i = 0; i < selection.size(); i++) {

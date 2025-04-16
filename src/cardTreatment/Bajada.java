@@ -33,9 +33,9 @@ public class Bajada extends Round implements Serializable {
 	
 	public void draw(Graphics g, BufferedImage img, BufferedImage marco) {
 		if (bajado) {
-			for (Map.Entry<List<Carta>, Rectangle> entrada : hitboxList.entrySet()) {
-				g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
-			}
+//			for (Map.Entry<List<Carta>, Rectangle> entrada : hitboxList.entrySet()) {
+//				g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
+//			}
 			for (List<Carta> cA : slotsBajados) {
 				for (Carta c : cA) {
 					c.render(g, img, marco, 1);
@@ -61,37 +61,26 @@ public class Bajada extends Round implements Serializable {
 		return false;
 	}
 	
-	public boolean getCanBajarse() { return canBajarse; }
+	public boolean getCanBajarse() { return !bajado && canBajarse; }
 	
 	private void positionCards() {
-		int xPos = x, yPos = y;
-		Escalera escalera = new Escalera();
+		int xPos = x, yPos = y, j = 0;
 		for (List<Carta> cA : slotsBajados) {
-			if (getRoundEscaleras() > 0) {
-				if (escalera.canBeEscalera(cA)) {
-					for (Carta c : cA) {
-						c.setX(xPos);
-						c.setY(yPos);
-						xPos += 22;
-					}
-					yPos += 57;
-					xPos = x;
-				}
-			} else if (getRoundTrios() > 0) {
-				for (int j = 0; j < slotsBajados.size(); j++) {
-					if (!escalera.canBeEscalera(cA)) {
-						for (Carta c : cA) {
-							c.setX(xPos);
-							c.setY(yPos);
-							xPos += 22;
-						}
-						if (j == 2) {
-							yPos += 57;
-							xPos = x;
-						} else { xPos += 5; }
-					}
-				}
+			hitboxList.get(cA).x = xPos;
+			hitboxList.get(cA).y = yPos;
+			for (int i = 0; i < cA.size(); i++) {
+				Carta c = cA.get(i);
+				if (i == cA.size() - 1) { c.setLastOnBajada(true); }
+				else { c.setLastOnBajada(false); }
+				c.setX(xPos);
+				c.setY(yPos);
+				xPos += 22;
 			}
+			if (j == 2) {
+				yPos += 57;
+				xPos = x;
+			} else { xPos += 79; }
+			j++;
 		}
 	}
 	
@@ -102,7 +91,8 @@ public class Bajada extends Round implements Serializable {
 	}
 	
 	private void makeHitboxes() {
-		int width = 0, height = 104, xPos = x + 2, yPos = y + 2;
+		hitboxList.clear();
+		int width = 0, height = 104, xPos = x, yPos = y;
 		for (int i = 0; i < slotsBajados.size(); i++) {
 			List<Carta> cA = slotsBajados.get(i);
 			width = 22 * (cA.size() - 1) + 74;
@@ -143,10 +133,14 @@ public class Bajada extends Round implements Serializable {
 	
 	public void mouseReleased(MouseEvent e, Carta selection) {
 		for (List<Carta> cA : slots) {
-			if (hitboxList.get(cA).contains(e.getX(), e.getY()) && selection != null) {
-				if (canBeAdded(cA, selection)) {
-					add(cA, selection);
-					added = true;
+			if (hitboxList.get(cA) != null && hitboxList.get(cA).contains(e.getX(), e.getY()) && selection != null) {
+				for (int i = 0; i < cA.size(); i++) {
+					if (cA.get(i).getAddHitbox().contains(e.getX(), e.getY())) {
+						if (canBeAdded(cA, selection, i)) {
+							add(cA, selection, i);
+							added = true;
+						}
+					}
 				}
 			}
 		}
@@ -160,32 +154,24 @@ public class Bajada extends Round implements Serializable {
 		this.added = added;
 	}
 
-	private void add(List<Carta> cA, Carta selection) {
-		Trio trio = new Trio();
-		Escalera escalera = new Escalera();
-		cA.add(selection);
-		if (trio.canBeATrio(cA)) {
-			for (List<Carta> aux : slotsBajados) {
-				if (cA == aux) {
-					aux = trio.getTrio();
-				}
-			}
-		} else {
-			for (List<Carta> aux : slotsBajados) {
-				if (cA == aux) {
-					aux = escalera.getEscalera();
-				}
+	private void add(List<Carta> cA, Carta selection, int i) {
+		cA.add(i + 1, selection);
+		for (List<Carta> aux : slotsBajados) {
+			if (cA == aux) {
+				aux = cA;
+				break;
 			}
 		}
 		makeHitboxes();
 		positionCards();
 	}
 	
-	private boolean canBeAdded(List<Carta> cA, Carta selection) {
+	private boolean canBeAdded(List<Carta> cA, Carta selection, int i) {
+		List<Carta> aux = new ArrayList<>(cA);
 		Escalera escalera = new Escalera();
 		Trio trio = new Trio();
-		cA.add(selection);
-		return escalera.canBeEscalera(cA) || trio.canBeATrio(cA);
+		aux.add(i + 1, selection);
+		return escalera.canBeEscalera(aux) || trio.canBeATrio(aux);
 	}
 
 	public int getX() {

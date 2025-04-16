@@ -17,7 +17,6 @@ public class Player extends Round {
 	private boolean roundWinner, gameWinner, yourTurn = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
 	private ResguardoOverlay resguardo;
-	private Bajada bajada;
 	private ArrayList<Bajada> bajadaList;
 	
 	public Player(int t) {
@@ -31,10 +30,20 @@ public class Player extends Round {
 		isBaraja = false;
 		descartado = false;
 		resguardo = new ResguardoOverlay();
-		bajada = new Bajada(0, 0);
 		bajadaList = new ArrayList<>();
+		initBajadaList();
 	}
 	
+	private void initBajadaList() {
+		for (int i = 0; i < 4; i++) {
+			if (i == turno) {
+				bajadaList.add(turno, new Bajada(229,270));
+			} else {
+				bajadaList.add(null);
+			}
+		}
+	}
+
 	public void give() {
 		mano.give();
 	}
@@ -144,13 +153,13 @@ public class Player extends Round {
 		mano.getBaraja().render(g);
 		for (int i = 0; i < bajadaList.size(); i++) {
 			Bajada b = bajadaList.get(i);
-			if (b.getSize() != 0) {
+			if (b != null) {
 				switch (i) {
 				case 0:
-					b.setXY(226, 270);
+					b.setXY(233, 29);
 					break;
 				case 1:
-					b.setXY(226, 29);
+					b.setXY(233, 270);
 					break;
 				case 2:
 					b.setXY(775, 29);
@@ -159,7 +168,7 @@ public class Player extends Round {
 					b.setXY(650, 270);
 					break;
 				}
-				bajada.draw(g, mano.getImage(), mano.getMarco());
+				b.draw(g, mano.getImage(), mano.getMarco());
 			}
 		}
 		resguardo.setSlots(slots);
@@ -213,15 +222,16 @@ public class Player extends Round {
 	}
 
 	public void setBajada(Bajada b) {
-		bajada = b;
+		bajadaList.remove(turno);
+		bajadaList.add(turno, b);
 	}
 	
 	public Bajada getBajada() {
-		return bajada;
+		return bajadaList.get(turno);
 	}
 
 	public boolean canBajarse() {
-		return bajada.getCanBajarse();
+		return bajadaList.get(turno).getCanBajarse();
 	}
 
 	public void setListBajada(ArrayList<Bajada> mino) {

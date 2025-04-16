@@ -76,16 +76,27 @@ public class Client extends Thread {
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
 					//fase 2: bajarse (opcional)
-					out.writeBoolean(player.canBajarse());
+					boolean bajarse = false, descartado = false;
+					while (!descartado && !bajarse) {
+						bajarse = player.canBajarse();
+						descartado = player.isDescartado();
+					}
+					out.writeBoolean(bajarse);
 					out.flush();
-					if (in.readBoolean()) {
-						out.writeObject(player.getBajada());
+					bajarse = in.readBoolean();
+					if (bajarse) {
+						boolean isBajado = false;
+						while(!isBajado && !descartado) {
+							isBajado = player.getBajada().isBajado();
+							descartado = player.isDescartado();
+						}
+						out.writeObject(player.getListBajada());
 						out.flush();
 					}
 					aux2 = (ArrayList<Bajada>) in.readObject();
 					player.setListBajada(aux2);
 					//fase 3: descartar
-					boolean descartado = false;
+//					boolean descartado = false;
 					while (!descartado) { descartado = player.isDescartado(); }
 					out.writeObject(player.getFullMano().getDescartes().getDescartes());
 					out.flush();

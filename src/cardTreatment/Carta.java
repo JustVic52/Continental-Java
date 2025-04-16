@@ -13,12 +13,12 @@ public class Carta implements Serializable {
 	private static final long serialVersionUID = 7866246894823092992L;
 	
 	private int value, palo, number, x, y, offsetX = 0, offsetY = 0;
-	private boolean comodin, seleccionada, resguardada;
+	private boolean comodin, seleccionada, resguardada, lastOnBajada, clipped;
 	public static final int PICAS = 3, CORAZONES = 4, TREVOLES = 1, DIAMANTES = 2;
 	public static final int CARD_WIDTH = Constants.CardConstants.CARD_WIDTH, CARD_HEIGHT = Constants.CardConstants.CARD_HEIGHT;
 	public static final int MARCO_WIDTH = Constants.CardConstants.MARCO_WIDTH, MARCO_HEIGHT = Constants.CardConstants.MARCO_HEIGHT;
 	public static final int ACE = 1, JACK = 11, QUEEN = 12, KING = 13;
-	private Rectangle hitbox;
+	private Rectangle hitbox, addHitbox;
 	
 	public Carta(int n, int p, int x, int y) { //Crea una carta de un valor N y un palo P, en una posición X e Y
 		number = n;
@@ -46,19 +46,34 @@ public class Carta implements Serializable {
 	
 	private void initHitbox() {
 		hitbox = new Rectangle(x, y, CARD_WIDTH - 4, CARD_HEIGHT - 8);
+		addHitbox = new Rectangle(x, y, 22, CARD_HEIGHT - 8);
 	}
 	
 	public void updateHitbox(double mult) {
 		hitbox.x = x + 2;
 		hitbox.y = y + 2;
+		addHitbox.x = x + 2;
+		addHitbox.y = y + 2;
 		setCardDimensions(mult);
 	}
 	
 	public void setCardDimensions(double mult) {
 		double multed = mult * (CARD_WIDTH - 4);
+		double addMulted = mult * 22;
 		hitbox.width = (int) multed;
+		if (lastOnBajada) {
+			addHitbox.width = (int) multed;
+		} else {
+			addHitbox.width = (int) addMulted;
+		}
 		multed = mult * (CARD_HEIGHT - 8);
+		addMulted = mult * 52;
 		hitbox.height = (int) multed;
+		if (clipped) {
+			addHitbox.height = (int) addMulted;
+		} else {
+			addHitbox.height = (int) multed;
+		}
 	}
 
 	public boolean isResguardada() {
@@ -73,9 +88,15 @@ public class Carta implements Serializable {
 		return hitbox;
 	}
 	
+	public Rectangle getAddHitbox() {
+		return addHitbox;
+	}
+	
 	public void drawHitbox(Graphics g) {
 		g.setColor(Color.pink);
-		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+//		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+		g.setColor(Color.green);
+		g.drawRect(addHitbox.x, addHitbox.y, addHitbox.width, addHitbox.height);
 	}
 	
 	private void adjustValue(int n) {
@@ -107,7 +128,7 @@ public class Carta implements Serializable {
 		if (seleccionada) {
 			g.drawImage(marco, x, y + 1, (int) mult * MARCO_WIDTH, (int) mult * MARCO_HEIGHT, null);
 		}
-//		drawHitbox(g);
+		drawHitbox(g);
 	}
 	
 	public boolean isSeleccionada() { return seleccionada; }
@@ -152,6 +173,14 @@ public class Carta implements Serializable {
 	
 	public void setPalo(int p) { palo = p; }
 	
+	public boolean isLastOnBajada() { return lastOnBajada; }
+
+	public void setLastOnBajada(boolean simonChan) { lastOnBajada = simonChan; }
+
+	public boolean isClipped() { return clipped; }
+
+	public void setClipped(boolean luciaLaGuarra) { clipped = luciaLaGuarra; }
+
 	public String getNombrePalo() {
 		switch (palo) {
 		case PICAS:

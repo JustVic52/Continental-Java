@@ -52,7 +52,7 @@ public class Partida {
 	public Descartes getDescartes() { return descartes; }
 
 	public void run() {
-		for (Socket saux : socketPlayers) {
+		for (int i = 0; i < numJugadores; i++) {
 			bajadas.add(new Bajada(0, 0));
 		}
 		while (!endRound) {
@@ -76,11 +76,11 @@ public class Partida {
 					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
 					updateDescartes();
 					//fase 2: bajarse (opcional)
-					if (inS.readBoolean()) {
+					boolean cosa = inS.readBoolean();
+					if (cosa) {
 						outS.writeBoolean(true);
 						outS.flush();
-						bajadas.remove(i);
-						bajadas.add(i, (Bajada) inS.readObject());
+						bajadas = (ArrayList<Bajada>) inS.readObject();
 					} else {
 						outS.writeBoolean(false);
 						outS.flush();
