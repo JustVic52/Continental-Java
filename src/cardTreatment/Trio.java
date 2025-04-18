@@ -55,6 +55,12 @@ public class Trio {
 		return false;
 	}
 	
+	public boolean canBeAdded(List<Carta> aux, int i) {
+		if (aux.size() <= 4) { return canBeATrio(aux); }
+		if (aux.size() == 5 && i >= 0 && aux.get(i).isComodin()) { return true; }
+		return false;
+	}
+	
 	public String toString() {
 		String res = "[";
 		boolean first = true;

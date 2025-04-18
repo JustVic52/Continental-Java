@@ -60,6 +60,10 @@ public class Playing extends State implements Statemethods {
 				player = Host.getServer().getClient().getPlayer();
 			}
 		} else {
+			if (baraja != player.getFullMano().getBaraja()) { baraja = player.getFullMano().getBaraja(); }
+			if (descartes != player.getFullMano().getDescartes()){ descartes = player.getFullMano().getDescartes(); }
+			if (bajadas != player.getListBajada()) { bajadas = player.getListBajada(); }
+			
 			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 			if (!resguardo.isActivated()) { buttons[0].draw(g); }
 			buttons[1].draw(g);
@@ -74,10 +78,6 @@ public class Playing extends State implements Statemethods {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		
-		if (baraja != player.getFullMano().getBaraja()) { baraja = player.getFullMano().getBaraja(); }
-		if (descartes != player.getFullMano().getDescartes()){ descartes = player.getFullMano().getDescartes(); }
-		if (bajadas != player.getListBajada()) { bajadas = player.getListBajada(); }
 		
 		if (baraja.getHitbox().contains(e.getX(), e.getY()) 
 				&& numActions == 0 && player.isYourTurn()) { baraja.setSelected(true); }
@@ -270,7 +270,7 @@ public class Playing extends State implements Statemethods {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		
+//		System.out.println("X: " + e.getX() + " || Y: " + e.getY());
 	}
 
 	@Override

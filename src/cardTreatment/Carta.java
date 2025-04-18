@@ -128,7 +128,7 @@ public class Carta implements Serializable {
 		if (seleccionada) {
 			g.drawImage(marco, x, y + 1, (int) mult * MARCO_WIDTH, (int) mult * MARCO_HEIGHT, null);
 		}
-		drawHitbox(g);
+//		drawHitbox(g);
 	}
 	
 	public boolean isSeleccionada() { return seleccionada; }

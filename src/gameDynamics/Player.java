@@ -156,19 +156,19 @@ public class Player extends Round {
 			if (b != null) {
 				switch (i) {
 				case 0:
-					b.setXY(233, 29);
+					b.setXY(233, 41);
 					break;
 				case 1:
-					b.setXY(233, 270);
+					b.setXY(233, 246);
 					break;
 				case 2:
-					b.setXY(775, 29);
+					b.setXY(756, 41);
 					break;
 				case 3:
-					b.setXY(650, 270);
+					b.setXY(756, 246);
 					break;
 				}
-				b.draw(g, mano.getImage(), mano.getMarco());
+//				b.draw(g, mano.getImage(), mano.getMarco());
 			}
 		}
 		resguardo.setSlots(slots);
