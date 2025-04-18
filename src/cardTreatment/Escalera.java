@@ -52,8 +52,9 @@ public class Escalera {
 	}
 	
 	public boolean canBeAdded(List<Carta> aux, int i) {
+		if (i >= 0 && aux.get(i + 1).isComodin()) { ;return canBeEscalera(aux); }
 		if (i >= 0 && aux.get(i).isComodin()) { aux.remove(i); }
-		return canBeEscalera(aux); 
+		return canBeEscalera(aux);
 	}
 	
 	public String toString() {

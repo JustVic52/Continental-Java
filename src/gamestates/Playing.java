@@ -69,7 +69,7 @@ public class Playing extends State implements Statemethods {
 			buttons[1].draw(g);
 			radio.render(g);
 			for (Bajada b : bajadas) {
-				if (b != null && b.isBajado()) { b.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco(), player.getFullMano().getAddMarco()); }
+				if (b != null && b.isBajado()) { b.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco(), player.getFullMano().getAddMarco(), player.getFullMano().getClippedMarco()); }
 			}
 			resguardo.draw(g, player.getFullMano().getImage());
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());

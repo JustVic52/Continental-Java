@@ -32,10 +32,14 @@ public class Bajada extends Round implements Serializable {
 		addHitbox = new HashMap<>();
 	}
 	
-	public void draw(Graphics g, BufferedImage img, BufferedImage marco, BufferedImage marcoAdd) {
+	public void draw(Graphics g, BufferedImage img, BufferedImage marco, BufferedImage marcoAdd, BufferedImage marcoClipped) {
 		if (bajado) {
 			for (List<Carta> cA : slotsBajados) {
-				g.drawImage(marcoAdd, cA.get(0).getX() - 15, cA.get(0).getY() + 3, marcoAdd.getWidth(), marcoAdd.getHeight(), null);
+				if (cA.get(0).isClipped()) {
+					g.drawImage(marcoClipped, cA.get(0).getX() - 15, cA.get(0).getY() + 3, marcoClipped.getWidth(), marcoClipped.getHeight(), null);
+				} else {
+					g.drawImage(marcoAdd, cA.get(0).getX() - 15, cA.get(0).getY() + 3, marcoAdd.getWidth(), marcoAdd.getHeight(), null);
+				}
 				for (Carta c : cA) {
 					c.render(g, img, marco, 1);
 				}
@@ -99,25 +103,26 @@ public class Bajada extends Round implements Serializable {
 		if (slotsBajados.size() >= 3) {
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < slotsBajados.get(i).size(); j++) {
-					slotsBajados.get(i).get(j).getHitbox().y = y;
-					if (j < slotsBajados.get(2).size()) slotsBajados.get(2).get(j).getHitbox().y = y + 52;
-					if (j < slotsBajados.get(2).size() && slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(2).get(j).getHitbox().x, slotsBajados.get(2).get(j).getHitbox().y)) {
+					Rectangle rec = new Rectangle(slotsBajados.get(i).get(j).getX(), slotsBajados.get(i).get(j).getY(), 74, 104);
+					if (j < slotsBajados.get(2).size() && rec.contains(slotsBajados.get(2).get(j).getX(), slotsBajados.get(2).get(j).getY())) {
 						if (cont == 0) {
 							addHitbox.get(slotsBajados.get(i)).height = 52;
 							hitboxList.get(slotsBajados.get(i)).height = 52;
 							cont = 1;
 						}
 						slotsBajados.get(i).get(j).setClipped(true);
+						if (j != slotsBajados.get(i).size() - 1) slotsBajados.get(i).get(j + 1).setClipped(true);
 					}
 					if (slotsBajados.size() == 4) {
-						if (j < slotsBajados.get(3).size() && slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(3).get(j).getHitbox().x, slotsBajados.get(3).get(j).getHitbox().y)) {
+						if (j < slotsBajados.get(3).size() && slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(3).get(j).getX(), slotsBajados.get(3).get(j).getY())) {
 							if (cont == 0) {
 								addHitbox.get(slotsBajados.get(i)).height = 52;
 								hitboxList.get(slotsBajados.get(i)).height = 52;
 								cont = 1;
 							}
 							slotsBajados.get(i).get(j).setClipped(true);
-						} else { slotsBajados.get(i).get(j).setClipped(false); }
+							if (j != slotsBajados.get(i).size() - 1) slotsBajados.get(i).get(j + 1).setClipped(true);
+						}
 					}
 				}
 				cont = 0;
@@ -222,7 +227,7 @@ public class Bajada extends Round implements Serializable {
 		Trio trio = new Trio();
 		boolean silksong = trio.canBeATrio(cA);
 		cA.add(i + 1, selection);
-		if (i >= 0 && cA.get(i).isComodin() && !(silksong && cA.size() != 5)) { cA.remove(i); }
+		if (i >= 0 && !cA.get(i + 1).isComodin() && cA.get(i).isComodin() && !(silksong && cA.size() != 5)) { cA.remove(i); }
 		for (List<Carta> aux : slotsBajados) {
 			if (cA == aux) {
 				aux = cA;

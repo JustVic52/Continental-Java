@@ -50,10 +50,10 @@ public class Carta implements Serializable {
 	}
 	
 	public void updateHitbox(double mult) {
-		hitbox.x = x + 2;
-		hitbox.y = y + 2;
-		addHitbox.x = x + 2;
-		addHitbox.y = y + 2;
+		if (hitbox.x != x + 2) hitbox.x = x + 2;
+		if (hitbox.y != y + 2) hitbox.y = y + 2;
+		if (addHitbox.x != x + 2)addHitbox.x = x + 2;
+		if (addHitbox.y != y + 2) addHitbox.y = y + 2;
 		setCardDimensions(mult);
 	}
 	
@@ -95,10 +95,8 @@ public class Carta implements Serializable {
 	public void drawHitbox(Graphics g) {
 		if (g.getColor() == Color.green) g.setColor(Color.blue);
 		else g.setColor(Color.green);
-//		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
-//		g.setColor(Color.green);
+		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 		g.drawRect(addHitbox.x, addHitbox.y, addHitbox.width, addHitbox.height);
-//		g.setColor(Color.blue);
 	}
 	
 	private void adjustValue(int n) {
