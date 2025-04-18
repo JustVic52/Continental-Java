@@ -13,7 +13,7 @@ public class Carta implements Serializable {
 	private static final long serialVersionUID = 7866246894823092992L;
 	
 	private int value, palo, number, x, y, offsetX = 0, offsetY = 0;
-	private boolean comodin, seleccionada, resguardada, lastOnBajada, clipped;
+	private boolean comodin, seleccionada, resguardada, lastOnBajada, clipped, small = false;
 	public static final int PICAS = 3, CORAZONES = 4, TREVOLES = 1, DIAMANTES = 2;
 	public static final int CARD_WIDTH = Constants.CardConstants.CARD_WIDTH, CARD_HEIGHT = Constants.CardConstants.CARD_HEIGHT;
 	public static final int MARCO_WIDTH = Constants.CardConstants.MARCO_WIDTH, MARCO_HEIGHT = Constants.CardConstants.MARCO_HEIGHT;
@@ -93,10 +93,12 @@ public class Carta implements Serializable {
 	}
 	
 	public void drawHitbox(Graphics g) {
-		g.setColor(Color.pink);
+		if (g.getColor() == Color.green) g.setColor(Color.blue);
+		else g.setColor(Color.green);
 //		g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
-		g.setColor(Color.green);
+//		g.setColor(Color.green);
 		g.drawRect(addHitbox.x, addHitbox.y, addHitbox.width, addHitbox.height);
+//		g.setColor(Color.blue);
 	}
 	
 	private void adjustValue(int n) {
@@ -117,6 +119,7 @@ public class Carta implements Serializable {
 	}
 	
 	public void render(Graphics g, BufferedImage img, BufferedImage marco, double mult) {
+		if (small) mult = 0.5;
 		double mW = mult * CARD_WIDTH;
 		double mH = mult * CARD_HEIGHT;
 		updateHitbox(mult);
@@ -180,6 +183,10 @@ public class Carta implements Serializable {
 	public boolean isClipped() { return clipped; }
 
 	public void setClipped(boolean luciaLaGuarra) { clipped = luciaLaGuarra; }
+	
+	public boolean isSmall() { return small; }
+	
+	public void setSmall(boolean luna) { small = luna; }
 
 	public String getNombrePalo() {
 		switch (palo) {

@@ -156,10 +156,10 @@ public class Player extends Round {
 			if (b != null) {
 				switch (i) {
 				case 0:
-					b.setXY(233, 41);
+					b.setXY(240, 41);
 					break;
 				case 1:
-					b.setXY(233, 246);
+					b.setXY(240, 246);
 					break;
 				case 2:
 					b.setXY(756, 41);

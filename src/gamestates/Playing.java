@@ -69,7 +69,7 @@ public class Playing extends State implements Statemethods {
 			buttons[1].draw(g);
 			radio.render(g);
 			for (Bajada b : bajadas) {
-				if (b != null && b.isBajado()) { b.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco()); }
+				if (b != null && b.isBajado()) { b.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco(), player.getFullMano().getAddMarco()); }
 			}
 			resguardo.draw(g, player.getFullMano().getImage());
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());
@@ -146,12 +146,13 @@ public class Playing extends State implements Statemethods {
 				c.setSeleccionada(false);
 				c.setX(player.getFullMano().getSlots().get(i).getX());
 				c.setY(player.getFullMano().getSlots().get(i).getY());
+				c.setSmall(false);
 			}
 		}
 		
 		for (i = 0; i < player.getFullMano().getSlots().size(); i++) {
 			Slot s = player.getFullMano().getSlots().get(i);
-			if (s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+			if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 				if (slot.isIn()) {
 					resguardo.getSlots().get(posI)[posJ].remove();
 					s.add(player.getSelection());
@@ -188,6 +189,7 @@ public class Playing extends State implements Statemethods {
 			for (i = 0; i < resguardo.getSlots().size(); i++) {
 				for (int j = 0; j < resguardo.getSlots().get(i).length; j++) {
 					Slot s = resguardo.getSlots().get(i)[j];
+					//para meterlo en el resguardo
 					if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 						if (slot.isIn()) {
 							resguardo.getSlots().get(posI)[posJ].remove();
@@ -285,6 +287,9 @@ public class Playing extends State implements Statemethods {
 				c.setX(e.getX() - c.getOffsetX());
 				c.setY(e.getY() - c.getOffsetY());
 			}
+		}
+		for (Bajada b : bajadas) {
+			if (b != null && b.isBajado()) b.mouseDragged(e, player.getSelection());
 		}
 	}
 }

@@ -17,7 +17,7 @@ public class Mano {
 	private Carta cartaEscogida = null;
 	private Carta ultimaCartaEliminada; //para el retake
 	private boolean canRetake = false;
-	private BufferedImage img, marco;
+	private BufferedImage img, marco, addMarco;
 	private Baraja baraja;
 	private Descartes descartes;
 	
@@ -27,7 +27,7 @@ public class Mano {
 		initSlot();
 		baraja = new Baraja();
 		descartes = new Descartes();
-		importCards();
+		importImgs();
 	}
 	
 	private void initSlot() {
@@ -42,9 +42,10 @@ public class Mano {
 		} 
 	}
 
-	private void importCards() {
+	private void importImgs() {
 		img = LoadSave.GetSpriteAtlas(LoadSave.CARD_ATLAS);
 		marco = LoadSave.GetSpriteAtlas(LoadSave.MARCO);
+		addMarco = LoadSave.GetSpriteAtlas(LoadSave.ADDMARCO);
 	}
 	
 	public void renderSlots(Graphics g, List<Slot[]> slots, boolean active) {
@@ -243,5 +244,9 @@ public class Mano {
 
 	public Descartes getDescartes() {
 		return descartes;
+	}
+
+	public BufferedImage getAddMarco() {
+		return addMarco;
 	}
 }

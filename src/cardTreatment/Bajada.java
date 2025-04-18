@@ -32,22 +32,27 @@ public class Bajada extends Round implements Serializable {
 		addHitbox = new HashMap<>();
 	}
 	
-	public void draw(Graphics g, BufferedImage img, BufferedImage marco) {
+	public void draw(Graphics g, BufferedImage img, BufferedImage marco, BufferedImage marcoAdd) {
 		if (bajado) {
 			for (List<Carta> cA : slotsBajados) {
+				g.drawImage(marcoAdd, cA.get(0).getX() - 15, cA.get(0).getY() + 3, marcoAdd.getWidth(), marcoAdd.getHeight(), null);
 				for (Carta c : cA) {
 					c.render(g, img, marco, 1);
 				}
 			}
-			for (Map.Entry<List<Carta>, Rectangle> entrada : addHitbox.entrySet()) {
-				g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
-			}
-			for (Map.Entry<List<Carta>, Rectangle> entrada : hitboxList.entrySet()) {
-				g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
-			}
+//			drawHitboxes(g);
 		}
 	}
 	
+	private void drawHitboxes(Graphics g) {
+		for (Map.Entry<List<Carta>, Rectangle> entrada : addHitbox.entrySet()) {
+			g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
+		}
+		for (Map.Entry<List<Carta>, Rectangle> entrada : hitboxList.entrySet()) {
+			g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
+		}
+	}
+
 	public boolean canBajarse(List<List<Carta>> bajada) {
 		if (bajado || bajada.isEmpty() || bajada == null) { return false; }
 		int numTrios = 0, numEscaleras = 0;
@@ -71,10 +76,8 @@ public class Bajada extends Round implements Serializable {
 		int xPos = x, yPos = y;
 		for (int j = 0; j < slotsBajados.size(); j++) {
 			List<Carta> cA = slotsBajados.get(j);
-			hitboxList.get(cA).x = xPos;
-			hitboxList.get(cA).y = yPos;
-			addHitbox.get(cA).x = xPos - 22;
-			addHitbox.get(cA).y = yPos;
+			hitboxList.get(cA).setLocation(xPos, yPos);
+			addHitbox.get(cA).setLocation(xPos - 16, yPos);
 			for (int i = 0; i < cA.size(); i++) {
 				Carta c = cA.get(i);
 				if (i == cA.size() - 1) { c.setLastOnBajada(true); }
@@ -96,27 +99,28 @@ public class Bajada extends Round implements Serializable {
 		if (slotsBajados.size() >= 3) {
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < slotsBajados.get(i).size(); j++) {
-					System.out.println(slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(2).get(j).getHitbox().x + 5, slotsBajados.get(2).get(j).getHitbox().y + 5));
-					if (slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(2).get(j).getHitbox().x + 5, slotsBajados.get(2).get(j).getHitbox().y + 5)) {
+					slotsBajados.get(i).get(j).getHitbox().y = y;
+					if (j < slotsBajados.get(2).size()) slotsBajados.get(2).get(j).getHitbox().y = y + 52;
+					if (j < slotsBajados.get(2).size() && slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(2).get(j).getHitbox().x, slotsBajados.get(2).get(j).getHitbox().y)) {
 						if (cont == 0) {
 							addHitbox.get(slotsBajados.get(i)).height = 52;
 							hitboxList.get(slotsBajados.get(i)).height = 52;
-							cont++;
+							cont = 1;
 						}
-						slotsBajados.get(i).get(i).setClipped(true);
-					} else { slotsBajados.get(i).get(i).setClipped(false); }
+						slotsBajados.get(i).get(j).setClipped(true);
+					}
 					if (slotsBajados.size() == 4) {
-						if (slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(3).get(j).getHitbox().x + 5, slotsBajados.get(3).get(j).getHitbox().y + 5)) {
+						if (j < slotsBajados.get(3).size() && slotsBajados.get(i).get(j).getHitbox().contains(slotsBajados.get(3).get(j).getHitbox().x, slotsBajados.get(3).get(j).getHitbox().y)) {
 							if (cont == 0) {
 								addHitbox.get(slotsBajados.get(i)).height = 52;
 								hitboxList.get(slotsBajados.get(i)).height = 52;
 								cont = 1;
 							}
-							slotsBajados.get(i).get(i).setClipped(true);
-						} else { slotsBajados.get(i).get(i).setClipped(false); }
+							slotsBajados.get(i).get(j).setClipped(true);
+						} else { slotsBajados.get(i).get(j).setClipped(false); }
 					}
-					cont = 0;
 				}
+				cont = 0;
 			}
 		}
 	}
@@ -135,7 +139,7 @@ public class Bajada extends Round implements Serializable {
 			List<Carta> cA = slotsBajados.get(i);
 			width = 22 * (cA.size() - 1) + 74;
 			hitboxList.put(cA, new Rectangle(xPos, yPos, width, height));
-			addHitbox.put(cA, new Rectangle(xPos - 20, yPos, 22, height));
+			addHitbox.put(cA, new Rectangle(xPos - 16, yPos, 16, height));
 			if (getRoundEscaleras() > 0) {
 				yPos += 57;
 			} else if (getRoundTrios() > 0) {
@@ -189,6 +193,21 @@ public class Bajada extends Round implements Serializable {
 				}
 			}
 		}
+	}
+	
+	public void mouseDragged(MouseEvent e, Carta selection) {
+		boolean res = false;
+		for (List<Carta> cA : slots) {
+			if (addHitbox.get(cA) != null && addHitbox.get(cA).contains(e.getX(), e.getY()) && selection != null) {
+				selection.setSmall(true);
+				res = true;
+			}
+			if (hitboxList.get(cA) != null && hitboxList.get(cA).contains(e.getX(), e.getY()) && selection != null) {
+				selection.setSmall(true);
+				res = true;
+			}
+		}
+		if (selection != null && !res) selection.setSmall(false);
 	}
 
 	public boolean isAdded() {

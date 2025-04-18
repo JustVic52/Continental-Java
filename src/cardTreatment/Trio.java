@@ -17,16 +17,12 @@ public class Trio {
 	}
 	
 	public boolean isDifferent(Carta carta) {
-		if (palos.isEmpty() && !carta.isComodin()) {
+		if (numOfTrio == 0 && !carta.isComodin()) {
 			numOfTrio = carta.getNumber();
 			palos.add(carta.getPalo());
 			return true;
 		}
-		for (int i : palos) {
-			if (i == carta.getPalo()) {
-				return false;
-			}
-		}
+		if (palos.contains(carta.getPalo())) { return false; }
 		if (!carta.isComodin()) {
 			palos.add(carta.getPalo());
 		}
@@ -46,7 +42,8 @@ public class Trio {
 		if (selection.isEmpty() || selection.size() < 3 || selection.size() > 4) { return false; }
 		//Recorro selection, si todas las cartas son del mismo número y distinto palo perfe
 		for (Carta c : selection) {
-			if (isDifferent(c) && (c.isComodin() || c.getNumber() == numOfTrio)) { cont++; }
+			if (!c.isComodin() && numOfTrio != 0 && c.getNumber() != numOfTrio) { return false; }
+			if (c.isComodin() || isDifferent(c)) { cont++; }
 		}
 		if (cont >= 3 && !palos.isEmpty()) {
 			trio = selection;
@@ -57,7 +54,10 @@ public class Trio {
 	
 	public boolean canBeAdded(List<Carta> aux, int i) {
 		if (aux.size() <= 4) { return canBeATrio(aux); }
-		if (aux.size() == 5 && i >= 0 && aux.get(i).isComodin()) { return true; }
+		if (aux.size() == 5 && i >= 0 && aux.get(i).isComodin()) {
+			aux.remove(i);
+			return canBeATrio(aux);
+		}
 		return false;
 	}
 	
