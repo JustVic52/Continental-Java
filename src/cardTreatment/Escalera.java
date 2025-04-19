@@ -1,21 +1,25 @@
 package cardTreatment;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Escalera {
 
 	private List<Carta> escalera;
 	private int paloOfEscalera;
+	private int[] numeros;
 	
 	public Escalera() {
 		escalera = new ArrayList<>();
 		paloOfEscalera = 0;
+		numeros = new int[13];
 	}
 	
 	public void clear() {
 		escalera = new ArrayList<>();
 		paloOfEscalera = 0;
+		numeros = new int[13];
 	}
 	
 	public List<Carta> getEscalera() {
@@ -32,18 +36,42 @@ public class Escalera {
 			if (!selection.get(i).isComodin() && paloOfEscalera == 0) { paloOfEscalera = selection.get(i).getPalo(); }
 			if (i == selection.size() - 1) {
 				if (selection.get(i).isComodin() || selection.get(i).getPalo() == paloOfEscalera) { cont++; }
+				else return false;
 			} else {
-				if (selection.get(i).isComodin() || selection.get(i).getPalo() == paloOfEscalera) {
-					if (selection.get(i).isComodin() || selection.get(i + 1).getNumber() - selection.get(i).getNumber() == 1
-							|| selection.get(i + 1).isComodin()) {
-						cont++;
-					}
-					if (selection.get(i).getNumber() == 13 && selection.get(i + 1).getNumber() == 1) { cont++; }
+				if (selection.get(i).isComodin()) { cont++; }
+				else {
+					if (selection.get(i).getPalo() == paloOfEscalera) {
+						int contAux = 0;
+						int cond = -1;
+						if (selection.get(i + 1).isComodin()) {
+							int j = i + 1;
+							while (j < selection.size() && selection.get(j).isComodin()) {
+								contAux++;
+								j++;
+							}
+							System.out.println(contAux);
+							if (selection.get(i).getNumber() > selection.get(j).getNumber()) {
+								cond = 13 - selection.get(i).getNumber() + selection.get(j).getNumber() - 1;
+								if (cond == contAux) cont++;
+								else return false;
+							} else { 
+								cond = selection.get(j).getNumber() - selection.get(i).getNumber() - 1;
+								System.out.println(cond);
+								if (cond == contAux) cont++;
+								else return false;
+							}
+							
+						}
+						else if (selection.get(i + 1).getNumber() - selection.get(i).getNumber() == 1
+								|| selection.get(i + 1).isComodin()) { cont++; }
+						else if (selection.get(i).getNumber() == 13 && (selection.get(i + 1).getNumber() == 1 || selection.get(i + 1).isComodin())) { cont++; }
+						else return false;
+					} else return false; 
 				}
 			}
 		}
 		
-		if (cont >= 4) {
+		if (cont >= 4 && paloOfEscalera != 0) {
 			escalera = selection;
 			return true;
 		}
@@ -51,6 +79,17 @@ public class Escalera {
 		return false;
 	}
 	
+	private String numerosToString() {
+		String res = "[";
+		boolean first = true;
+		for (int i : numeros) {
+			if (!first) { res += ", "; }
+			res += i;
+			first = false;
+		}
+		return res + "]";
+	}
+
 	public boolean canBeAdded(List<Carta> aux, int i) {
 		if (i >= 0 && aux.get(i + 1).isComodin()) { ;return canBeEscalera(aux); }
 		if (i >= 0 && aux.get(i).isComodin()) { aux.remove(i); }
@@ -69,4 +108,18 @@ public class Escalera {
 		}
 		return res + "]";
 	}
+	
+//	public static void main(String[] args) {
+//		
+//		ArrayList<Carta> aux = new ArrayList<>();
+//		aux.add(new Carta(100,100));
+//		aux.add(new Carta(13, 1, 100,100));
+//		aux.add(new Carta(100,100));
+//		aux.add(new Carta(100,100));
+//		aux.add(new Carta(3,1,100,100));
+//		Escalera escalera = new Escalera();
+//		System.out.println(aux);
+//		System.out.println(escalera.canBeEscalera(aux));
+//		
+//	}
 }

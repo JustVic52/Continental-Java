@@ -76,14 +76,23 @@ public class Partida {
 					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
 					updateDescartes();
 					//fase 2: bajarse (opcional)
-					boolean cosa = inS.readBoolean();
-					if (cosa) {
+					boolean descartado = inS.readBoolean();
+					if (descartado) {
 						outS.writeBoolean(true);
 						outS.flush();
 						bajadas = (ArrayList<Bajada>) inS.readObject();
 					} else {
 						outS.writeBoolean(false);
 						outS.flush();
+						boolean isBajado = inS.readBoolean();
+						if (isBajado) {
+							outS.writeBoolean(true);
+							outS.flush();
+							bajadas = (ArrayList<Bajada>) inS.readObject();
+						} else {
+							outS.writeBoolean(false);
+							outS.flush();
+						}
 					}
 					updateBajada();
 					//fase 3: descartar
@@ -105,6 +114,17 @@ public class Partida {
 		endRound = false;
 	}
 	
+	private void updateDescartado(boolean descartado) {
+		for (ObjectOutputStream outS : out) {
+			try {
+				outS.writeBoolean(descartado);
+				outS.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void updateBajada() {
 		for (ObjectOutputStream outS : out) {
 			try {

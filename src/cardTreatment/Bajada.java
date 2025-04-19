@@ -21,7 +21,7 @@ public class Bajada extends Round implements Serializable {
 	boolean bajado = false;
 	int[] palos;
 	private int x, y;
-	private boolean added, canBajarse;
+	private boolean added, canBajarse, dragged = false;
 	
 	public Bajada(int xPos, int yPos) {
 		x = xPos;
@@ -212,8 +212,12 @@ public class Bajada extends Round implements Serializable {
 				res = true;
 			}
 		}
-		if (selection != null && !res) selection.setSmall(false);
+		dragged = res;
 	}
+	
+	public boolean isDragged() { return dragged; }
+	
+	public void setDragged(boolean d) { dragged = d; }
 
 	public boolean isAdded() {
 		return added;

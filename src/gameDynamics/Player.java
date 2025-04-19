@@ -3,6 +3,7 @@ package gameDynamics;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import cardTreatment.Bajada;
 import cardTreatment.Carta;

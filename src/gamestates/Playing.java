@@ -288,8 +288,13 @@ public class Playing extends State implements Statemethods {
 				c.setY(e.getY() - c.getOffsetY());
 			}
 		}
+		boolean res = false;
 		for (Bajada b : bajadas) {
-			if (b != null && b.isBajado()) b.mouseDragged(e, player.getSelection());
+			if (b != null && b.isBajado()) { 
+				b.mouseDragged(e, player.getSelection());
+				res = b.isDragged();
+			}
 		}
+		if (player.getSelection() != null && !res) { player.getSelection().setSmall(false); }
 	}
 }

@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 import cardTreatment.Bajada;
 import cardTreatment.Carta;
@@ -76,7 +77,7 @@ public class Client extends Thread {
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
 					//fase 2: bajarse (opcional)
-					boolean bajarse = false, descartado = false;
+					boolean bajarse = false, descartado = false, isBajado = player.getBajada().isBajado();
 					while (!descartado && !bajarse) {
 						bajarse = player.canBajarse();
 						descartado = player.isDescartado();
@@ -85,13 +86,24 @@ public class Client extends Thread {
 					out.flush();
 					bajarse = in.readBoolean();
 					if (bajarse) {
-						boolean isBajado = false;
 						while(!isBajado && !descartado) {
 							isBajado = player.getBajada().isBajado();
 							descartado = player.isDescartado();
 						}
 						out.writeObject(player.getListBajada());
 						out.flush();
+					} else {
+						isBajado = player.getBajada().isBajado();
+						out.writeBoolean(isBajado);
+						out.flush();
+						isBajado = in.readBoolean();
+						if (isBajado) {
+							while(!descartado) {
+								descartado = player.isDescartado();
+							}
+							out.writeObject(player.getListBajada());
+							out.flush();
+						}
 					}
 					aux2 = (ArrayList<Bajada>) in.readObject();
 					player.setListBajada(aux2);
