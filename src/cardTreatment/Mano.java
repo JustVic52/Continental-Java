@@ -254,4 +254,12 @@ public class Mano {
 	public BufferedImage getClippedMarco() {
 		return clippedMarco;
 	}
+
+	public void bajarse(Bajada bajada) {
+		for (List<Carta> cA : bajada.getBajada()) {
+			for (Carta c : cA) {
+				mano.remove(c);
+			}
+		}
+	}
 }

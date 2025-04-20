@@ -15,13 +15,14 @@ public class ResguardoOverlay extends Round {
 	
 	private List<Slot[]> slots;
 	private BufferedImage tablero;
-	private int x, y = 0, width, height;
+	private int x, y = 0, width, height, numRound;
 	private boolean activated = false;
 	private GameButton cancel;
 	private static final int UPPER_Y = 37, MIDDLE_Y = 154, DOWN_Y = 271;
 	private static final int ESCALERA_X = 215, TRIO_X = 935, ROUND8_X = 581;	
 
 	public ResguardoOverlay() {
+		numRound = 1;
 		slots = new ArrayList<>();
 		cancel = new GameButton(1182, 481, 2);
 		loadTablero();
@@ -35,10 +36,10 @@ public class ResguardoOverlay extends Round {
 	}
 
 	private void loadTablero() {
-		tablero = LoadSave.GetSpriteAtlas(LoadSave.RESGUARDO + getNumRound() + ".png");
+		tablero = LoadSave.GetSpriteAtlas(LoadSave.RESGUARDO + numRound + ".png");
 		width = tablero.getWidth();
 		height = tablero.getHeight();
-		switch (getNumRound()) {
+		switch (numRound) {
 	    case 2: case 5:
 	        x = 908;
 	        break;
@@ -53,7 +54,7 @@ public class ResguardoOverlay extends Round {
 	}
 	
 	private void loadSlots() {
-		switch (getNumRound()) {
+		switch (numRound) {
 		case 1:
 			slots.add(new Slot[13]);
 			break;
@@ -158,6 +159,13 @@ public class ResguardoOverlay extends Round {
 				
 				break;
 			}
+		}
+	}
+	
+	public void updateTablero(int kaladin) {
+		if (numRound != kaladin) {
+			numRound = kaladin;
+			loadTablero();
 		}
 	}
 	

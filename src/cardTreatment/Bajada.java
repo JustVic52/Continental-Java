@@ -258,6 +258,8 @@ public class Bajada extends Round implements Serializable {
 		this.x = x;
 		this.y = y;
 	}
+	
+	public List<List<Carta>> getBajada() { return slotsBajados; }
 
 	public int getY() {
 		return y;

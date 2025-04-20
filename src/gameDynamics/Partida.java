@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 public class Partida {
@@ -55,6 +56,7 @@ public class Partida {
 		for (int i = 0; i < numJugadores; i++) {
 			bajadas.add(new Bajada(0, 0));
 		}
+		endRound = false;
 		while (!endRound) {
 			for (int i = 0; i < socketPlayers.size(); i++) {
 				Socket s = socketPlayers.get(i);
@@ -62,6 +64,8 @@ public class Partida {
 				ObjectInputStream inS = in.get(i);
 				try {
 					s.setKeepAlive(true);
+					//decir en qué ronda estamos
+					giveRound();
 					//decir que es tu turno
 					sendTurns(s);
 					//fase 1: robar
@@ -98,8 +102,9 @@ public class Partida {
 					//fase 3: descartar
 					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
 					updateDescartes();
-					
-					endRound = inS.readBoolean();
+					boolean end = inS.readBoolean();
+					updateEnd(end);
+					endRound = end;
 				} catch (IOException e) {
 					
 				} catch (ClassNotFoundException e) {
@@ -111,13 +116,12 @@ public class Partida {
 		round.updateRound();
 		descartes.clear();
 		bajadas.clear();
-		endRound = false;
 	}
-	
-	private void updateDescartado(boolean descartado) {
+
+	private void updateEnd(boolean end) {
 		for (ObjectOutputStream outS : out) {
 			try {
-				outS.writeBoolean(descartado);
+				outS.writeBoolean(end);
 				outS.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -185,14 +189,23 @@ public class Partida {
 		}
 	}
 
-	public void updateRun() { round.updateRound(); }
-
 	public void playGame() {
 		for (int i = 0; i < 10; i++) {
 			giveCards();
 			run();
 		}
 		setGameWinner();
+	}
+
+	private void giveRound() {
+		for (ObjectOutputStream outS : out) {
+			try {
+				outS.writeInt(round.getNumRound());
+				outS.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void setGameWinner() {

@@ -13,7 +13,7 @@ import ui.ResguardoOverlay;
 
 public class Player extends Round {
 	
-	private int points, turno, ciclo;
+	private int points, turno, ciclo, numRound = 1;
 	private Mano mano;
 	private boolean roundWinner, gameWinner, yourTurn = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
@@ -77,6 +77,8 @@ public class Player extends Round {
 	public boolean getGameWinner() {
 		return gameWinner;
 	}
+	
+	public void setNumRound(int rapiño) { numRound = rapiño; }
 	
 	public void roundWin() {
 		if (mano.getSize() == 0) {
@@ -150,6 +152,7 @@ public class Player extends Round {
 	}
 
 	public void render(Graphics g, List<Slot[]> slots, boolean active) {
+		resguardo.updateTablero(numRound);
 		mano.getDescartes().render(g);
 		mano.getBaraja().render(g);
 		for (int i = 0; i < bajadaList.size(); i++) {
@@ -241,5 +244,14 @@ public class Player extends Round {
 
 	public ArrayList<Bajada> getListBajada() {
 		return bajadaList;
+	}
+
+	public void update() {
+		points = 0;
+		resguardo = new ResguardoOverlay();
+		mano = new Mano();
+		resguardo.updateTablero(numRound);
+		bajadaList = new ArrayList<>();
+		initBajadaList();
 	}
 }

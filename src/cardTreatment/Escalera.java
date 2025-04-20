@@ -41,26 +41,28 @@ public class Escalera {
 				if (selection.get(i).isComodin()) { cont++; }
 				else {
 					if (selection.get(i).getPalo() == paloOfEscalera) {
-						int contAux = 0;
-						int cond = -1;
 						if (selection.get(i + 1).isComodin()) {
+							//Si la carta no es comodín y la siguiente si, voy a ir hasta la siguiente carta que no sea comodín y compruebo
+							//si la resta de esos valores - 1 es igual a la cantidad de comodines entre ellos. Si es así, es correcto.
+							//si no hay más cartas sin comodín, contar y ya.
+							int contAux = 0;
+							int cond = -1;
 							int j = i + 1;
 							while (j < selection.size() && selection.get(j).isComodin()) {
 								contAux++;
 								j++;
 							}
-							System.out.println(contAux);
-							if (selection.get(i).getNumber() > selection.get(j).getNumber()) {
+							if (j == selection.size()) j--;
+							if (selection.get(j).isComodin()) cont++;
+							else if (selection.get(i).getNumber() > selection.get(j).getNumber()) {
 								cond = 13 - selection.get(i).getNumber() + selection.get(j).getNumber() - 1;
 								if (cond == contAux) cont++;
 								else return false;
 							} else { 
 								cond = selection.get(j).getNumber() - selection.get(i).getNumber() - 1;
-								System.out.println(cond);
 								if (cond == contAux) cont++;
 								else return false;
 							}
-							
 						}
 						else if (selection.get(i + 1).getNumber() - selection.get(i).getNumber() == 1
 								|| selection.get(i + 1).isComodin()) { cont++; }
@@ -108,13 +110,14 @@ public class Escalera {
 		}
 		return res + "]";
 	}
-	
+	//No lo voy a quitar ahora porque ya es la cuarta vez que lo pongo pensando que solo lo voy a usar una vez xd
 //	public static void main(String[] args) {
 //		
 //		ArrayList<Carta> aux = new ArrayList<>();
+//		aux.add(new Carta(10, 3, 100,100));
 //		aux.add(new Carta(100,100));
-//		aux.add(new Carta(13, 1, 100,100));
-//		aux.add(new Carta(100,100));
+//		aux.add(new Carta(12, 3, 100,100));
+//		aux.add(new Carta(13, 3, 100,100));
 //		aux.add(new Carta(100,100));
 //		aux.add(new Carta(3,1,100,100));
 //		Escalera escalera = new Escalera();

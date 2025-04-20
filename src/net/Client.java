@@ -18,6 +18,7 @@ public class Client extends Thread {
 	private String nombre = "";
 	private boolean endRound = false;
 	private boolean yourTurn = false;
+	private int numRound = 1;
 	ObjectOutputStream out;
 	ObjectInputStream in;
 	
@@ -34,7 +35,6 @@ public class Client extends Thread {
 			out = new ObjectOutputStream(socket.getOutputStream());
 			in = new ObjectInputStream(socket.getInputStream());
 			player = new Player(in.readInt());
-			
 			//lógica del juego
 			for (int i = 0; i < 10; i++) {
 				//Recibir cartas
@@ -50,12 +50,25 @@ public class Client extends Thread {
 		}
 	}
 	
+	private void recieveRound() {
+		try {
+			System.out.println("soy el cliente " + player.getTurno());
+			numRound = in.readInt();
+			player.setNumRound(numRound);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void runGame() {
 		int action = 0;
 		ArrayList<Carta> aux = new ArrayList<>();
 		ArrayList<Bajada> aux2 = new ArrayList<>();
+		boolean end = false;
+		endRound = false;
 		try {
 			while (!endRound) {
+				recieveRound();
 				yourTurn = in.readBoolean();	
 				player.setYourTurn(yourTurn);
 				if (yourTurn) {
@@ -108,14 +121,15 @@ public class Client extends Thread {
 					aux2 = (ArrayList<Bajada>) in.readObject();
 					player.setListBajada(aux2);
 					//fase 3: descartar
-//					boolean descartado = false;
 					while (!descartado) { descartado = player.isDescartado(); }
 					out.writeObject(player.getFullMano().getDescartes().getDescartes());
 					out.flush();
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-					out.writeBoolean(player.getMano().size() == 0);
+					end = player.getMano().isEmpty();
+					out.writeBoolean(end);
 					out.flush();
+					end = in.readBoolean();
 				} else {
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
@@ -123,15 +137,17 @@ public class Client extends Thread {
 					player.setListBajada(aux2);
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
+					end = in.readBoolean();
 				}
 				yourTurn = false;
-				endRound = player.getMano().size() == 0;
+				endRound = end;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		player.update();
 	}
 
 	private void recieveCard() {
