@@ -37,6 +37,7 @@ public class Client extends Thread {
 			//lógica del juego
 			for (int i = 0; i < 10; i++) {
 				//Recibir cartas
+				recieveMano();
 				//jugar ronda
 				runGame();
 			}			
@@ -62,7 +63,6 @@ public class Client extends Thread {
 		ArrayList<Carta> aux = new ArrayList<>();
 		ArrayList<Bajada> aux2 = new ArrayList<>();
 		endRound = false;
-		recieveMano();
 		recieveRound();
 		try {
 			while (!endRound) {
@@ -134,7 +134,7 @@ public class Client extends Thread {
 					player.setListBajada(aux2);
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-					recieveEnd();
+					end = in.readBoolean();
 				}
 				yourTurn = false;
 				endRound = end;
@@ -145,22 +145,6 @@ public class Client extends Thread {
 			e.printStackTrace();
 		}
 		player.update();
-	}
-	
-	private void recieveEnd() {
-		boolean recieved = false;
-		int cont = 0;
-		try {
-			recieved = false;
-			while (!recieved) {
-				end = in.readBoolean();
-				out.writeBoolean(end);
-				out.flush();
-				boolean temp = in.readBoolean();
-				cont++;
-				recieved = temp;
-			}
-		} catch (IOException e) {} 
 	}
 
 	private void recieveCard() {
@@ -175,32 +159,12 @@ public class Client extends Thread {
 	}
 
 	private void recieveMano() {
-		boolean recieved = false, temp = false;
-		ArrayList<Carta> aux = null;
-		int cont = 0;
-		while (!recieved && cont < 5) {
-			try {
-				recieved = false;
-				aux = null;
-				aux = (ArrayList<Carta>) in.readObject();
-				temp = aux != null;
-				if (temp) player.setMano(aux);
-			}
-			catch (IOException e) { temp = aux != null; } 
-			catch (ClassNotFoundException e) {}
-			try {
-				if (!temp) System.out.println("la mano es nula");
-				else {
-					System.out.println("la mano NO ES NULA");
-					if (player.getMano() != aux) player.setMano(aux);
-				}
-				out.writeBoolean(temp);
-				out.flush();
-			} 
-			catch (IOException e1) {}
-			cont++;
-			recieved = temp;
-		}
+		try {
+			ArrayList<Carta> aux = (ArrayList<Carta>) in.readObject();
+			player.setMano(aux);
+		} 
+		catch (ClassNotFoundException e) {}
+		catch (IOException e) {}		
 	}
 
 	public Player getPlayer() {

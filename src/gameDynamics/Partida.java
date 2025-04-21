@@ -56,7 +56,6 @@ public class Partida {
 		endRound = false;
 		boolean end = false;
 		ArrayList<Carta> aux = new ArrayList<>();
-		giveCards();
 		giveRound();
 		while (!endRound) {
 			for (int i = 0; i < numJugadores; i++) {
@@ -121,28 +120,13 @@ public class Partida {
 	}
 
 	private void updateEnd(boolean end, ObjectOutputStream outS2) {
-		for (int i = 0; i < out.size(); i++) {
-			ObjectOutputStream outS = out.get(i);
-			ObjectInputStream inS = in.get(i);
+		for (ObjectOutputStream outS : out) {
 			if (outS != outS2) {
 				try {
-					boolean recieved = false;
-					while (!recieved) {
-						outS.writeBoolean(end);
-						outS.flush();
-						boolean temp = inS.readBoolean();
-						if (end == temp) {
-							outS.writeBoolean(true);
-							outS.flush();
-						} else {
-							outS.writeBoolean(false);
-							outS.flush();
-						}
-						recieved = end == temp;
-					}
-				} catch (IOException e) {
-					
+					outS.writeBoolean(end);
+					outS.flush();
 				}
+				catch (IOException e) {}
 			}
 		}
 	}
@@ -192,25 +176,14 @@ public class Partida {
 
 	private void giveCards() {
 		List<Carta> cartas = new ArrayList<>();
-		for (int i = 0; i < out.size(); i++) {
-			ObjectOutputStream outS = out.get(i);
-			ObjectInputStream inS = in.get(i);
+		for (ObjectOutputStream outS : out) {
 //			cartas = makePersonalizedCards();
 			for (int j = 0; j < round.getNumCartas(); j++) {
 				cartas.add(baraja.give());
 			}
-			boolean temp = outS == null;
 			try {
-				boolean recieved = false;
-				int cont = 0;
-				while (!recieved && cont < 5) {
-					outS.flush();
-					outS.writeObject(cartas);
-					outS.flush();
-					temp = inS.readBoolean();
-					cont++;
-					recieved = temp;
-				}
+				outS.writeObject(cartas);
+				outS.flush();
 			}
 			catch (IOException e) {}
 			cartas.clear();
@@ -236,6 +209,7 @@ public class Partida {
 
 	public void playGame() {
 		for (int i = 0; i < 10; i++) {
+			giveCards();
 			run();
 		}
 		setGameWinner();
