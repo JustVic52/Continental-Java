@@ -6,14 +6,11 @@ import cardTreatment.Bajada;
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
-import net.Client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 
 public class Partida {
@@ -54,18 +51,19 @@ public class Partida {
 
 	public void run() {
 		for (int i = 0; i < numJugadores; i++) {
-			bajadas.add(new Bajada(0, 0));
+			bajadas.add(new Bajada(round.getNumRound(), 0, 0));
 		}
 		endRound = false;
+		boolean end = false;
+		ArrayList<Carta> aux = new ArrayList<>();
+		giveCards();
+		giveRound();
 		while (!endRound) {
-			for (int i = 0; i < socketPlayers.size(); i++) {
+			for (int i = 0; i < numJugadores; i++) {
 				Socket s = socketPlayers.get(i);
 				ObjectOutputStream outS = out.get(i);
 				ObjectInputStream inS = in.get(i);
 				try {
-					s.setKeepAlive(true);
-					//decir en qué ronda estamos
-					giveRound();
 					//decir que es tu turno
 					sendTurns(s);
 					//fase 1: robar
@@ -77,7 +75,8 @@ public class Partida {
 						sendCard(descartes.getCarta(), outS);
 						descartes.remove();
 					}
-					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
+					aux = (ArrayList<Carta>) inS.readObject();
+					descartes.setDescartes(aux);
 					updateDescartes();
 					//fase 2: bajarse (opcional)
 					boolean descartado = inS.readBoolean();
@@ -100,31 +99,50 @@ public class Partida {
 					}
 					updateBajada();
 					//fase 3: descartar
-					descartes.setDescartes((ArrayList<Carta>) inS.readObject());
+					aux = (ArrayList<Carta>) inS.readObject();
+					descartes.setDescartes(aux);
 					updateDescartes();
-					boolean end = inS.readBoolean();
-					updateEnd(end);
-					endRound = end;
+					end = inS.readBoolean();
+					updateEnd(end, outS);
+					if (end) break;
 				} catch (IOException e) {
 					
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
 			}
+			endRound = end;
 		}
 //		countPoints();
 		round.updateRound();
-		descartes.clear();
-		bajadas.clear();
+		descartes = new Descartes();
+		baraja = new Baraja();
+		bajadas = new ArrayList<>();
 	}
 
-	private void updateEnd(boolean end) {
-		for (ObjectOutputStream outS : out) {
-			try {
-				outS.writeBoolean(end);
-				outS.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
+	private void updateEnd(boolean end, ObjectOutputStream outS2) {
+		for (int i = 0; i < out.size(); i++) {
+			ObjectOutputStream outS = out.get(i);
+			ObjectInputStream inS = in.get(i);
+			if (outS != outS2) {
+				try {
+					boolean recieved = false;
+					while (!recieved) {
+						outS.writeBoolean(end);
+						outS.flush();
+						boolean temp = inS.readBoolean();
+						if (end == temp) {
+							outS.writeBoolean(true);
+							outS.flush();
+						} else {
+							outS.writeBoolean(false);
+							outS.flush();
+						}
+						recieved = end == temp;
+					}
+				} catch (IOException e) {
+					
+				}
 			}
 		}
 	}
@@ -159,7 +177,6 @@ public class Partida {
 				outS.writeBoolean(s == actual);
 				outS.flush();
 			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 	}
@@ -175,36 +192,65 @@ public class Partida {
 
 	private void giveCards() {
 		List<Carta> cartas = new ArrayList<>();
-		for (ObjectOutputStream outS : out) {
+		for (int i = 0; i < out.size(); i++) {
+			ObjectOutputStream outS = out.get(i);
+			ObjectInputStream inS = in.get(i);
+//			cartas = makePersonalizedCards();
 			for (int j = 0; j < round.getNumCartas(); j++) {
 				cartas.add(baraja.give());
 			}
+			boolean temp = outS == null;
 			try {
-				outS.writeObject(cartas);
-				outS.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
+				boolean recieved = false;
+				int cont = 0;
+				while (!recieved && cont < 5) {
+					outS.flush();
+					outS.writeObject(cartas);
+					outS.flush();
+					temp = inS.readBoolean();
+					cont++;
+					recieved = temp;
+				}
 			}
+			catch (IOException e) {}
 			cartas.clear();
 		}
 	}
 
+	private List<Carta> makePersonalizedCards() {
+		List<Carta> res = new ArrayList<>();
+		for (int j = 0; j < round.getNumCartas(); j++) {
+			Carta carta = baraja.give();
+		}
+		res.add(new Carta(9,1,0,0));
+		res.add(new Carta(9,2,0,0));
+		res.add(new Carta(9,3,0,0));
+		res.add(new Carta(9,4,0,0));
+		res.add(new Carta(10,1,0,0));
+		res.add(new Carta(10,2,0,0));
+		res.add(new Carta(10,3,0,0));
+		res.add(new Carta(10,4,0,0));
+		
+		return res;
+	}
+
 	public void playGame() {
 		for (int i = 0; i < 10; i++) {
-			giveCards();
 			run();
 		}
 		setGameWinner();
 	}
 
 	private void giveRound() {
+		int i = 0;
 		for (ObjectOutputStream outS : out) {
 			try {
 				outS.writeInt(round.getNumRound());
 				outS.flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				
 			}
+			i++;
 		}
 	}
 

@@ -30,7 +30,7 @@ public class Player extends Round {
 		isDescartes = false;
 		isBaraja = false;
 		descartado = false;
-		resguardo = new ResguardoOverlay();
+		resguardo = new ResguardoOverlay(numRound);
 		bajadaList = new ArrayList<>();
 		initBajadaList();
 	}
@@ -38,7 +38,7 @@ public class Player extends Round {
 	private void initBajadaList() {
 		for (int i = 0; i < 4; i++) {
 			if (i == turno) {
-				bajadaList.add(turno, new Bajada(229,270));
+				bajadaList.add(turno, new Bajada(numRound, 229,270));
 			} else {
 				bajadaList.add(null);
 			}
@@ -158,6 +158,7 @@ public class Player extends Round {
 		for (int i = 0; i < bajadaList.size(); i++) {
 			Bajada b = bajadaList.get(i);
 			if (b != null) {
+				b.updateRonda(numRound);
 				switch (i) {
 				case 0:
 					b.setXY(240, 41);
@@ -235,7 +236,7 @@ public class Player extends Round {
 	}
 
 	public boolean canBajarse() {
-		return bajadaList.get(turno).getCanBajarse();
+		return bajadaList.get(turno) != null && bajadaList.get(turno).getCanBajarse();
 	}
 
 	public void setListBajada(ArrayList<Bajada> mino) {
@@ -248,8 +249,11 @@ public class Player extends Round {
 
 	public void update() {
 		points = 0;
-		resguardo = new ResguardoOverlay();
+		resguardo = new ResguardoOverlay(numRound);
 		mano = new Mano();
+		isDescartes = false;
+		isBaraja = false;
+		descartado = false;
 		resguardo.updateTablero(numRound);
 		bajadaList = new ArrayList<>();
 		initBajadaList();

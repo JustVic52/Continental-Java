@@ -12,24 +12,28 @@ import java.util.Map;
 
 import gameDynamics.Round;
 
-public class Bajada extends Round implements Serializable {
+public class Bajada implements Serializable {
 	
 	private static final long serialVersionUID = 2593544615184734293L;
 	
 	private List<List<Carta>> slots, slotsBajados;
 	private Map<List<Carta>, Rectangle> hitboxList, addHitbox;
-	boolean bajado = false;
+	boolean bajado;
 	int[] palos;
 	private int x, y;
 	private boolean added, canBajarse, dragged = false;
+	private Round round;
 	
-	public Bajada(int xPos, int yPos) {
+	public Bajada(int numRound, int xPos, int yPos) {
 		x = xPos;
 		y = yPos;
+		bajado = false;
 		slots = new ArrayList<>();
 		slotsBajados = new ArrayList<>();
 		hitboxList = new HashMap<>();
 		addHitbox = new HashMap<>();
+		round = new Round();
+		round.setNumRound(numRound);
 	}
 	
 	public void draw(Graphics g, BufferedImage img, BufferedImage marco, BufferedImage marcoAdd, BufferedImage marcoClipped) {
@@ -65,12 +69,12 @@ public class Bajada extends Round implements Serializable {
 			if (canBeTrio(cartas)) { numTrios++; }
 			if (canBeEscalera(cartas)) { numEscaleras++; }
 		}
-		if (numTrios == getRoundTrios() && numEscaleras == getRoundEscaleras()) {
+		if (numTrios == round.getRoundTrios() && numEscaleras == round.getRoundEscaleras()) {
 			slots.clear();
 			slots = bajada;
 			canBajarse = true;
 			return true;
-		}
+		} else { canBajarse = false; }
 		return false;
 	}
 	
@@ -132,6 +136,7 @@ public class Bajada extends Round implements Serializable {
 
 	public void bajarse() {
 		slotsBajados = slots;
+		bajado = true;
 		makeHitboxes();
 		positionCards();
 	}
@@ -145,9 +150,9 @@ public class Bajada extends Round implements Serializable {
 			width = 22 * (cA.size() - 1) + 74;
 			hitboxList.put(cA, new Rectangle(xPos, yPos, width, height));
 			addHitbox.put(cA, new Rectangle(xPos - 16, yPos, 16, height));
-			if (getRoundEscaleras() > 0) {
+			if (round.getRoundEscaleras() > 0) {
 				yPos += 57;
-			} else if (getRoundTrios() > 0) {
+			} else if (round.getRoundTrios() > 0) {
 				for (int j = 0; j < slotsBajados.size(); j++) {
 					Trio trio = new Trio();
 					if (trio.canBeATrio(cA)) {
@@ -229,9 +234,14 @@ public class Bajada extends Round implements Serializable {
 
 	private void add(List<Carta> cA, Carta selection, int i) {
 		Trio trio = new Trio();
-		boolean silksong = trio.canBeATrio(cA);
+		Escalera escalera = new Escalera();
 		cA.add(i + 1, selection);
-		if (i >= 0 && !cA.get(i + 1).isComodin() && cA.get(i).isComodin() && !(silksong && cA.size() != 5)) { cA.remove(i); }
+		if (trio.canBeAdded(cA, i)) {
+			cA = trio.getTrio();
+		}
+		else if (escalera.canBeAdded(cA, i)) {
+			cA = escalera.getEscalera();
+		}
 		for (List<Carta> aux : slotsBajados) {
 			if (cA == aux) {
 				aux = cA;
@@ -271,5 +281,11 @@ public class Bajada extends Round implements Serializable {
 	
 	public String toString() {
 		return slotsBajados.toString();
+	}
+
+	public void updateRonda(int numRound) {
+		if (numRound != round.getNumRound()) {
+			round.setNumRound(numRound);
+		}
 	}
 }

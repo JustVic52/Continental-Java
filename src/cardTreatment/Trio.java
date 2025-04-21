@@ -54,11 +54,14 @@ public class Trio {
 	
 	public boolean canBeAdded(List<Carta> aux, int i) {
 		if (aux.size() <= 4) { return canBeATrio(aux); }
-		if (aux.size() == 5 && i >= 0 && aux.get(i).isComodin()) {
-			aux.remove(i);
-			return canBeATrio(aux);
+		if (i >= 0 && aux.get(i).isComodin()) {
+			if (aux.size() == 5) {
+				Carta temp = aux.remove(i);
+				if (canBeATrio(aux)) return true;
+				else aux.add(i, temp);
+			}
 		}
-		return false;
+		return canBeATrio(aux);
 	}
 	
 	public String toString() {
@@ -76,5 +79,19 @@ public class Trio {
 
 	public List<Carta> getTrio() {
 		return trio;
+	}
+	
+	public static void main(String[] args) {
+		
+		ArrayList<Carta> aux = new ArrayList<>();
+		aux.add(new Carta(10, 3, 100,100));
+		aux.add(new Carta(10, 2, 100,100));
+		aux.add(new Carta(100,100));
+		aux.add(new Carta(10, 1, 100,100));
+//		aux.add(new Carta(100,100));
+		Trio trio = new Trio();
+		System.out.println(aux);
+		System.out.println(trio.canBeAdded(aux, 2));
+		
 	}
 }

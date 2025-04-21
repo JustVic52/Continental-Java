@@ -1,11 +1,15 @@
 package gameDynamics;
 
-public class Round {
+import java.io.Serializable;
+
+public class Round implements Serializable {
+	
+	private static final long serialVersionUID = 7979117387072463113L;
 	
 	private int numRound, trios, escaleras, numCartas, cartasMin;
 	
 	public Round() {
-		numRound = 1;
+		numRound = 2;
 		setRound(numRound);
 	}
 	
@@ -37,6 +41,11 @@ public class Round {
 			res += (tri == 1) ? "1 Trío." : tri + " Tríos.";
 		}
 		return res;
+	}
+	
+	public void setNumRound(int num) {
+		numRound = num;
+		setRound(num);
 	}
 
 	private void setRound(int num) {

@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
 import cardTreatment.Bajada;
 import cardTreatment.Carta;
@@ -16,7 +15,7 @@ public class Client extends Thread {
 	private Player player;
 	private final Socket socket;
 	private String nombre = "";
-	private boolean endRound = false;
+	private boolean endRound = false, end = false;
 	private boolean yourTurn = false;
 	private int numRound = 1;
 	ObjectOutputStream out;
@@ -30,15 +29,14 @@ public class Client extends Thread {
 	@Override
 	public void run() {
 		try {
-			socket.setKeepAlive(true);
 			//creación y obtención del player.
 			out = new ObjectOutputStream(socket.getOutputStream());
+			out.flush();
 			in = new ObjectInputStream(socket.getInputStream());
 			player = new Player(in.readInt());
 			//lógica del juego
 			for (int i = 0; i < 10; i++) {
 				//Recibir cartas
-				recieveMano();
 				//jugar ronda
 				runGame();
 			}			
@@ -52,7 +50,6 @@ public class Client extends Thread {
 	
 	private void recieveRound() {
 		try {
-			System.out.println("soy el cliente " + player.getTurno());
 			numRound = in.readInt();
 			player.setNumRound(numRound);
 		} catch (IOException e) {
@@ -61,14 +58,15 @@ public class Client extends Thread {
 	}
 
 	private void runGame() {
-		int action = 0;
+		int action = 1;
 		ArrayList<Carta> aux = new ArrayList<>();
 		ArrayList<Bajada> aux2 = new ArrayList<>();
-		boolean end = false;
 		endRound = false;
+		recieveMano();
+		recieveRound();
 		try {
 			while (!endRound) {
-				recieveRound();
+				end = false;
 				yourTurn = in.readBoolean();	
 				player.setYourTurn(yourTurn);
 				if (yourTurn) {
@@ -90,7 +88,7 @@ public class Client extends Thread {
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
 					//fase 2: bajarse (opcional)
-					boolean bajarse = false, descartado = false, isBajado = player.getBajada().isBajado();
+					boolean bajarse = false, descartado = false, isBajado = false;
 					while (!descartado && !bajarse) {
 						bajarse = player.canBajarse();
 						descartado = player.isDescartado();
@@ -106,7 +104,7 @@ public class Client extends Thread {
 						out.writeObject(player.getListBajada());
 						out.flush();
 					} else {
-						isBajado = player.getBajada().isBajado();
+						isBajado = player.getBajada() != null && player.getBajada().isBajado();
 						out.writeBoolean(isBajado);
 						out.flush();
 						isBajado = in.readBoolean();
@@ -129,7 +127,6 @@ public class Client extends Thread {
 					end = player.getMano().isEmpty();
 					out.writeBoolean(end);
 					out.flush();
-					end = in.readBoolean();
 				} else {
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
@@ -137,7 +134,7 @@ public class Client extends Thread {
 					player.setListBajada(aux2);
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-					end = in.readBoolean();
+					recieveEnd();
 				}
 				yourTurn = false;
 				endRound = end;
@@ -148,6 +145,22 @@ public class Client extends Thread {
 			e.printStackTrace();
 		}
 		player.update();
+	}
+	
+	private void recieveEnd() {
+		boolean recieved = false;
+		int cont = 0;
+		try {
+			recieved = false;
+			while (!recieved) {
+				end = in.readBoolean();
+				out.writeBoolean(end);
+				out.flush();
+				boolean temp = in.readBoolean();
+				cont++;
+				recieved = temp;
+			}
+		} catch (IOException e) {} 
 	}
 
 	private void recieveCard() {
@@ -162,16 +175,31 @@ public class Client extends Thread {
 	}
 
 	private void recieveMano() {
-		try {
-			player.setMano((ArrayList<Carta>) in.readObject());
-		} catch (IOException e) {
+		boolean recieved = false, temp = false;
+		ArrayList<Carta> aux = null;
+		int cont = 0;
+		while (!recieved && cont < 5) {
 			try {
-				socket.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+				recieved = false;
+				aux = null;
+				aux = (ArrayList<Carta>) in.readObject();
+				temp = aux != null;
+				if (temp) player.setMano(aux);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			catch (IOException e) { temp = aux != null; } 
+			catch (ClassNotFoundException e) {}
+			try {
+				if (!temp) System.out.println("la mano es nula");
+				else {
+					System.out.println("la mano NO ES NULA");
+					if (player.getMano() != aux) player.setMano(aux);
+				}
+				out.writeBoolean(temp);
+				out.flush();
+			} 
+			catch (IOException e1) {}
+			cont++;
+			recieved = temp;
 		}
 	}
 

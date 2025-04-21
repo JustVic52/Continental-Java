@@ -93,8 +93,11 @@ public class Escalera {
 	}
 
 	public boolean canBeAdded(List<Carta> aux, int i) {
-		if (i >= 0 && aux.get(i + 1).isComodin()) { ;return canBeEscalera(aux); }
-		if (i >= 0 && aux.get(i).isComodin()) { aux.remove(i); }
+		if (i >= 0 && aux.get(i + 1).isComodin()) { return canBeEscalera(aux); }
+		if (i >= 0 && aux.get(i).isComodin()) {
+			if (aux.size() > 13) aux.remove(i);
+			else if (!canBeEscalera(aux)) aux.remove(i);
+		}
 		return canBeEscalera(aux);
 	}
 	
@@ -114,15 +117,16 @@ public class Escalera {
 //	public static void main(String[] args) {
 //		
 //		ArrayList<Carta> aux = new ArrayList<>();
-//		aux.add(new Carta(10, 3, 100,100));
+//		aux.add(new Carta(5, 3, 100,100));
+//		aux.add(new Carta(6, 3, 100,100));
+//		aux.add(new Carta(7, 3, 100,100));
 //		aux.add(new Carta(100,100));
-//		aux.add(new Carta(12, 3, 100,100));
-//		aux.add(new Carta(13, 3, 100,100));
-//		aux.add(new Carta(100,100));
-//		aux.add(new Carta(3,1,100,100));
+//		aux.add(new Carta(9, 3, 100,100));
+//		aux.add(new Carta(2, 3,100,100));
 //		Escalera escalera = new Escalera();
 //		System.out.println(aux);
-//		System.out.println(escalera.canBeEscalera(aux));
+//		System.out.println(escalera.canBeAdded(aux, 3));
+//		System.out.println(escalera.getEscalera());
 //		
 //	}
 }

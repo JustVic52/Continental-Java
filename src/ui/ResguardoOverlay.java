@@ -21,8 +21,8 @@ public class ResguardoOverlay extends Round {
 	private static final int UPPER_Y = 37, MIDDLE_Y = 154, DOWN_Y = 271;
 	private static final int ESCALERA_X = 215, TRIO_X = 935, ROUND8_X = 581;	
 
-	public ResguardoOverlay() {
-		numRound = 1;
+	public ResguardoOverlay(int num) {
+		numRound = num;
 		slots = new ArrayList<>();
 		cancel = new GameButton(1182, 481, 2);
 		loadTablero();
@@ -54,6 +54,7 @@ public class ResguardoOverlay extends Round {
 	}
 	
 	private void loadSlots() {
+		slots.clear();
 		switch (numRound) {
 		case 1:
 			slots.add(new Slot[13]);

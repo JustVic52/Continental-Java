@@ -87,6 +87,7 @@ public class Join extends State implements Statemethods {
 					Socket s = null;
 					try {
 						s = new Socket(InetAddress.getLocalHost(), 6020);
+						s.setKeepAlive(true);
 						client = new Client(s, texto.getTexto());
 						client.start();
 						Gamestate.state = Gamestate.PLAYING;

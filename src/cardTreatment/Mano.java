@@ -233,9 +233,11 @@ public class Mano {
 	}
 
 	public void setMano(ArrayList<Carta> m) {
-		mano = m;
-		for (Carta c : mano) {
-			addToSlot(c);
+		if (m != null) {
+			mano = m;
+			for (Carta c : mano) {
+				addToSlot(c);
+			}
 		}
 	}
 

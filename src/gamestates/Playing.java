@@ -38,7 +38,7 @@ public class Playing extends State implements Statemethods {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
 		radio = new Radio();
-		resguardo = new ResguardoOverlay();
+		resguardo = new ResguardoOverlay(1);
 		bajadas = new ArrayList<>();
 		baraja = new Baraja();
 		descartes = new Descartes();
@@ -167,13 +167,13 @@ public class Playing extends State implements Statemethods {
 		
 		if (resguardo.isActivated()) {
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-				if (numActions == 1 && !bajadas.get(player.getTurno()).isBajado() && bajadas.get(player.getTurno()).canBajarse(resguardo.getCartas())) {
+				if (numActions == 1 && !player.getBajada().isBajado() && player.getBajada().canBajarse(resguardo.getCartas())) {
+					justBajado = 1;
 					buttons[1].setIndex(2);
 					bajadas.get(player.getTurno()).bajarse();
 					bajadas.get(player.getTurno()).setBajado(true);
 					resguardo.bajarse();
 					player.getFullMano().bajarse(bajadas.get(player.getTurno()));
-					justBajado = 1;
 				} else { buttons[1].setIndex(0); }
 			} else { buttons[1].setIndex(0); }
 			if (resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
@@ -272,7 +272,7 @@ public class Playing extends State implements Statemethods {
 		
 		if (player.isDescartado()) {
 			numActions = 0;
-			if (justBajado == 1) justBajado = 0;
+			justBajado = 0;
 			player.setDescartado(false);
 		}
 	}
