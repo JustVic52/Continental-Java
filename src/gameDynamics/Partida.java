@@ -24,6 +24,7 @@ public class Partida {
 	private ArrayList<Bajada> bajadas = new ArrayList<>();
 	List<ObjectOutputStream> out;
 	List<ObjectInputStream> in;
+	ArrayList<Integer> pointList;
 	
 	public Partida(List<Socket> sp, ArrayList<ObjectOutputStream> listaOut) {
 		round = new Round();
@@ -32,13 +33,15 @@ public class Partida {
 		descartes = new Descartes();
 		numJugadores = sp.size();
 		endRound = false;
-		crearOutIn(listaOut);
+		pointList = new ArrayList<>();
+		crearOutInPoints(listaOut);
 	}
 	
-	private void crearOutIn(ArrayList<ObjectOutputStream> listaOut) {
+	private void crearOutInPoints(ArrayList<ObjectOutputStream> listaOut) {
 		out = listaOut;
 		in = new ArrayList<>();
 		for (int i = 0; i < numJugadores; i++) {
+			pointList.add(0);
 			try {
 				in.add(new ObjectInputStream(socketPlayers.get(i).getInputStream()));
 			} catch (IOException e) {
@@ -53,6 +56,7 @@ public class Partida {
 		for (int i = 0; i < numJugadores; i++) {
 			bajadas.add(new Bajada(round.getNumRound(), 0, 0));
 		}
+		updateBajada();
 		endRound = false;
 		boolean end = false;
 		ArrayList<Carta> aux = new ArrayList<>();
@@ -78,11 +82,10 @@ public class Partida {
 					descartes.setDescartes(aux);
 					updateDescartes();
 					//fase 2: bajarse (opcional)
-					boolean descartado = inS.readBoolean();
-					if (descartado) {
+					boolean bajarse = inS.readBoolean();
+					if (bajarse) {
 						outS.writeBoolean(true);
 						outS.flush();
-						bajadas = (ArrayList<Bajada>) inS.readObject();
 					} else {
 						outS.writeBoolean(false);
 						outS.flush();
@@ -90,20 +93,28 @@ public class Partida {
 						if (isBajado) {
 							outS.writeBoolean(true);
 							outS.flush();
-							bajadas = (ArrayList<Bajada>) inS.readObject();
 						} else {
 							outS.writeBoolean(false);
 							outS.flush();
 						}
 					}
-					updateBajada();
-					//fase 3: descartar
-					aux = (ArrayList<Carta>) inS.readObject();
-					descartes.setDescartes(aux);
-					updateDescartes();
-					end = inS.readBoolean();
-					updateEnd(end, outS);
-					if (end) break;
+					boolean empty = inS.readBoolean();
+					updateEnd(empty, outS);
+					if (empty) {
+						end = inS.readBoolean();
+						updateEnd(end, outS);
+						if (end) break;
+					} else {
+						bajadas = (ArrayList<Bajada>) inS.readObject();
+						updateBajada();
+						//fase 3: descartar
+						aux = (ArrayList<Carta>) inS.readObject();
+						descartes.setDescartes(aux);
+						updateDescartes();
+						end = inS.readBoolean();
+						updateEnd(end, outS);
+						if (end) break;
+					}
 				} catch (IOException e) {
 					
 				} catch (ClassNotFoundException e) {
@@ -112,11 +123,25 @@ public class Partida {
 			}
 			endRound = end;
 		}
-//		countPoints();
+		countPoints();
+		try { Thread.sleep(5000); } catch (InterruptedException e) {}
 		round.updateRound();
 		descartes = new Descartes();
 		baraja = new Baraja();
 		bajadas = new ArrayList<>();
+	}
+
+	private void givePlayers() {
+		int i = 0;
+		for (ObjectOutputStream outS : out) {
+			try {
+				outS.writeInt(numJugadores);
+				outS.flush();
+			} catch (IOException e) {
+				
+			}
+			i++;
+		}
 	}
 
 	private void updateEnd(boolean end, ObjectOutputStream outS2) {
@@ -177,10 +202,10 @@ public class Partida {
 	private void giveCards() {
 		List<Carta> cartas = new ArrayList<>();
 		for (ObjectOutputStream outS : out) {
-//			cartas = makePersonalizedCards();
 			for (int j = 0; j < round.getNumCartas(); j++) {
 				cartas.add(baraja.give());
 			}
+//			cartas = makePersonalizedCards();
 			try {
 				outS.writeObject(cartas);
 				outS.flush();
@@ -192,9 +217,6 @@ public class Partida {
 
 	private List<Carta> makePersonalizedCards() {
 		List<Carta> res = new ArrayList<>();
-		for (int j = 0; j < round.getNumCartas(); j++) {
-			Carta carta = baraja.give();
-		}
 		res.add(new Carta(9,1,0,0));
 		res.add(new Carta(9,2,0,0));
 		res.add(new Carta(9,3,0,0));
@@ -202,17 +224,24 @@ public class Partida {
 		res.add(new Carta(10,1,0,0));
 		res.add(new Carta(10,2,0,0));
 		res.add(new Carta(10,3,0,0));
-		res.add(new Carta(10,4,0,0));
+		res.add(new Carta(10,3,0,0));
+		res.add(new Carta(10,3,0,0));
+//		res.add(new Carta(10,4,0,0));
 		
 		return res;
 	}
 
 	public void playGame() {
+		//número de jugadores
+		givePlayers();
+		//lógica del juego
 		for (int i = 0; i < 10; i++) {
+			//damos cartas
 			giveCards();
+			//jugamos ronda
 			run();
 		}
-		setGameWinner();
+		//Decimos lo del winner y tal
 	}
 
 	private void giveRound() {
@@ -221,19 +250,25 @@ public class Partida {
 			try {
 				outS.writeInt(round.getNumRound());
 				outS.flush();
-			} catch (IOException e) {
-				
-			}
+			} catch (IOException e) {}
 			i++;
 		}
 	}
 
-	private void setGameWinner() {
-		
-	}
-
 	private void countPoints() {
-		
+		try {
+			for (int i = 0; i < numJugadores; i++) {
+				ObjectInputStream inS = in.get(i);
+				pointList.remove(i);
+				int points = inS.readInt();
+				pointList.add(i, points);
+			}
+			for (ObjectOutputStream outS : out) {
+				outS.writeObject(pointList);
+				outS.flush();
+			}
+		}
+		catch (IOException e) {}
 	}
 
 	public Baraja getBaraja() {

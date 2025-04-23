@@ -24,6 +24,8 @@ public class LoadSave {
 	public static final String COMBO_BUTTONS = "comboBox_atlas.png";
 	public static final String URM_BUTTONS = "urm_buttons.png";
 	public static final String MARCO_CUADRO = "marco_cuadrotexto.png";
+	public static final String TABLEROPOINTS = "tableropoints.png";
+	public static final String WIN_LOSE_BANNER = "win_lose_banner.png";
 
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

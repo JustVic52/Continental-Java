@@ -45,7 +45,7 @@ public class CuadroTexto {
 			}
 		}
 		if (texto != null) {
-			g.drawString(texto, x + 1, y + height + 10);
+			g.drawString(texto, x + 1, y + height + 11);
 		}
 	}
 	

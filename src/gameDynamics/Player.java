@@ -13,15 +13,16 @@ import ui.ResguardoOverlay;
 
 public class Player extends Round {
 	
-	private int points, turno, ciclo, numRound = 1;
+	private int turno, ciclo, numRound = 1;
 	private Mano mano;
 	private boolean roundWinner, gameWinner, yourTurn = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
 	private ResguardoOverlay resguardo;
 	private ArrayList<Bajada> bajadaList;
+	private ArrayList<Integer> pointList;
+	private ArrayList<String> nameList;
 	
 	public Player(int t) {
-		points = 0;
 		turno = t;
 		ciclo = 1;
 		mano = new Mano();
@@ -32,6 +33,8 @@ public class Player extends Round {
 		descartado = false;
 		resguardo = new ResguardoOverlay(numRound);
 		bajadaList = new ArrayList<>();
+		pointList = new ArrayList<>();
+		nameList = new ArrayList<>();
 		initBajadaList();
 	}
 	
@@ -42,6 +45,8 @@ public class Player extends Round {
 			} else {
 				bajadaList.add(null);
 			}
+			pointList.add(0);
+			nameList.add("");
 		}
 	}
 
@@ -55,11 +60,6 @@ public class Player extends Round {
 	
 	public int getTurno() {
 		return turno;
-	}
-	
-	public void discard(Carta carta) {
-		boolean res = false;
-		mano.discard(res);
 	}
 	
 	public void take(Carta carta) {
@@ -86,14 +86,6 @@ public class Player extends Round {
 		}
 	}
 	
-	public void count() {
-		if (!roundWinner) {
-			for (int i = 0; i < mano.getSize(); i++) {
-				points += mano.getMano().get(i).getValue();
-			}
-		}
-	}
-	
 	public boolean getRoundWinner() {
 		return roundWinner;
 	}
@@ -111,7 +103,7 @@ public class Player extends Round {
 	}
 	
 	public int getPoints() {
-		return points;
+		return pointList.get(turno);
 	}
 
 	public Mano getFullMano() {
@@ -136,10 +128,6 @@ public class Player extends Round {
 	
 	public Carta getSelection() {
 		return mano.getSelection();
-	}
-	
-	public void setPoints(int p) {
-		points = p;
 	}
 
 	public Carta getUltimaCarta() {
@@ -248,7 +236,6 @@ public class Player extends Round {
 	}
 
 	public void update() {
-		points = 0;
 		resguardo = new ResguardoOverlay(numRound);
 		mano = new Mano();
 		isDescartes = false;
@@ -258,4 +245,24 @@ public class Player extends Round {
 		bajadaList = new ArrayList<>();
 		initBajadaList();
 	}
+
+	public void countPoints() {
+		int points = pointList.remove(turno);
+		if (roundWinner) {
+			points -= numRound * 10;
+		} else {
+			for (Carta c : getMano()) {
+				points += c.getValue();
+			}
+		}
+		pointList.add(turno, points);
+	}
+
+	public ArrayList<String> getNameList() { return nameList; }
+	
+	public void setNameList(ArrayList<String> aux) { nameList = aux; }
+	
+	public ArrayList<Integer> getPointList() { return pointList; }
+	
+	public void setPointList(ArrayList<Integer> aux) { pointList = aux; }
 }

@@ -25,7 +25,7 @@ public class Host extends State implements Statemethods {
 	
 	public Host(Game g) {
 		super(g);
-		texto = new CuadroTexto(604, 312, 196, 19, 14);
+		texto = new CuadroTexto(604, 312, 196, 19, 15);
 		loadButtons();
 		loadBackground();
 		background = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);

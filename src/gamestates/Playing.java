@@ -14,6 +14,7 @@ import cardTreatment.Slot;
 import gameDynamics.Player;
 import mainGame.Game;
 import ui.GameButton;
+import ui.PointsOverlay;
 import ui.ResguardoOverlay;
 import utilz.Constants;
 import utilz.LoadSave;
@@ -23,11 +24,12 @@ public class Playing extends State implements Statemethods {
 	
 	//Playing necesita el player, los botones de retake y bajar, el botón de pausa, y la radio
 
-	private BufferedImage tablero;
+	private BufferedImage tablero, fondo;
 	private Player player = null;
 	private GameButton[] buttons = new GameButton[2];
 	private Radio radio;
 	private ResguardoOverlay resguardo;
+	private PointsOverlay pointDisplay;
 	private Slot slot = null;
 	private int posI = 0, posJ = 0, numActions = 0, justBajado = 0;
 	private ArrayList<Bajada> bajadas;
@@ -37,8 +39,10 @@ public class Playing extends State implements Statemethods {
 	public Playing(Game g) {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
+		fondo = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
 		radio = new Radio();
 		resguardo = new ResguardoOverlay(1);
+		pointDisplay = new PointsOverlay();
 		bajadas = new ArrayList<>();
 		baraja = new Baraja();
 		descartes = new Descartes();
@@ -64,6 +68,8 @@ public class Playing extends State implements Statemethods {
 			if (descartes != player.getFullMano().getDescartes()){ descartes = player.getFullMano().getDescartes(); }
 			if (bajadas != player.getListBajada()) { bajadas = player.getListBajada(); }
 			if (resguardo != player.getResguardo()) { resguardo = player.getResguardo(); }
+			if (pointDisplay.getPointList() != player.getPointList()) { pointDisplay.setPointList(player.getPointList()); }
+			if (pointDisplay.getNameList() != player.getNameList()) { pointDisplay.setNameList(player.getNameList()); }
 			
 			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 			if (!resguardo.isActivated()) { buttons[0].draw(g); }
@@ -74,6 +80,17 @@ public class Playing extends State implements Statemethods {
 			}
 			resguardo.draw(g, player.getFullMano().getImage());
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());
+			if (Join.getClient() != null) {
+				if (Join.getClient().isRoundOver()) {
+					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+					pointDisplay.draw(g, player.getRoundWinner());
+				}
+			} else {
+				if (Host.getServer().getClient().isRoundOver()) {
+					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+					pointDisplay.draw(g, player.getRoundWinner());
+				}
+			}
 		}
 	}
 
@@ -130,7 +147,7 @@ public class Playing extends State implements Statemethods {
 		}
 		
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-			if (!bajadas.get(player.getTurno()).isBajado() && bajadas.get(player.getTurno()).canBajarse(resguardo.getCartas())) {
+			if (player.getBajada() != null && !player.getBajada().isBajado() && player.getBajada().canBajarse(resguardo.getCartas())) {
 				buttons[1].setIndex(3);
 			} else { buttons[1].setIndex(1); }
 		}
@@ -167,13 +184,13 @@ public class Playing extends State implements Statemethods {
 		
 		if (resguardo.isActivated()) {
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
-				if (numActions == 1 && !player.getBajada().isBajado() && player.getBajada().canBajarse(resguardo.getCartas())) {
+				if (numActions == 1 && player.getBajada() != null && !player.getBajada().isBajado() && player.getBajada().canBajarse(resguardo.getCartas())) {
 					justBajado = 1;
 					buttons[1].setIndex(2);
-					bajadas.get(player.getTurno()).bajarse();
-					bajadas.get(player.getTurno()).setBajado(true);
+					player.getBajada().bajarse();
+					player.getBajada().setBajado(true);
 					resguardo.bajarse();
-					player.getFullMano().bajarse(bajadas.get(player.getTurno()));
+					player.getFullMano().bajarse(player.getBajada());
 				} else { buttons[1].setIndex(0); }
 			} else { buttons[1].setIndex(0); }
 			if (resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {

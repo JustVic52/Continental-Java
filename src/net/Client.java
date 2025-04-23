@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import cardTreatment.Bajada;
 import cardTreatment.Carta;
@@ -15,7 +16,7 @@ public class Client extends Thread {
 	private Player player;
 	private final Socket socket;
 	private String nombre = "";
-	private boolean endRound = false, end = false;
+	private boolean endRound = false, end = false, roundOver = false;
 	private boolean yourTurn = false;
 	private int numRound = 1;
 	ObjectOutputStream out;
@@ -34,6 +35,8 @@ public class Client extends Thread {
 			out.flush();
 			in = new ObjectInputStream(socket.getInputStream());
 			player = new Player(in.readInt());
+			//número de jugadores
+			recievePlayers();
 			//lógica del juego
 			for (int i = 0; i < 10; i++) {
 				//Recibir cartas
@@ -59,10 +62,13 @@ public class Client extends Thread {
 	}
 
 	private void runGame() {
+		roundOver = false;
 		int action = 1;
 		ArrayList<Carta> aux = new ArrayList<>();
 		ArrayList<Bajada> aux2 = new ArrayList<>();
 		endRound = false;
+		try { aux2 = (ArrayList<Bajada>) in.readObject(); } catch (ClassNotFoundException | IOException e) {}
+		player.setListBajada(aux2);
 		recieveRound();
 		try {
 			while (!endRound) {
@@ -101,8 +107,6 @@ public class Client extends Thread {
 							isBajado = player.getBajada().isBajado();
 							descartado = player.isDescartado();
 						}
-						out.writeObject(player.getListBajada());
-						out.flush();
 					} else {
 						isBajado = player.getBajada() != null && player.getBajada().isBajado();
 						out.writeBoolean(isBajado);
@@ -110,31 +114,44 @@ public class Client extends Thread {
 						isBajado = in.readBoolean();
 						if (isBajado) {
 							while(!descartado) {
-								descartado = player.isDescartado();
+								descartado = player.isDescartado() || player.getMano().isEmpty();
 							}
-							out.writeObject(player.getListBajada());
-							out.flush();
 						}
 					}
-					aux2 = (ArrayList<Bajada>) in.readObject();
-					player.setListBajada(aux2);
-					//fase 3: descartar
-					while (!descartado) { descartado = player.isDescartado(); }
-					out.writeObject(player.getFullMano().getDescartes().getDescartes());
+					out.writeBoolean(player.getMano().isEmpty());
 					out.flush();
-					aux = (ArrayList<Carta>) in.readObject();
-					player.setFullDescartes(aux);
-					end = player.getMano().isEmpty();
-					out.writeBoolean(end);
-					out.flush();
+					if (player.getMano().isEmpty()) {
+						end = true;
+						out.writeBoolean(end);
+						out.flush();
+					} else {
+						out.writeObject(player.getListBajada());
+						out.flush();
+						aux2 = (ArrayList<Bajada>) in.readObject();
+						player.setListBajada(aux2);
+						//fase 3: descartar
+						while (!descartado) { descartado = player.isDescartado(); }
+						out.writeObject(player.getFullMano().getDescartes().getDescartes());
+						out.flush();
+						aux = (ArrayList<Carta>) in.readObject();
+						player.setFullDescartes(aux);
+						end = player.getMano().isEmpty();
+						out.writeBoolean(end);
+						out.flush();
+					}
 				} else {
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
-					aux2 = (ArrayList<Bajada>) in.readObject();
-					player.setListBajada(aux2);
-					aux = (ArrayList<Carta>) in.readObject();
-					player.setFullDescartes(aux);
-					end = in.readBoolean();
+					boolean temp = in.readBoolean();
+					if (temp) {
+						end = in.readBoolean();
+					} else {
+						aux2 = (ArrayList<Bajada>) in.readObject();
+						player.setListBajada(aux2);
+						aux = (ArrayList<Carta>) in.readObject();
+						player.setFullDescartes(aux);
+						end = in.readBoolean();
+					}
 				}
 				yourTurn = false;
 				endRound = end;
@@ -144,7 +161,35 @@ public class Client extends Thread {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		player.setRoundWinner(player.getMano().isEmpty());
+		exchangePoints();
+		roundOver = true;
+		try { Thread.sleep(5000); } catch (InterruptedException e) {}
 		player.update();
+	}
+
+	private void recievePlayers() {
+		try {
+			int numJugadores = in.readInt();
+			ArrayList<Integer> aux = new ArrayList<>();
+			for (int i = 0; i < numJugadores; i++) {
+				aux.add(0);
+			}
+			player.setPointList(aux);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void exchangePoints() {
+		ArrayList<Integer> aux = new ArrayList<>();
+		try {
+			player.countPoints();
+			out.writeInt(player.getPoints());
+			out.flush();
+			aux = (ArrayList<Integer>) in.readObject();
+			player.setPointList(aux);
+		} catch (IOException | ClassNotFoundException e) { e.printStackTrace(); }
 	}
 
 	private void recieveCard() {
@@ -180,4 +225,6 @@ public class Client extends Thread {
 	}
 	
 	public String getNombre() { return nombre; }
+	
+	public boolean isRoundOver() { return roundOver; }
 }
