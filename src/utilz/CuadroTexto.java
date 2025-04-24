@@ -82,6 +82,10 @@ public class CuadroTexto {
 	public boolean isActive() {
 		return active;
 	}
+	
+	public Rectangle getHitbox() {
+		return hitbox;
+	}
 
 	public void setActive(boolean active) {
 		this.active = active;

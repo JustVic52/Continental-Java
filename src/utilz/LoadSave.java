@@ -21,6 +21,7 @@ public class LoadSave {
 	public static final String MENU_BACKGROUND = "background_menu.png";
 	public static final String LOGO = "logo.png";
 	public static final String HOST_OVERLAY = "host_background.png";
+	public static final String JOIN_OVERLAY = "join_background.png";
 	public static final String COMBO_BUTTONS = "comboBox_atlas.png";
 	public static final String URM_BUTTONS = "urm_buttons.png";
 	public static final String MARCO_CUADRO = "marco_cuadrotexto.png";

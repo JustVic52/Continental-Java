@@ -9,7 +9,7 @@ public class Round implements Serializable {
 	private int numRound, trios, escaleras, numCartas, cartasMin;
 	
 	public Round() {
-		numRound = 2;
+		numRound = 10;
 		setRound(numRound);
 	}
 	
@@ -29,14 +29,36 @@ public class Round implements Serializable {
 	}
 	
 	public String sacarObjetivos() {
-		String res = "Objetivo: ";
+		String res = "Objetivo: \n";
 		int esc = escaleras;
 		int tri = trios;
 		if (esc > 0) {
 			res += (esc == 1) ? "1 Escalera" : esc + " Escaleras";
-			if (tri > 0) { res += " y "; }
+			if (tri > 0) { res += " y \n"; }
 			else { res += "."; }
 		}
+		if (tri > 0) {
+			res += (tri == 1) ? "1 Trío." : tri + " Tríos.";
+		}
+		System.out.println(res);
+		return res;
+	}
+	
+	public String sacarObjetivosEscaleras() {
+		String res = "";
+		int esc = escaleras;
+		int tri = trios;
+		if (esc > 0) {
+			res += (esc == 1) ? "1 Escalera" : esc + " Escaleras";
+			if (tri > 0) { res += " y \n"; }
+			else { res += "."; }
+		}
+		return res;
+	}
+	
+	public String sacarObjetivosTrios() {
+		String res = "";
+		int tri = trios;
 		if (tri > 0) {
 			res += (tri == 1) ? "1 Trío." : tri + " Tríos.";
 		}

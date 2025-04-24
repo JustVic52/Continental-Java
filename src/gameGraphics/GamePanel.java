@@ -44,10 +44,10 @@ public class GamePanel extends JPanel {
             fuente = fuente.deriveFont(Font.PLAIN, 18); // Ajustar tamaño y estilo
         } catch (IOException e) {
             e.printStackTrace();
-            fuente = new Font("Arial", Font.BOLD, 12); // Fuente por defecto si falla
+            fuente = new Font("Arial", Font.BOLD, 12);
         } catch (FontFormatException e) {
             e.printStackTrace();
-            fuente = new Font("Arial", Font.BOLD, 12); // Fuente por defecto si falla
+            fuente = new Font("Arial", Font.BOLD, 12);
         }
 		g.setFont(fuente);
 		game.render(g);

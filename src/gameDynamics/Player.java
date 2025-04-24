@@ -21,6 +21,7 @@ public class Player extends Round {
 	private ArrayList<Bajada> bajadaList;
 	private ArrayList<Integer> pointList;
 	private ArrayList<String> nameList;
+	private ArrayList<Boolean> turns;
 	
 	public Player(int t) {
 		turno = t;
@@ -35,10 +36,11 @@ public class Player extends Round {
 		bajadaList = new ArrayList<>();
 		pointList = new ArrayList<>();
 		nameList = new ArrayList<>();
-		initBajadaList();
+		turns = new ArrayList<>();
+		initLists();
 	}
 	
-	private void initBajadaList() {
+	private void initLists() {
 		for (int i = 0; i < 4; i++) {
 			if (i == turno) {
 				bajadaList.add(turno, new Bajada(numRound, 229,270));
@@ -47,6 +49,7 @@ public class Player extends Round {
 			}
 			pointList.add(0);
 			nameList.add("");
+			turns.add(false);
 		}
 	}
 
@@ -81,7 +84,7 @@ public class Player extends Round {
 	public void setNumRound(int rapiño) { numRound = rapiño; }
 	
 	public void roundWin() {
-		if (mano.getSize() == 0) {
+		if (getFullMano().isEmpty()) {
 			setRoundWinner(true);
 		}
 	}
@@ -243,7 +246,8 @@ public class Player extends Round {
 		descartado = false;
 		resguardo.updateTablero(numRound);
 		bajadaList = new ArrayList<>();
-		initBajadaList();
+		turns = new ArrayList<>();
+		initLists();
 	}
 
 	public void countPoints() {
@@ -265,4 +269,11 @@ public class Player extends Round {
 	public ArrayList<Integer> getPointList() { return pointList; }
 	
 	public void setPointList(ArrayList<Integer> aux) { pointList = aux; }
+	
+	public ArrayList<Boolean> getTurns() { return turns; }
+
+	public void setTurns(ArrayList<Boolean> aux3) {
+		turns = aux3;
+		setYourTurn(turns.get(turno));
+	}
 }

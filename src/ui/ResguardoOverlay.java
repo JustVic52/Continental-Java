@@ -142,12 +142,15 @@ public class ResguardoOverlay extends Round {
 				break;
 			case 8:
 				
-				if (ss.equals(aux.get(1)) || ss.equals(aux.get(3))) { x = TRIO_X; }
-				for (int i = 0; i < ss.length; i++) {
-					ss[i] = new Slot(x, y, true);
-					x += 80;
+				if (aux.size() > 1) {
+					if (ss.equals(aux.get(1)) || ss.equals(aux.get(3))) { x = TRIO_X; }
+					for (int i = 0; i < ss.length; i++) {
+						ss[i] = new Slot(x, y, true);
+						x += 80;
+					}
+					if (x == 1255 && y == UPPER_Y) { y = MIDDLE_Y; }
 				}
-				if (x == 1255 && y == UPPER_Y) { y = MIDDLE_Y; }
+				
 				break;
 			default:
 				

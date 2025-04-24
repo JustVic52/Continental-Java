@@ -37,6 +37,8 @@ public class Client extends Thread {
 			player = new Player(in.readInt());
 			//número de jugadores
 			recievePlayers();
+			//Nombres de los jugadores
+			recieveNames();
 			//lógica del juego
 			for (int i = 0; i < 10; i++) {
 				//Recibir cartas
@@ -52,6 +54,16 @@ public class Client extends Thread {
 		}
 	}
 	
+	private void recieveNames() {
+		ArrayList<String> aux = new ArrayList<>();
+		try {
+			out.writeObject(nombre);
+			out.flush();
+			aux = (ArrayList<String>) in.readObject();
+			player.setNameList(aux);
+		} catch (IOException | ClassNotFoundException e) { e.printStackTrace(); }
+	}
+
 	private void recieveRound() {
 		try {
 			numRound = in.readInt();
@@ -66,6 +78,7 @@ public class Client extends Thread {
 		int action = 1;
 		ArrayList<Carta> aux = new ArrayList<>();
 		ArrayList<Bajada> aux2 = new ArrayList<>();
+		ArrayList<Boolean> aux3 = new ArrayList<>();
 		endRound = false;
 		try { aux2 = (ArrayList<Bajada>) in.readObject(); } catch (ClassNotFoundException | IOException e) {}
 		player.setListBajada(aux2);
@@ -73,8 +86,9 @@ public class Client extends Thread {
 		try {
 			while (!endRound) {
 				end = false;
-				yourTurn = in.readBoolean();	
-				player.setYourTurn(yourTurn);
+				aux3 = (ArrayList<Boolean>) in.readObject();
+				player.setTurns(aux3);
+				yourTurn = player.isYourTurn();
 				if (yourTurn) {
 					//fase 1: robar
 					boolean baraja = false, descartes = false;
@@ -102,6 +116,7 @@ public class Client extends Thread {
 					out.writeBoolean(bajarse);
 					out.flush();
 					bajarse = in.readBoolean();
+					boolean temp = false;
 					if (bajarse) {
 						while(!isBajado && !descartado) {
 							isBajado = player.getBajada().isBajado();
@@ -113,16 +128,18 @@ public class Client extends Thread {
 						out.flush();
 						isBajado = in.readBoolean();
 						if (isBajado) {
-							while(!descartado) {
-								descartado = player.isDescartado() || player.getMano().isEmpty();
+							while(!descartado && !temp) {
+								descartado = player.isDescartado();
+								temp = player.getFullMano().isEmpty();
 							}
 						}
 					}
-					out.writeBoolean(player.getMano().isEmpty());
+					temp = player.getFullMano().isEmpty();
+					out.writeBoolean(temp);
 					out.flush();
-					if (player.getMano().isEmpty()) {
+					if (temp) {
 						end = true;
-						out.writeBoolean(end);
+						out.writeBoolean(true);
 						out.flush();
 					} else {
 						out.writeObject(player.getListBajada());
@@ -135,7 +152,7 @@ public class Client extends Thread {
 						out.flush();
 						aux = (ArrayList<Carta>) in.readObject();
 						player.setFullDescartes(aux);
-						end = player.getMano().isEmpty();
+						end = player.getFullMano().isEmpty();
 						out.writeBoolean(end);
 						out.flush();
 					}
@@ -161,7 +178,7 @@ public class Client extends Thread {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		player.setRoundWinner(player.getMano().isEmpty());
+		player.setRoundWinner(player.getFullMano().isEmpty());
 		exchangePoints();
 		roundOver = true;
 		try { Thread.sleep(5000); } catch (InterruptedException e) {}
@@ -195,6 +212,7 @@ public class Client extends Thread {
 	private void recieveCard() {
 		try {
 			Carta carta = (Carta) in.readObject();
+			System.out.println(carta);
 			player.getFullMano().take(carta);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

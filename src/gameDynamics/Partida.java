@@ -25,6 +25,7 @@ public class Partida {
 	List<ObjectOutputStream> out;
 	List<ObjectInputStream> in;
 	ArrayList<Integer> pointList;
+	ArrayList<String> nameList;
 	
 	public Partida(List<Socket> sp, ArrayList<ObjectOutputStream> listaOut) {
 		round = new Round();
@@ -34,6 +35,7 @@ public class Partida {
 		numJugadores = sp.size();
 		endRound = false;
 		pointList = new ArrayList<>();
+		nameList = new ArrayList<>();
 		crearOutInPoints(listaOut);
 	}
 	
@@ -42,6 +44,7 @@ public class Partida {
 		in = new ArrayList<>();
 		for (int i = 0; i < numJugadores; i++) {
 			pointList.add(0);
+			nameList.add("");
 			try {
 				in.add(new ObjectInputStream(socketPlayers.get(i).getInputStream()));
 			} catch (IOException e) {
@@ -132,7 +135,6 @@ public class Partida {
 	}
 
 	private void givePlayers() {
-		int i = 0;
 		for (ObjectOutputStream outS : out) {
 			try {
 				outS.writeInt(numJugadores);
@@ -140,7 +142,6 @@ public class Partida {
 			} catch (IOException e) {
 				
 			}
-			i++;
 		}
 	}
 
@@ -179,11 +180,13 @@ public class Partida {
 	}
 
 	private void sendTurns(Socket actual) {
-		for (int i = 0; i < socketPlayers.size(); i++) {
-			Socket s = socketPlayers.get(i);
-			ObjectOutputStream outS = out.get(i);
+		ArrayList<Boolean> aux = new ArrayList<>();
+		for (Socket s : socketPlayers) {
+			aux.add(s == actual);
+		}
+		for (ObjectOutputStream outS : out) {
 			try {
-				outS.writeBoolean(s == actual);
+				outS.writeObject(aux);
 				outS.flush();
 			} catch (IOException e) {
 			}
@@ -205,7 +208,7 @@ public class Partida {
 			for (int j = 0; j < round.getNumCartas(); j++) {
 				cartas.add(baraja.give());
 			}
-//			cartas = makePersonalizedCards();
+			cartas = makePersonalizedCards();
 			try {
 				outS.writeObject(cartas);
 				outS.flush();
@@ -224,8 +227,7 @@ public class Partida {
 		res.add(new Carta(10,1,0,0));
 		res.add(new Carta(10,2,0,0));
 		res.add(new Carta(10,3,0,0));
-		res.add(new Carta(10,3,0,0));
-		res.add(new Carta(10,3,0,0));
+//		res.add(new Carta(10,4,0,0));
 //		res.add(new Carta(10,4,0,0));
 		
 		return res;
@@ -234,6 +236,8 @@ public class Partida {
 	public void playGame() {
 		//número de jugadores
 		givePlayers();
+		//lista con los nombres de los jugadores
+		giveNames();
 		//lógica del juego
 		for (int i = 0; i < 10; i++) {
 			//damos cartas
@@ -244,14 +248,28 @@ public class Partida {
 		//Decimos lo del winner y tal
 	}
 
+	private void giveNames() {
+		try {
+			for (int i = 0; i < numJugadores; i++) {
+				ObjectInputStream inS = in.get(i);
+				nameList.remove(i);
+				String name = (String) inS.readObject();
+				nameList.add(i, name);
+			}
+			for (ObjectOutputStream outS : out) {
+				outS.writeObject(nameList);
+				outS.flush();
+			}
+		}
+		catch (IOException | ClassNotFoundException e) {}
+	}
+
 	private void giveRound() {
-		int i = 0;
 		for (ObjectOutputStream outS : out) {
 			try {
 				outS.writeInt(round.getNumRound());
 				outS.flush();
 			} catch (IOException e) {}
-			i++;
 		}
 	}
 

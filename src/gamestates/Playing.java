@@ -1,9 +1,15 @@
 package gamestates;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cardTreatment.Bajada;
@@ -12,6 +18,7 @@ import cardTreatment.Carta;
 import cardTreatment.Descartes;
 import cardTreatment.Slot;
 import gameDynamics.Player;
+import gameDynamics.Round;
 import mainGame.Game;
 import ui.GameButton;
 import ui.PointsOverlay;
@@ -70,7 +77,7 @@ public class Playing extends State implements Statemethods {
 			if (resguardo != player.getResguardo()) { resguardo = player.getResguardo(); }
 			if (pointDisplay.getPointList() != player.getPointList()) { pointDisplay.setPointList(player.getPointList()); }
 			if (pointDisplay.getNameList() != player.getNameList()) { pointDisplay.setNameList(player.getNameList()); }
-			
+
 			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 			if (!resguardo.isActivated()) { buttons[0].draw(g); }
 			buttons[1].draw(g);
@@ -80,6 +87,7 @@ public class Playing extends State implements Statemethods {
 			}
 			resguardo.draw(g, player.getFullMano().getImage());
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());
+			printStrings(g);
 			if (Join.getClient() != null) {
 				if (Join.getClient().isRoundOver()) {
 					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
@@ -92,6 +100,32 @@ public class Playing extends State implements Statemethods {
 				}
 			}
 		}
+	}
+
+	private void printStrings(Graphics g) {
+		try {
+			Font fuente = Font.createFont(Font.TRUETYPE_FONT, new File("res/fuentes/Minecraftia-Regular.ttf"));
+			fuente = fuente.deriveFont(Font.PLAIN, 14);
+			g.setFont(fuente);
+			g.setColor(Color.white);
+			g.drawString("Objetivo:", 22, 592);
+			g.drawString(player.getBajada().getRound().sacarObjetivosEscaleras(), 22, 609);
+			if (player.getBajada().getRound().sacarObjetivosEscaleras().equals("")) {
+				g.drawString(player.getBajada().getRound().sacarObjetivosTrios(), 22, 609);
+			} else { g.drawString(player.getBajada().getRound().sacarObjetivosTrios(), 22, 626); }
+			int yPos = 648;
+			for (int i = 0; i < player.getNameList().size(); i++) {
+				g.setColor(Color.white);
+				if (i == player.getTurno()) g.drawString(player.getNameList().get(i) + " (you)", 42, yPos);
+				else g.drawString(player.getNameList().get(i), 42, yPos);
+				if (player.getTurns().get(i)) {
+					g.setColor(new Color(47, 143, 33, 255));
+					g.fillRect(24, yPos - 19, 8, 8);
+				}
+				yPos += 20;
+			}
+		}
+		catch (FontFormatException | IOException e) {}
 	}
 
 	@Override
@@ -173,10 +207,8 @@ public class Playing extends State implements Statemethods {
 			if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 				if (slot.isIn()) {
 					resguardo.getSlots().get(posI)[posJ].remove();
-					s.add(player.getSelection());
-				} else {
-					player.getFullMano().moveBetweenSlots(i);
 				}
+				player.getFullMano().moveBetweenSlots(slot.isIn(), i, posI, posJ);
 				player.getFullMano().getSelection().setSmall(false);
 				player.deselect();
 			}
@@ -214,9 +246,8 @@ public class Playing extends State implements Statemethods {
 					if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 						if (slot.isIn()) {
 							resguardo.getSlots().get(posI)[posJ].remove();
-						} else {
-							player.getFullMano().getSlots().get(posI).remove();
 						}
+						player.getFullMano().moveBetweenResguardo(slot.isIn(), posI, posJ, i, j);
 						s.add(player.getSelection());
 						player.deselect();
 					}
@@ -253,10 +284,8 @@ public class Playing extends State implements Statemethods {
 					if (b.isAdded()) {
 						if (slot.isIn()) {
 							resguardo.getSlots().get(posI)[posJ].remove();
-						} else {
-							player.getFullMano().getSlots().get(posI).remove();
 						}
-						player.getMano().remove(player.getSelection());
+						player.getFullMano().discardWithoutUpdate(slot.isIn(), posI, posJ);
 						player.deselect();
 						b.setAdded(false);
 					}
@@ -280,7 +309,7 @@ public class Playing extends State implements Statemethods {
 			if (slot.isIn()) {
 				resguardo.getSlots().get(posI)[posJ].remove();
 			}
-			player.getFullMano().discard(slot.isIn());
+			player.getFullMano().discard(slot.isIn(), posI, posJ);
 			descartes.take(player.getUltimaCarta());
 			player.setDescartado(true);
 		} else {
@@ -310,6 +339,14 @@ public class Playing extends State implements Statemethods {
 			if (c.isSeleccionada()) {
 				c.setX(e.getX() - c.getOffsetX());
 				c.setY(e.getY() - c.getOffsetY());
+			}
+		}
+		for (Slot[] sA : resguardo.getSlots()) {
+			for (Slot s : sA) {
+				if (s.getCarta() != null && s.getCarta().isSeleccionada()) {
+					s.getCarta().setX(e.getX() - s.getCarta().getOffsetX());
+					s.getCarta().setY(e.getY() - s.getCarta().getOffsetY());
+				}
 			}
 		}
 		boolean res = false;

@@ -10,7 +10,7 @@ import utilz.LoadSave;
 
 public class Radio {
 
-	private int x = 1134, y = 304;
+	private int x = 1134, y = 551;
 	private int width = RadioConstants.RADIO_WIDTH, height = RadioConstants.RADIO_HEIGHT;
 	private Rectangle hitbox;
 	private Thread radioTh;

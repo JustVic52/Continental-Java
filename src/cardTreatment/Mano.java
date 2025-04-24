@@ -13,6 +13,7 @@ public class Mano {
 	
 	private List<Carta> mano;
 	private List<Slot> manoSlot;
+	private List<Slot[]> resguardo;
 	private Carta selection;
 	private Carta cartaEscogida = null;
 	private Carta ultimaCartaEliminada; //para el retake
@@ -24,6 +25,7 @@ public class Mano {
 	public Mano() {
 		mano = new ArrayList<>();
 		manoSlot = new ArrayList<>();
+		resguardo = new ArrayList<>();
 		initSlot();
 		baraja = new Baraja();
 		descartes = new Descartes();
@@ -50,6 +52,7 @@ public class Mano {
 	}
 	
 	public void renderSlots(Graphics g, List<Slot[]> slots, boolean active) {
+		if (resguardo != slots) resguardo = slots;
 		ArrayList<Slot> aux = new ArrayList<>(manoSlot);
 		Slot auxS = null;
 		for (Slot s : aux) {
@@ -76,14 +79,13 @@ public class Mano {
 	}
 
 	public void give() {
-//		baraja = b;
 		Carta c = baraja.give();
 		cartaEscogida = c;
 		mano.add(c); //añade una carta de la baraja y la elimina de la lista.
 		addToSlot(c); //añade la carta al slot
 	}
 	
-	public void addToSlot(Carta c) {
+	public int addToSlot(Carta c) {
 		int i = 0;
 		boolean added = false;
 		while (i < manoSlot.size() && !added) {
@@ -93,46 +95,75 @@ public class Mano {
 			}
 			i++;
 		}
+		return i;
 	}
 
-	public void discard(boolean in) {
-		if (!in) {
-			removeFromSlots(selection);
+	public boolean isEmpty() {
+		boolean res = true;
+		for (Slot[] sA : resguardo) {
+			for (Slot s : sA) {
+				if (s.getCarta() != null) res = false;
+			}
 		}
-		mano.remove(selection);
+		return mano.isEmpty() && res;
+	}
+	
+	public void discard(boolean in, int posI, int posJ) {
+		if (in) {
+			resguardo.get(posI)[posJ].remove();
+		} else {
+			manoSlot.get(posI).remove();
+			updateSlots(posI);
+			mano.remove(findPosI(posI));
+		}
 		ultimaCartaEliminada = selection;
 		deselect();
 	}
 	
-	private void removeFromSlots(Carta carta) {
-		int i = 0;
-		boolean removed = false;
-		while (i < manoSlot.size() && !removed) {
-			if (manoSlot.get(i).getCarta() != null && manoSlot.get(i).getCarta().equals(carta)) {
-				manoSlot.get(i).remove();
-				updateSlots(i);
-				removed = true;
-			}
-			i++;
+	public void discardWithoutUpdate(boolean in, int posI, int posJ) {
+		if (in) {
+			resguardo.get(posI)[posJ].remove();
+		} else {
+			manoSlot.get(posI).remove();
+			mano.remove(findPosI(posI));
 		}
+		deselect();
+	}
+
+	public void moveBetweenResguardo(boolean isIn, int posI, int posJ, int finalI, int finalJ) {
+		int cont = findPosI(posI);
+		if (isIn) {
+			resguardo.get(posI)[posJ].remove();
+		} else {
+			manoSlot.get(posI).remove();
+			mano.remove(cont);
+		}
+		resguardo.get(finalI)[finalJ].add(selection);
 	}
 	
-	private void removeWithoutUpdate(Carta carta) {
-		int i = 0;
-		boolean removed = false;
-		while (i < manoSlot.size() && !removed) {
-			if (manoSlot.get(i).getCarta() != null && manoSlot.get(i).getCarta().equals(carta)) {
-				manoSlot.get(i).remove();
-				removed = true;
-			}
-			i++;
-		}
+	private int findPosI(int posI) {
+		int cont = 0;
+		if (posI == 0) return 0;
+		for (int i = 0; i < posI; i++) {
+	        if (manoSlot.get(i).getCarta() != null) {
+	            cont++;
+	        }
+	    }
+		return cont;
 	}
-	
-	public void moveBetweenSlots(int i) {
+
+	public void moveBetweenSlots(boolean isIn, int i, int posI, int posJ) {
+		int posI2 = findPosI(posI);
 		if (manoSlot.get(i).getCarta() == null) {
-			removeWithoutUpdate(selection);
+			if (isIn) {
+				resguardo.get(posI)[posJ].remove();
+			} else {
+				mano.remove(posI2);
+				manoSlot.get(posI).remove();
+			}
+			int i2 = findPosI(i + 1);
 			manoSlot.get(i).add(selection);
+			mano.add(i2, selection);
 		}
 	}
 
@@ -149,8 +180,8 @@ public class Mano {
 	}
 
 	public void take(Carta carta) {
-		mano.add(carta);
-		addToSlot(carta);
+		int posI = findPosI(addToSlot(carta) - 1);
+		mano.add(posI, carta);
 	}
 	
 	public void retake() {
@@ -177,6 +208,13 @@ public class Mano {
 				c.setSeleccionada(false);
 			}
 		}
+		for (Slot[] sA : resguardo) {
+			for (Slot s : sA) {
+				if (s.getCarta() != null && s.getCarta() == selection) {
+					s.getCarta().setSeleccionada(false);
+				}
+			}
+		}
 		selection = null;
 	}
 	
@@ -196,6 +234,10 @@ public class Mano {
 		return mano;
 	}
 	
+	public List<Slot[]> getResguardo() {
+		return resguardo;
+	}
+	
 	public Carta getSelection() {
 		return selection;
 	}
@@ -206,10 +248,17 @@ public class Mano {
 		return res;
 	}
 	
-	public String selectionToString() {
-		String res = "";
-		if (selection != null) { res += "Carta seleccionada: " + selection + "\n"; }
-		return res;
+	private String resguardoToString() {
+		String res = "[";
+		for (Slot[] sA : resguardo) {
+			res += "[";
+			for(int i = 0; i < sA.length; i++) {
+				if (i != 0) res += ", ";
+				res += sA[i].getCarta();
+			}
+			res += "]";
+		}
+		return res + "]";
 	}
 
 	public Carta getUltimaCarta() {
@@ -258,9 +307,9 @@ public class Mano {
 	}
 
 	public void bajarse(Bajada bajada) {
-		for (List<Carta> cA : bajada.getBajada()) {
-			for (Carta c : cA) {
-				mano.remove(c);
+		for (int i = 0; i < bajada.getBajada().size(); i++) {
+			for (Slot s : resguardo.get(i)) {
+				s.remove();
 			}
 		}
 	}

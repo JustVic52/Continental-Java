@@ -33,8 +33,8 @@ public class Constants {
 	}
 	
 	public static class RadioConstants {
-		public static final int RADIO_WIDTH = 98;
-		public static final int RADIO_HEIGHT = 125;
+		public static final int RADIO_WIDTH = 97;
+		public static final int RADIO_HEIGHT = 66;
 		public static final int RADIO_PLAY = 0;
 		public static final int RADIO_SELECTED = 1;
 		public static final int RADIO_MUTED = 2;

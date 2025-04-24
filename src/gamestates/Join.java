@@ -1,5 +1,6 @@
 package gamestates;
 
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -9,6 +10,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import gameGraphics.GamePanel;
 import mainGame.Game;
 import net.Client;
 import ui.URMButton;
@@ -21,12 +23,12 @@ public class Join extends State implements Statemethods {
 	private BufferedImage overlay, background;
 	private URMButton[] buttons = new URMButton[2];
 	private int x, y, width, height;
-	private CuadroTexto texto;
+	private CuadroTexto nombre, ip;
 	
 	public Join(Game g) {
 		super(g);
-		
-		texto = new CuadroTexto(604, 312, 196, 19, 15);
+		nombre = new CuadroTexto(604, 251, 196, 19, 15);
+		ip = new CuadroTexto(604, 312, 196, 19, 15);
 		loadButtons();
 		loadBackground();
 		background = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
@@ -39,7 +41,7 @@ public class Join extends State implements Statemethods {
 	}
 
 	private void loadBackground() {
-		overlay = LoadSave.GetSpriteAtlas(LoadSave.HOST_OVERLAY);
+		overlay = LoadSave.GetSpriteAtlas(LoadSave.JOIN_OVERLAY);
 		width = overlay.getWidth();
 		height = overlay.getHeight();
 		x = (Game.GAME_WIDTH / 2) - (width / 2);
@@ -61,8 +63,10 @@ public class Join extends State implements Statemethods {
 			urm.draw(g);
 		}
 		
-		g.drawString("Nombre:", 480, 341);
-		texto.draw(g);
+		g.drawString("IP:", 480, 343);
+		g.drawString("Nombre: ", 480, 282);
+		nombre.draw(g);
+		ip.draw(g);
 	}
 
 	@Override
@@ -75,20 +79,21 @@ public class Join extends State implements Statemethods {
 	}
 	
 	public void mouseClicked(MouseEvent e) {
-		texto.mouseClicked(e);
+		nombre.mouseClicked(e);
+		ip.mouseClicked(e);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
-//				if (!texto.getTexto().equals("")) {
+//				if (!nombre.getTexto().equals("") && !ip.getTexto().equals("")) {
 					buttons[0].setMousePressed(false);
 					Socket s = null;
 					try {
-						s = new Socket(InetAddress.getLocalHost(), 6020);
+						s = new Socket(/*ip.getTexto()*/ InetAddress.getLocalHost(), 6020);
 						s.setKeepAlive(true);
-						client = new Client(s, texto.getTexto());
+						client = new Client(s, nombre.getTexto());
 						client.start();
 						Gamestate.state = Gamestate.PLAYING;
 					} catch (UnknownHostException e1) {
@@ -127,17 +132,19 @@ public class Join extends State implements Statemethods {
 				urm.setMouseOver(true);
 			}
 		}
-		texto.mouseMoved(e);
+		if (nombre.getHitbox().contains(e.getX(), e.getY()) || ip.getHitbox().contains(e.getX(), e.getY())) {
+			GamePanel.setIntCursor(Cursor.TEXT_CURSOR);
+		} else GamePanel.setIntCursor(Cursor.DEFAULT_CURSOR);
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 	
 	public void keyTyped(KeyEvent e) {
-		texto.keyTyped(e);
+		nombre.keyTyped(e);
+		ip.keyTyped(e);
 	}
 	
 	public static Client getClient() { return client; }

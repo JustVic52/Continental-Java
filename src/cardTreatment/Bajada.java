@@ -288,4 +288,6 @@ public class Bajada implements Serializable {
 			round.setNumRound(numRound);
 		}
 	}
+
+	public Round getRound() { return round; }
 }
