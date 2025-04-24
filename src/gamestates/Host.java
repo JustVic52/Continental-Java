@@ -25,17 +25,17 @@ public class Host extends State implements Statemethods {
 	
 	public Host(Game g) {
 		super(g);
-		texto = new CuadroTexto(604, 312, 196, 19, 15);
+		texto = new CuadroTexto(604, 354, 196, 19, 15);
 		loadButtons();
 		loadBackground();
 		background = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
 	}
 
 	private void loadButtons() {
-		buttons[0] = new URMButton(743, 422, 0);
-		buttons[1] = new URMButton(485, 422, 2);
-		comboButtons[0] = new ComboButton(772, 245, 0);
-		comboButtons[1] = new ComboButton(660, 245, 1);
+		buttons[0] = new URMButton(743, 464, 0);
+		buttons[1] = new URMButton(485, 464, 2);
+		comboButtons[0] = new ComboButton(772, 287, 0);
+		comboButtons[1] = new ComboButton(660, 287, 1);
 	}
 
 	private void loadBackground() {
@@ -66,9 +66,9 @@ public class Host extends State implements Statemethods {
 		for (ComboButton cb : comboButtons) {
 			cb.draw(g);
 		}
-		g.drawString(numOfPlayers + "", 721, 279);
-		g.drawString("Jugadores:", 478, 279);
-		g.drawString("Nombre:", 480, 341);
+		g.drawString(numOfPlayers + "", 721, 321);
+		g.drawString("Jugadores:", 478, 321);
+		g.drawString("Nombre:", 480, 383);
 		texto.draw(g);
 	}
 

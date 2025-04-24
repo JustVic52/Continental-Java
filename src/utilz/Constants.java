@@ -10,8 +10,18 @@ public class Constants {
 			public static final int B_HEIGHT = 56;
 		}
 		
+		public static class PauseButtons {
+			public static final int SOUND_SIZE = 42;
+		}
+		
 		public static class URMButtons {
 			public static final int B_SIDE = 56;
+		}
+		
+		public static class VolumeButtons {
+			public static final int VOLUME_WIDTH = 28;
+			public static final int VOLUME_HEIGHT = 44;
+			public static final int SLIDER_WIDTH = 215;
 		}
 		
 		public static class ComboButton {

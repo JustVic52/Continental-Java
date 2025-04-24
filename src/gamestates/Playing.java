@@ -173,11 +173,12 @@ public class Playing extends State implements Statemethods {
 			if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 				buttons[0].setIndex(buttons[0].getIndex() + 1);
 			}
-			if (radio.getHitbox().contains(e.getX(), e.getY())) {
-				if (radio.isMuted()) {
-					radio.setRadioState(3);
-				} else { radio.setRadioState(1); }
-			}
+		}
+		
+		if (radio.getHitbox().contains(e.getX(), e.getY())) {
+			if (radio.isMuted()) {
+				radio.setRadioState(3);
+			} else { radio.setRadioState(1); }
 		}
 		
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
@@ -267,16 +268,18 @@ public class Playing extends State implements Statemethods {
 					buttons[1].setIndex(2);
 				} else { buttons[1].setIndex(0); }
 			} else { buttons[1].setIndex(0); }
-			if (radio.getHitbox().contains(e.getX(), e.getY())) {
-				if (radio.isMuted()) {
-					radio.setRadioState(0);
-					radio.setMuted(false);
-				} else {
-					radio.setRadioState(2);
-					radio.setMuted(true);
-				}
+		}
+		
+		if (radio.getHitbox().contains(e.getX(), e.getY())) {
+			if (radio.isMuted()) {
+				radio.setRadioState(0);
+				radio.setMuted(false);
+			} else {
+				radio.setRadioState(2);
+				radio.setMuted(true);
 			}
 		}
+		
 		if (player.getBajada() != null && player.getBajada().isBajado()) {
 			for (Bajada b : bajadas) {
 				if (b != null && b.isBajado() && justBajado == 0 && numActions == 1) {

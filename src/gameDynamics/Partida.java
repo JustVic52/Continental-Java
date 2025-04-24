@@ -208,7 +208,7 @@ public class Partida {
 			for (int j = 0; j < round.getNumCartas(); j++) {
 				cartas.add(baraja.give());
 			}
-			cartas = makePersonalizedCards();
+//			cartas = makePersonalizedCards();
 			try {
 				outS.writeObject(cartas);
 				outS.flush();

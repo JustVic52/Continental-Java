@@ -27,8 +27,8 @@ public class Join extends State implements Statemethods {
 	
 	public Join(Game g) {
 		super(g);
-		nombre = new CuadroTexto(604, 251, 196, 19, 15);
-		ip = new CuadroTexto(604, 312, 196, 19, 15);
+		nombre = new CuadroTexto(604, 293, 196, 19, 15);
+		ip = new CuadroTexto(604, 354, 196, 19, 15);
 		loadButtons();
 		loadBackground();
 		background = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
@@ -36,8 +36,8 @@ public class Join extends State implements Statemethods {
 	}	
 
 	private void loadButtons() {
-		buttons[0] = new URMButton(743, 422, 0);
-		buttons[1] = new URMButton(485, 422, 2);
+		buttons[0] = new URMButton(743, 464, 0); //X - 422
+		buttons[1] = new URMButton(485, 464, 2);
 	}
 
 	private void loadBackground() {
@@ -63,8 +63,8 @@ public class Join extends State implements Statemethods {
 			urm.draw(g);
 		}
 		
-		g.drawString("IP:", 480, 343);
-		g.drawString("Nombre: ", 480, 282);
+		g.drawString("IP:", 480, 385);
+		g.drawString("Nombre: ", 480, 324);
 		nombre.draw(g);
 		ip.draw(g);
 	}

@@ -9,7 +9,7 @@ public class Round implements Serializable {
 	private int numRound, trios, escaleras, numCartas, cartasMin;
 	
 	public Round() {
-		numRound = 10;
+		numRound = 1;
 		setRound(numRound);
 	}
 	
