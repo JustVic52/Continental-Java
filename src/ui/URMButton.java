@@ -34,14 +34,20 @@ public class URMButton {
 			imgs[i] = temp.getSubimage(i * B_SIDE, rowIndex * B_SIDE, B_SIDE, B_SIDE);
 	}
 
-	public void draw(Graphics g) {
+	public void draw(Graphics g, double d) {
 		index = 0;
 		if (mouseOver)
 			index = 1;
 		if (mousePressed)
 			index = 2;
 		
-		g.drawImage(imgs[index], x, y, B_SIDE, B_SIDE, null);
+		int newSide = (int) (B_SIDE * d);
+		
+		if (hitbox.width != newSide) {
+			hitbox.width = hitbox.height = newSide;
+		}
+		
+		g.drawImage(imgs[index], x, y, newSide, newSide, null);
 	}
 
 	public void resetBools() {

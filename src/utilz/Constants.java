@@ -21,7 +21,7 @@ public class Constants {
 		public static class VolumeButtons {
 			public static final int VOLUME_WIDTH = 28;
 			public static final int VOLUME_HEIGHT = 44;
-			public static final int SLIDER_WIDTH = 215;
+			public static final int SLIDER_WIDTH = 216;
 		}
 		
 		public static class ComboButton {

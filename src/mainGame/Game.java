@@ -8,7 +8,9 @@ import gamestates.Gamestate;
 import gamestates.Host;
 import gamestates.Join;
 import gamestates.Menu;
+import gamestates.Options;
 import gamestates.Playing;
+import ui.AudioOptions;
 import utilz.Constants;
 
 public class Game implements Runnable {
@@ -25,6 +27,8 @@ public class Game implements Runnable {
 	private Menu menu;
 	private Host host;
 	private Join join;
+	private Options options;
+	private AudioOptions audioOptions;
 
 	public Game() {
 		initStates();
@@ -35,10 +39,12 @@ public class Game implements Runnable {
 	}
 	
 	private void initStates() {
+		audioOptions = new AudioOptions(this);
 		playing = new Playing(this);
 		menu = new Menu(this);
 		host = new Host(this);
 		join = new Join(this);
+		options = new Options(this);
 	}
 
 	private void startGameLoop() {
@@ -70,6 +76,8 @@ public class Game implements Runnable {
 		case JOIN:
 			join.draw(g);
 			break;
+		case OPTIONS:
+			options.draw(g);
 		default:
 			break;
 		}
@@ -122,4 +130,10 @@ public class Game implements Runnable {
 	public Join getJoin() {
 		return join;
 	}
+	
+	public Options getOptions() {
+		return options;
+	}
+	
+	public AudioOptions getAudioOptions() { return audioOptions; }
 }

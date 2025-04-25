@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -15,157 +16,98 @@ import static utilz.Constants.UI.VolumeButtons.*;
 
 public class PauseOverlay {
 
-	private Playing playing;
+	private boolean visible = false;
 	private BufferedImage backgroundImg;
 	private int bgX, bgY, bgW, bgH;
-	private SoundButton musicButton, sfxButton;
-	private URMButton menuB, replayB, unpauseB;
-	private VolumeButton volumeButton;
+	private AudioOptions audioOptions;
+	private URMButton quitOptions, openOptions;
 
-	public PauseOverlay(Playing playing) {
-		this.playing = playing;
+	public PauseOverlay(Game game) {
 		loadBackground();
-		createSoundButtons();
 		createUrmButtons();
-		createVolumeButton();
-
+		audioOptions = game.getAudioOptions();
 	}
-
-	private void createVolumeButton() {
-		int vX = 309;
-		int vY = 278;
-		volumeButton = new VolumeButton(vX, vY, SLIDER_WIDTH, VOLUME_HEIGHT);
-	}
-
+	
 	private void createUrmButtons() {
-		int unpauseX = 462;
-		int bY = 325;
+		int unpauseX = 640 - 28;
+		int bY = 430;
 
-		unpauseB = new URMButton(unpauseX, bY, 1);
-
-	}
-
-	private void createSoundButtons() {
-		int soundX = (int) (450 * Game.SCALE);
-		int musicY = (int) (140 * Game.SCALE);
-		int sfxY = (int) (186 * Game.SCALE);
-		musicButton = new SoundButton(soundX, musicY, SOUND_SIZE, SOUND_SIZE);
-		sfxButton = new SoundButton(soundX, sfxY, SOUND_SIZE, SOUND_SIZE);
-
+		quitOptions = new URMButton(unpauseX, bY, 1);
+		openOptions = new URMButton(1270 - 28, 8, 3);
 	}
 
 	private void loadBackground() {
 		backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.PAUSE_BACKGROUND);
-		bgW = (int) (backgroundImg.getWidth() * Game.SCALE);
-		bgH = (int) (backgroundImg.getHeight() * Game.SCALE);
+		bgW = backgroundImg.getWidth();
+		bgH = backgroundImg.getHeight();
 		bgX = Game.GAME_WIDTH / 2 - bgW / 2;
-		bgY = (int) (25 * Game.SCALE);
-
-	}
-
-	public void update() {
-
-		musicButton.update();
-		sfxButton.update();
-
-		volumeButton.update();
+		bgY = Game.GAME_HEIGHT / 2 - bgH / 2;
 
 	}
 
 	public void draw(Graphics g) {
-		// Background
-		g.drawImage(backgroundImg, bgX, bgY, bgW, bgH, null);
+		openOptions.draw(g, 0.5);
+		if (visible) {
+			// Background
+			g.setColor(new Color(0, 0, 0, 150));
+			g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
+			g.drawImage(backgroundImg, bgX, bgY, bgW, bgH, null);
 
-		// Sound buttons
-		musicButton.draw(g);
-		sfxButton.draw(g);
+			// Sound buttons
+			audioOptions.draw(g);
 
-		// UrmButtons
-		menuB.draw(g);
-		replayB.draw(g);
-		unpauseB.draw(g);
-
-		// Volume Button
-		volumeButton.draw(g);
+			// UrmButtons
+			quitOptions.draw(g, 1);
+		}
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		if (volumeButton.isMousePressed()) {
-			volumeButton.changeX(e.getX());
-		}
-
+		audioOptions.mouseDragged(e);
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if (isIn(e, musicButton))
-			musicButton.setMousePressed(true);
-		else if (isIn(e, sfxButton))
-			sfxButton.setMousePressed(true);
-		else if (isIn(e, menuB))
-			menuB.setMousePressed(true);
-		else if (isIn(e, replayB))
-			replayB.setMousePressed(true);
-		else if (isIn(e, unpauseB))
-			unpauseB.setMousePressed(true);
-		else if (isIn(e, volumeButton))
-			volumeButton.setMousePressed(true);
+		if (visible) {
+			if (quitOptions.getHitbox().contains(e.getX(), e.getY()))
+				quitOptions.setMousePressed(true);
+			else audioOptions.mousePressed(e);
+		} else {
+			if (openOptions.getHitbox().contains(e.getX(), e.getY()))
+				openOptions.setMousePressed(true);
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		if (isIn(e, musicButton)) {
-			if (musicButton.isMousePressed())
-				musicButton.setMuted(!musicButton.isMuted());
-
-		} else if (isIn(e, sfxButton)) {
-			if (sfxButton.isMousePressed())
-				sfxButton.setMuted(!sfxButton.isMuted());
-		} else if (isIn(e, menuB)) {
-			if (menuB.isMousePressed()) {
-				Gamestate.state = Gamestate.MENU;
-				playing.unpauseGame();
-			}
-		} else if (isIn(e, replayB)) {
-			if (replayB.isMousePressed())
-				System.out.println("replay lvl!");
-		} else if (isIn(e, unpauseB)) {
-			if (unpauseB.isMousePressed())
-				playing.unpauseGame();
+		if (visible) {
+			if (quitOptions.getHitbox().contains(e.getX(), e.getY())) {
+				if (quitOptions.isMousePressed()) { visible = false; }
+			} else audioOptions.mouseReleased(e);
+		} else {
+			if (openOptions.getHitbox().contains(e.getX(), e.getY()))
+				if (openOptions.isMousePressed()) { visible = true; }
 		}
-
-		musicButton.resetBools();
-		sfxButton.resetBools();
-		menuB.resetBools();
-		replayB.resetBools();
-		unpauseB.resetBools();
-		volumeButton.resetBools();
-
+		quitOptions.resetBools();
+		openOptions.resetBools();
 	}
 
 	public void mouseMoved(MouseEvent e) {
-		musicButton.setMouseOver(false);
-		sfxButton.setMouseOver(false);
-		menuB.setMouseOver(false);
-		replayB.setMouseOver(false);
-		unpauseB.setMouseOver(false);
-		volumeButton.setMouseOver(false);
+		quitOptions.setMouseOver(false);
+		openOptions.setMouseOver(false);
 
-		if (isIn(e, musicButton))
-			musicButton.setMouseOver(true);
-		else if (isIn(e, sfxButton))
-			sfxButton.setMouseOver(true);
-		else if (isIn(e, menuB))
-			menuB.setMouseOver(true);
-		else if (isIn(e, replayB))
-			replayB.setMouseOver(true);
-		else if (isIn(e, unpauseB))
-			unpauseB.setMouseOver(true);
-		else if (isIn(e, volumeButton))
-			volumeButton.setMouseOver(true);
+		if (visible) {
+			if (quitOptions.getHitbox().contains(e.getX(), e.getY()))
+				quitOptions.setMouseOver(true);
+			else audioOptions.mouseMoved(e);
+		} else {
+			if (openOptions.getHitbox().contains(e.getX(), e.getY()))
+				openOptions.setMouseOver(true);
+		}
 
 	}
+	
+	public boolean isVisible() { return visible; }
 
-	private boolean isIn(MouseEvent e, PauseButton b) {
-		return b.getBounds().contains(e.getX(), e.getY());
+	public void setVisible(boolean b) {
+		visible = b;
 	}
 
 }

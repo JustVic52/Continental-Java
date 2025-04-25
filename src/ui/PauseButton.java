@@ -52,7 +52,7 @@ public class PauseButton {
 		this.height = height;
 	}
 
-	public Rectangle getBounds() {
+	public Rectangle getHitbox() {
 		return bounds;
 	}
 

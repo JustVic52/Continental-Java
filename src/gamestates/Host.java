@@ -61,7 +61,7 @@ public class Host extends State implements Statemethods {
 		g.drawImage(overlay, x, y, width, height, null);
 		
 		for (URMButton urm : buttons) {
-			urm.draw(g);
+			urm.draw(g, 1);
 		}
 		for (ComboButton cb : comboButtons) {
 			cb.draw(g);
@@ -161,8 +161,8 @@ public class Host extends State implements Statemethods {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+			Gamestate.state = Gamestate.MENU;
 	}
 	
 	public void keyTyped(KeyEvent e) {

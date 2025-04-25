@@ -27,7 +27,12 @@ public class SoundButton extends PauseButton {
 				soundImgs[j][i] = temp.getSubimage(i * SOUND_SIZE, j * SOUND_SIZE, SOUND_SIZE, SOUND_SIZE);
 	}
 
-	public void update() {
+	public void resetBools() {
+		mouseOver = false;
+		mousePressed = false;
+	}
+
+	public void draw(Graphics g, int mY) {
 		if (muted)
 			rowIndex = 1;
 		else
@@ -38,16 +43,9 @@ public class SoundButton extends PauseButton {
 			colIndex = 1;
 		if (mousePressed)
 			colIndex = 2;
-
-	}
-
-	public void resetBools() {
-		mouseOver = false;
-		mousePressed = false;
-	}
-
-	public void draw(Graphics g) {
-		g.drawImage(soundImgs[rowIndex][colIndex], x, y, width, height, null);
+		
+		if (bounds.y != mY) bounds.y = mY;
+		g.drawImage(soundImgs[rowIndex][colIndex], x, mY, width, height, null);
 	}
 
 	public boolean isMouseOver() {

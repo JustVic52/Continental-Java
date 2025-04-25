@@ -36,20 +36,15 @@ public class VolumeButton extends PauseButton {
 		
 	}
 
-	public void update() {
+	public void draw(Graphics g, int vBY) {
 		index = 0;
 		if (mouseOver)
 			index = 1;
 		if (mousePressed)
 			index = 2;
-
-	}
-
-	public void draw(Graphics g) {
-
-		g.drawImage(slider, x, y, width, height, null);
-		g.drawImage(imgs[index], buttonX - VOLUME_WIDTH / 2, y, VOLUME_WIDTH, height, null);
-
+		if (bounds.y != vBY) bounds.y = vBY;
+		g.drawImage(slider, x, vBY, width, height, null);
+		g.drawImage(imgs[index], buttonX - VOLUME_WIDTH / 2, vBY, VOLUME_WIDTH, height, null);
 	}
 
 	public void changeX(int x) {
