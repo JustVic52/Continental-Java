@@ -1,10 +1,12 @@
 package gamestates;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import audio.AudioPlayer;
 import mainGame.Game;
 import ui.MenuButton;
 import utilz.LoadSave;
@@ -46,6 +48,8 @@ public class Menu extends State implements Statemethods {
 	public void draw(Graphics g) {
 		g.drawImage(background, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		g.drawImage(overlay, x, y, width, height, null);
+		g.setColor(Color.white);
+		g.drawString("v0.9.5 pre-release", 10, Game.GAME_HEIGHT);
 
 		for (MenuButton mb : buttons) {
 			mb.draw(g);
@@ -57,6 +61,7 @@ public class Menu extends State implements Statemethods {
 		for (MenuButton mb : buttons) {
 			if (mb.getHitbox().contains(e.getX(), e.getY())) {
 				mb.setMousePressed(true);
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 			}
 		}
 	}
@@ -66,6 +71,7 @@ public class Menu extends State implements Statemethods {
 		for (MenuButton mb : buttons) {
 			if (mb.getHitbox().contains(e.getX(), e.getY())) {
 				if (mb.isMousePressed()) {
+					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 					mb.applyGamestate();
 				}
 			}

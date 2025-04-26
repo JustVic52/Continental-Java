@@ -10,6 +10,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import audio.AudioPlayer;
 import gameGraphics.GamePanel;
 import mainGame.Game;
 import net.Client;
@@ -74,6 +75,7 @@ public class Join extends State implements Statemethods {
 		for (URMButton urm : buttons) {
 			if (urm.getHitbox().contains(e.getX(), e.getY())) {
 				urm.setMousePressed(true);
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 			}
 		}
 	}
@@ -87,6 +89,7 @@ public class Join extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 //				if (!nombre.getTexto().equals("") && !ip.getTexto().equals("")) {
 					buttons[0].setMousePressed(false);
 					Socket s = null;
@@ -95,6 +98,7 @@ public class Join extends State implements Statemethods {
 						s.setKeepAlive(true);
 						client = new Client(s, nombre.getTexto());
 						client.start();
+						game.getAudioPlayer().startLoop(AudioPlayer.START_PLAYING);
 						Gamestate.state = Gamestate.PLAYING;
 					} catch (UnknownHostException e1) {
 						e1.printStackTrace();
@@ -111,6 +115,7 @@ public class Join extends State implements Statemethods {
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[1].isMousePressed()) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 				Gamestate.state = Gamestate.MENU;
 			}
 		}

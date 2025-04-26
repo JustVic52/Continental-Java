@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import audio.AudioPlayer;
 import mainGame.Game;
 import net.Server;
 import ui.ComboButton;
@@ -76,11 +77,13 @@ public class Host extends State implements Statemethods {
 	public void mousePressed(MouseEvent e) {
 		for (URMButton urm : buttons) {
 			if (urm.getHitbox().contains(e.getX(), e.getY())) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 				urm.setMousePressed(true);
 			}
 		}
 		for (ComboButton cb : comboButtons) {
 			if (cb.getHitbox().contains(e.getX(), e.getY())) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 				cb.setMousePressed(true);
 			}
 		}
@@ -94,6 +97,7 @@ public class Host extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 //				if (!texto.getTexto().equals("")) {
 					buttons[0].setMousePressed(false);
 					ServerSocket ss = null;
@@ -103,7 +107,8 @@ public class Host extends State implements Statemethods {
 						server.start();
 						boolean clave = server.isAlive();
 						while (clave) { clave = server.getClient() == null; }
-						Gamestate.state = Gamestate.PLAYING;
+						game.getAudioPlayer().startLoop(AudioPlayer.START_PLAYING);
+								Gamestate.state = Gamestate.PLAYING;
 					} catch (IOException e1) {
 						try {
 							if (ss != null) { ss.close(); }
@@ -117,16 +122,19 @@ public class Host extends State implements Statemethods {
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[1].isMousePressed()) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 				Gamestate.state = Gamestate.MENU;
 			}
 		}
 		if (comboButtons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (comboButtons[0].isMousePressed()) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 				if (numOfPlayers < 4) { numOfPlayers++; }
 			}
 		}
 		if (comboButtons[1].getHitbox().contains(e.getX(), e.getY())) {
 			if (comboButtons[1].isMousePressed()) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 				if (numOfPlayers > 1) { numOfPlayers--; }
 			}
 		}

@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import audio.AudioPlayer;
 import mainGame.Game;
 import ui.AudioOptions;
 import ui.URMButton;
@@ -58,6 +59,7 @@ public class Options extends State implements Statemethods {
 	public void mousePressed(MouseEvent e) {
 		if (menuB.getHitbox().contains(e.getX(), e.getY())) {
 			menuB.setMousePressed(true);
+			game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 		} else {
 			audioOptions.mousePressed(e);
 		}
@@ -67,6 +69,7 @@ public class Options extends State implements Statemethods {
 	public void mouseReleased(MouseEvent e) {
 		if (menuB.getHitbox().contains(e.getX(), e.getY())) {
 			if (menuB.isMousePressed())
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 				Gamestate.state = Gamestate.MENU;
 		} else {
 			audioOptions.mouseReleased(e); 

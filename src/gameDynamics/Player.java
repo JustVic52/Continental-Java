@@ -49,7 +49,7 @@ public class Player extends Round {
 			}
 			pointList.add(0);
 			nameList.add("");
-			turns.add(false);
+			if (nameList.get(i).equals("")) turns.add(false);
 		}
 	}
 
@@ -246,7 +246,6 @@ public class Player extends Round {
 		descartado = false;
 		resguardo.updateTablero(numRound);
 		bajadaList = new ArrayList<>();
-		turns = new ArrayList<>();
 		initLists();
 	}
 

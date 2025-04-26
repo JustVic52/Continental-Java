@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import audio.Radio;
+import audio.AudioPlayer;
 import cardTreatment.Bajada;
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
@@ -35,13 +35,13 @@ public class Playing extends State implements Statemethods {
 	private BufferedImage tablero, fondo;
 	private Player player = null;
 	private GameButton[] buttons = new GameButton[2];
-	private Radio radio;
 	private ResguardoOverlay resguardo;
 	private PointsOverlay pointDisplay;
 	private PauseOverlay pauseOverlay;
 	private Slot slot = null;
-	private int posI = 0, posJ = 0, numActions = 0, justBajado = 0;
+	private int posI = 0, posJ = 0, numActions = 0, justBajado = 0, contSound = 0;
 	private ArrayList<Bajada> bajadas;
+	private ArrayList<Boolean> aux;
 	private Baraja baraja;
 	private Descartes descartes;
 	
@@ -49,12 +49,12 @@ public class Playing extends State implements Statemethods {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
 		fondo = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
-		radio = new Radio();
 		resguardo = new ResguardoOverlay(1);
 		pointDisplay = new PointsOverlay();
 		pauseOverlay = new PauseOverlay(g);
 		bajadas = new ArrayList<>();
 		baraja = new Baraja();
+		aux = new ArrayList<>();
 		descartes = new Descartes();
 		iniButtons();
 	}
@@ -75,16 +75,26 @@ public class Playing extends State implements Statemethods {
 			}
 		} else {
 			if (baraja != player.getFullMano().getBaraja()) { baraja = player.getFullMano().getBaraja(); }
-			if (descartes != player.getFullMano().getDescartes()){ descartes = player.getFullMano().getDescartes(); }
-			if (bajadas != player.getListBajada()) { bajadas = player.getListBajada(); }
+			if (descartes != player.getFullMano().getDescartes()) { descartes = player.getFullMano().getDescartes(); }
+			if (bajadas != player.getListBajada()) {
+				ArrayList<Bajada> aux = new ArrayList<>(bajadas);
+				bajadas = player.getListBajada();
+				if (bajadas != null) {
+					for (int i = 0; i < aux.size(); i++) {
+						if (aux.get(i) == null && bajadas.get(i) != null) {
+							game.getAudioPlayer().playEffect(AudioPlayer.BAJAR);
+						}
+					}
+				}
+			}
 			if (resguardo != player.getResguardo()) { resguardo = player.getResguardo(); }
 			if (pointDisplay.getPointList() != player.getPointList()) { pointDisplay.setPointList(player.getPointList()); }
 			if (pointDisplay.getNameList() != player.getNameList()) { pointDisplay.setNameList(player.getNameList()); }
+			if (aux != player.getTurns()) { aux = player.getTurns(); if (player.isYourTurn()) game.getAudioPlayer().playEffect(AudioPlayer.TURN); }
 
 			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 			if (!resguardo.isActivated()) { buttons[0].draw(g); }
 			buttons[1].draw(g);
-			radio.render(g);
 			for (Bajada b : bajadas) {
 				if (b != null && b.isBajado()) { b.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco(), player.getFullMano().getAddMarco(), player.getFullMano().getClippedMarco()); }
 			}
@@ -96,11 +106,21 @@ public class Playing extends State implements Statemethods {
 				if (Join.getClient().isRoundOver()) {
 					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 					pointDisplay.draw(g, player.getRoundWinner());
+					if (contSound == 0) {
+						if (player.getRoundWinner()) game.getAudioPlayer().playEffect(AudioPlayer.LVL_COMPLETED);
+						else game.getAudioPlayer().playEffect(AudioPlayer.LVL_LOST);
+						contSound = 1;
+					}
 				}
 			} else {
 				if (Host.getServer().getClient().isRoundOver()) {
 					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 					pointDisplay.draw(g, player.getRoundWinner());
+					if (contSound == 0) {
+						if (player.getRoundWinner()) game.getAudioPlayer().playEffect(AudioPlayer.LVL_COMPLETED);
+						else game.getAudioPlayer().playEffect(AudioPlayer.LVL_LOST);
+						contSound = 1;
+					}
 				}
 			}
 		}
@@ -118,7 +138,7 @@ public class Playing extends State implements Statemethods {
 				g.drawString(player.getBajada().getRound().sacarObjetivosTrios(), 22, 609);
 			} else { g.drawString(player.getBajada().getRound().sacarObjetivosTrios(), 22, 626); }
 			int yPos = 648;
-			for (int i = 0; i < player.getNameList().size(); i++) {
+			for (int i = 0; i < player.getTurns().size(); i++) {
 				g.setColor(Color.white);
 				if (i == player.getTurno()) g.drawString(player.getNameList().get(i) + " (you)", 42, yPos);
 				else g.drawString(player.getNameList().get(i), 42, yPos);
@@ -159,6 +179,7 @@ public class Playing extends State implements Statemethods {
 			
 			if (resguardo.isActivated()) {
 				if (resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
+					game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 					resguardo.getButton().setIndex(1);
 				}
 				for (int i = 0; i < resguardo.getSlots().size(); i++) {
@@ -179,16 +200,12 @@ public class Playing extends State implements Statemethods {
 			} else {
 				if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 					buttons[0].setIndex(buttons[0].getIndex() + 1);
+					game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 				}
 			}
 			
-			if (radio.getHitbox().contains(e.getX(), e.getY())) {
-				if (radio.isMuted()) {
-					radio.setRadioState(3);
-				} else { radio.setRadioState(1); }
-			}
-			
 			if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 				if (player.getBajada() != null && !player.getBajada().isBajado() && player.getBajada().canBajarse(resguardo.getCartas())) {
 					buttons[1].setIndex(3);
 				} else { buttons[1].setIndex(1); }
@@ -217,6 +234,7 @@ public class Playing extends State implements Statemethods {
 			for (i = 0; i < player.getFullMano().getSlots().size(); i++) {
 				Slot s = player.getFullMano().getSlots().get(i);
 				if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+					game.getAudioPlayer().playEffect(AudioPlayer.CARDINSLOT);
 					if (slot.isIn()) {
 						resguardo.getSlots().get(posI)[posJ].remove();
 					}
@@ -228,7 +246,10 @@ public class Playing extends State implements Statemethods {
 			
 			if (resguardo.isActivated()) {
 				if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
+					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 					if (numActions == 1 && player.getBajada() != null && !player.getBajada().isBajado() && player.getBajada().canBajarse(resguardo.getCartas())) {
+						game.getAudioPlayer().playEffect(AudioPlayer.BAJAR);
+						contSound = 0;
 						justBajado = 1;
 						buttons[1].setIndex(2);
 						player.getBajada().bajarse();
@@ -238,6 +259,7 @@ public class Playing extends State implements Statemethods {
 					} else { buttons[1].setIndex(0); }
 				} else { buttons[1].setIndex(0); }
 				if (resguardo.getButton().getHitbox().contains(e.getX(), e.getY())) {
+					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 					resguardo.getButton().setIndex(0);
 					resguardo.setActivated(false);
 				} else { resguardo.getButton().setIndex(0); }
@@ -248,6 +270,7 @@ public class Playing extends State implements Statemethods {
 							c.setSeleccionada(false);
 							c.setX(resguardo.getSlots().get(i)[j].getX());
 							c.setY(resguardo.getSlots().get(i)[j].getY());
+							game.getAudioPlayer().playEffect(AudioPlayer.CARDINSLOT);
 						}
 					}
 				}
@@ -256,6 +279,7 @@ public class Playing extends State implements Statemethods {
 						Slot s = resguardo.getSlots().get(i)[j];
 						//para meterlo en el resguardo
 						if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+							game.getAudioPlayer().playEffect(AudioPlayer.CARDINSLOT);
 							if (slot.isIn()) {
 								resguardo.getSlots().get(posI)[posJ].remove();
 							}
@@ -267,6 +291,7 @@ public class Playing extends State implements Statemethods {
 				}
 			} else {
 				if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
+					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 					if (buttons[0].getIndex() == 1) { buttons[0].setIndex(2); }
 					if (buttons[0].getIndex() == 3) { buttons[0].setIndex(0); }
 				} else { 
@@ -274,6 +299,7 @@ public class Playing extends State implements Statemethods {
 					if (buttons[0].getIndex() == 3) { buttons[0].setIndex(2); }
 				}
 				if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
+					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 					resguardo.setActivated(true);
 					if (player.canBajarse()) {
 						buttons[1].setIndex(2);
@@ -281,21 +307,12 @@ public class Playing extends State implements Statemethods {
 				} else { buttons[1].setIndex(0); }
 			}
 			
-			if (radio.getHitbox().contains(e.getX(), e.getY())) {
-				if (radio.isMuted()) {
-					radio.setRadioState(0);
-					radio.setMuted(false);
-				} else {
-					radio.setRadioState(2);
-					radio.setMuted(true);
-				}
-			}
-			
 			if (player.getBajada() != null && player.getBajada().isBajado()) {
 				for (Bajada b : bajadas) {
 					if (b != null && b.isBajado() && justBajado == 0 && numActions == 1) {
 						b.mouseReleased(e, player.getSelection());
 						if (b.isAdded()) {
+							game.getAudioPlayer().playEffect(AudioPlayer.AÑADIR);
 							if (slot.isIn()) {
 								resguardo.getSlots().get(posI)[posJ].remove();
 							}
@@ -308,18 +325,21 @@ public class Playing extends State implements Statemethods {
 			}
 			
 			if (baraja.isSelected() && numActions == 0 && baraja.getHitbox().contains(e.getX(), e.getY())) {
+				game.getAudioPlayer().playEffect(AudioPlayer.ROBAR);
 				player.setBaraja(true);
 				numActions = 1;
 				baraja.setSelected(false);
 			}
 			
 			if (descartes.isSelected() && numActions == 0 && descartes.getHitbox().contains(e.getX(), e.getY())) {
+				game.getAudioPlayer().playEffect(AudioPlayer.ROBAR);
 				player.setDescartes(true);
 				descartes.remove();
 				numActions = 1;
 	    		descartes.setSelected(false);
 			}
 			else if (descartes.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null && numActions == 1) {
+				game.getAudioPlayer().playEffect(AudioPlayer.DESCARTAR);
 				if (slot.isIn()) {
 					resguardo.getSlots().get(posI)[posJ].remove();
 				}
@@ -337,6 +357,7 @@ public class Playing extends State implements Statemethods {
 			}
 		}
 	}
+	
 
 	@Override
 	public void mouseMoved(MouseEvent e) {

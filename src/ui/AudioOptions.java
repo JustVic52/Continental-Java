@@ -7,6 +7,7 @@ import static utilz.Constants.UI.VolumeButtons.VOLUME_HEIGHT;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 
+import audio.AudioPlayer;
 import gamestates.Gamestate;
 import mainGame.Game;
 
@@ -61,35 +62,45 @@ public class AudioOptions {
 
 	public void mouseDragged(MouseEvent e) {
 		if (volumeButton.isMousePressed()) {
-//			float valueBefore = volumeButton.getFloatValue();
+			float valueBefore = volumeButton.getFloatValue();
 			volumeButton.changeX(e.getX());
-//			float valueAfter = volumeButton.getFloatValue();
-//			if (valueBefore != valueAfter)
-//				game.getAudioPlayer().setVolume(valueAfter);
+			float valueAfter = volumeButton.getFloatValue();
+			if (valueBefore != valueAfter)
+				game.getAudioPlayer().setVolume(valueAfter);
 		}
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if (musicButton.getHitbox().contains(e.getX(), e.getY()))
+		if (musicButton.getHitbox().contains(e.getX(), e.getY())) {
 			musicButton.setMousePressed(true);
-		if (sfxButton.getHitbox().contains(e.getX(), e.getY()))
+			game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
+		}
+		if (sfxButton.getHitbox().contains(e.getX(), e.getY())) {
 			sfxButton.setMousePressed(true);
-		if (volumeButton.getHitbox().contains(e.getX(), e.getY()))
+			game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
+		}
+		if (volumeButton.getHitbox().contains(e.getX(), e.getY())) {
 			volumeButton.setMousePressed(true);
+			game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
 		if (musicButton.getHitbox().contains(e.getX(), e.getY())) {
 			if (musicButton.isMousePressed()) {
 				musicButton.setMuted(!musicButton.isMuted());
-//				game.getAudioPlayer().toggleSongMute();
+				game.getAudioPlayer().toggleSongMute();
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 			}
 
 		} else if (sfxButton.getHitbox().contains(e.getX(), e.getY())) {
 			if (sfxButton.isMousePressed()) {
 				sfxButton.setMuted(!sfxButton.isMuted());
-//				game.getAudioPlayer().toggleEffectMute();
+				game.getAudioPlayer().toggelEffectMute();
+				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 			}
+		} else if (volumeButton.getHitbox().contains(e.getX(), e.getY())) {
+			game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
 		}
 
 		musicButton.resetBools();

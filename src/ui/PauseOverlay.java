@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import audio.AudioPlayer;
 import gamestates.Gamestate;
 import gamestates.Playing;
 import mainGame.Game;
@@ -21,8 +22,10 @@ public class PauseOverlay {
 	private int bgX, bgY, bgW, bgH;
 	private AudioOptions audioOptions;
 	private URMButton quitOptions, openOptions;
+	private Game game;
 
 	public PauseOverlay(Game game) {
+		this.game = game;
 		loadBackground();
 		createUrmButtons();
 		audioOptions = game.getAudioOptions();
@@ -67,23 +70,27 @@ public class PauseOverlay {
 
 	public void mousePressed(MouseEvent e) {
 		if (visible) {
-			if (quitOptions.getHitbox().contains(e.getX(), e.getY()))
+			if (quitOptions.getHitbox().contains(e.getX(), e.getY())) {
 				quitOptions.setMousePressed(true);
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
+			}
 			else audioOptions.mousePressed(e);
 		} else {
-			if (openOptions.getHitbox().contains(e.getX(), e.getY()))
+			if (openOptions.getHitbox().contains(e.getX(), e.getY())) {
 				openOptions.setMousePressed(true);
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
+			}
 		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
 		if (visible) {
 			if (quitOptions.getHitbox().contains(e.getX(), e.getY())) {
-				if (quitOptions.isMousePressed()) { visible = false; }
+				if (quitOptions.isMousePressed()) { visible = false; game.getAudioPlayer().playEffect(AudioPlayer.FLACK); }
 			} else audioOptions.mouseReleased(e);
 		} else {
 			if (openOptions.getHitbox().contains(e.getX(), e.getY()))
-				if (openOptions.isMousePressed()) { visible = true; }
+				if (openOptions.isMousePressed()) { visible = true; game.getAudioPlayer().playEffect(AudioPlayer.FLACK); }
 		}
 		quitOptions.resetBools();
 		openOptions.resetBools();

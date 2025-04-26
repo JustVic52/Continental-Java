@@ -212,7 +212,7 @@ public class Client extends Thread {
 	private void recieveCard() {
 		try {
 			Carta carta = (Carta) in.readObject();
-			System.out.println(carta);
+//			System.out.println(carta);
 			player.getFullMano().take(carta);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

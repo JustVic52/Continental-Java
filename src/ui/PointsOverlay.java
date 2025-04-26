@@ -1,8 +1,12 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import mainGame.Game;
@@ -33,6 +37,12 @@ public class PointsOverlay {
 	
 	public void draw (Graphics g, boolean winner) {
 		g.setColor(Color.white);
+		Font fuente;
+		try {
+			fuente = Font.createFont(Font.TRUETYPE_FONT, new File("res/fuentes/Minecraftia-Regular.ttf"));
+			fuente = fuente.deriveFont(Font.PLAIN, 18);
+		}
+		catch (FontFormatException | IOException e) {}
 		int xPos = x + 65, yPos = y + 97;
 		g.drawImage(img, x, y, width, height, null);
 		if (winner) g.drawImage(winLoseBanner.getSubimage(0, 0, 500, 152), x, y - 160, winLoseBanner.getWidth(), 152, null);
