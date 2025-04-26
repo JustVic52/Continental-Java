@@ -27,6 +27,7 @@ public class AudioPlayer {
 	public static int BAJAR = 7;
 	public static int AÑADIR = 8;
 	public static int LVL_LOST = 9;
+	public static int BEEP = 10;
 	
 	private Clip[] songs, effects;
 	private int currentSongId;
@@ -52,7 +53,7 @@ public class AudioPlayer {
 	}
 	
 	private void loadSongs() {
-		String[] names = {"Menu theme", "Card Faces On My Mind", "About that ace", "CardShark Dreams"};
+		String[] names = {"Menu theme", "Card Faces On My Mind", "About that ace", "to be and just to be", "CardShark Dreams", "Ace of Pixels", "In a blank world"};
 		songs = new Clip[names.length];
 		for (int i = 0; i < songs.length; i++) {
 			songs[i] = getClip(names[i]);
@@ -90,7 +91,7 @@ public class AudioPlayer {
 	}
 	
 	private void loadEffects() {
-		String[] names = {"lvlcompleted", "cardInSlot", "robar", "flick", "flack", "descartar", "turn", "bajar", "añadir", "lvllost"};
+		String[] names = {"lvlcompleted", "cardInSlot", "robar", "flick", "flack", "descartar", "turn", "bajar", "añadir", "lvllost", "beep"};
 		effects = new Clip[names.length];
 		for (int i = 0; i < effects.length; i++) {
 			effects[i] = getClip(names[i]);

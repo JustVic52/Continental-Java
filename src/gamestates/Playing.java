@@ -25,6 +25,7 @@ import ui.GameButton;
 import ui.PauseOverlay;
 import ui.PointsOverlay;
 import ui.ResguardoOverlay;
+import utilz.CircleTimer;
 import utilz.Constants;
 import utilz.LoadSave;
 
@@ -44,6 +45,7 @@ public class Playing extends State implements Statemethods {
 	private ArrayList<Boolean> aux;
 	private Baraja baraja;
 	private Descartes descartes;
+	private CircleTimer circleTimer;
 	
 	public Playing(Game g) {
 		super(g);
@@ -56,6 +58,7 @@ public class Playing extends State implements Statemethods {
 		baraja = new Baraja();
 		aux = new ArrayList<>();
 		descartes = new Descartes();
+		circleTimer = new CircleTimer(170, 275, g);
 		iniButtons();
 	}
 	
@@ -79,9 +82,9 @@ public class Playing extends State implements Statemethods {
 			if (bajadas != player.getListBajada()) {
 				ArrayList<Bajada> aux = new ArrayList<>(bajadas);
 				bajadas = player.getListBajada();
-				if (bajadas != null) {
-					for (int i = 0; i < aux.size(); i++) {
-						if (aux.get(i) == null && bajadas.get(i) != null) {
+				if (bajadas != null && !bajadas.isEmpty() && aux.size() == bajadas.size()) {
+					for (int i = 0; i < bajadas.size(); i++) {
+						if (bajadas.get(i) != null && aux.get(i) == null) {
 							game.getAudioPlayer().playEffect(AudioPlayer.BAJAR);
 						}
 					}
@@ -98,6 +101,7 @@ public class Playing extends State implements Statemethods {
 			for (Bajada b : bajadas) {
 				if (b != null && b.isBajado()) { b.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco(), player.getFullMano().getAddMarco(), player.getFullMano().getClippedMarco()); }
 			}
+			circleTimer.draw(g);
 			resguardo.draw(g, player.getFullMano().getImage());
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());
 			printStrings(g);
@@ -292,8 +296,8 @@ public class Playing extends State implements Statemethods {
 			} else {
 				if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
-					if (buttons[0].getIndex() == 1) { buttons[0].setIndex(2); }
-					if (buttons[0].getIndex() == 3) { buttons[0].setIndex(0); }
+					if (buttons[0].getIndex() == 1) { buttons[0].setIndex(2); player.setRetake(true); }
+					if (buttons[0].getIndex() == 3) { buttons[0].setIndex(0); player.setRetake(false); }
 				} else { 
 					if (buttons[0].getIndex() == 1) { buttons[0].setIndex(0); }
 					if (buttons[0].getIndex() == 3) { buttons[0].setIndex(2); }
@@ -345,6 +349,7 @@ public class Playing extends State implements Statemethods {
 				}
 				player.getFullMano().discard(slot.isIn(), posI, posJ);
 				descartes.take(player.getUltimaCarta());
+				if (player.isRetake()) circleTimer.start();
 				player.setDescartado(true);
 			} else {
 				player.deselect();

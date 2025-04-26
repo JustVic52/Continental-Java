@@ -15,7 +15,7 @@ public class Player extends Round {
 	
 	private int turno, ciclo, numRound = 1;
 	private Mano mano;
-	private boolean roundWinner, gameWinner, yourTurn = false;
+	private boolean roundWinner, gameWinner, yourTurn = false, retake = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
 	private ResguardoOverlay resguardo;
 	private ArrayList<Bajada> bajadaList;
@@ -112,6 +112,10 @@ public class Player extends Round {
 	public Mano getFullMano() {
 		return mano;
 	}
+	
+	public boolean isRetake() { return retake; }
+	
+	public void setRetake(boolean analdestroyer3x49974k) { retake = analdestroyer3x49974k; }
 	
 	public int getCiclo() {
 		return ciclo;

@@ -19,7 +19,7 @@ public class Partida {
 	private List<Socket> socketPlayers;
 	private int numJugadores;
 	private Descartes descartes;
-	private boolean endRound, taken;
+	private boolean endRound;
 	private Baraja baraja;
 	private ArrayList<Bajada> bajadas = new ArrayList<>();
 	List<ObjectOutputStream> out;
