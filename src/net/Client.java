@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import cardTreatment.Bajada;
 import cardTreatment.Carta;
@@ -29,34 +28,37 @@ public class Client extends Thread {
 
 	@Override
 	public void run() {
-		try {
-			//creación y obtención del player.
-			out = new ObjectOutputStream(socket.getOutputStream());
-			out.flush();
-			in = new ObjectInputStream(socket.getInputStream());
-			player = new Player(in.readInt());
-			//número de jugadores
-			recievePlayers();
-			//Nombres de los jugadores
-			recieveNames();
-			starting = true;
-			//lógica del juego
-			for (int i = 0; i < 10; i++) {
-				//Recibir cartas
-				recieveMano();
-				//jugar ronda
-				runGame();
-			}			
-			boolean winner = in.readBoolean();
-			player.setGameWinner(winner);
-			gameOver = true;
-			in.close();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				//creación y obtención del player.
+				out = new ObjectOutputStream(socket.getOutputStream());
+				out.flush();
+				in = new ObjectInputStream(socket.getInputStream());
+				player = new Player(in.readInt());
+				//número de jugadores
+				recievePlayers();
+				//Nombres de los jugadores
+				recieveNames();
+				starting = true;
+				//lógica del juego
+				for (int i = 0; i < 10; i++) {
+					//Recibir cartas
+					recieveMano();
+					//jugar ronda
+					runGame();
+				}			
+				boolean winner = in.readBoolean();
+				player.setGameWinner(winner);
+				gameOver = true;
+				in.close();
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void recieveNames() {
 		ArrayList<String> aux = new ArrayList<>();
 		try {
@@ -76,6 +78,7 @@ public class Client extends Thread {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void runGame() {
 		roundOver = false;
 		int action = 1;
@@ -164,7 +167,7 @@ public class Client extends Thread {
 						aux = (ArrayList<Carta>) in.readObject();
 						player.setFullDescartes(aux);
 						player.setCiclo(1);
-						if (player.getNameList().size() != 1) try { Thread.sleep(3000); } catch (InterruptedException e) {}
+						if (player.getNumJugadores() != 1) try { Thread.sleep(3000); } catch (InterruptedException e) {}
 						player.setCiclo(0);
 						out.writeBoolean(player.isRetake());
 						out.flush();
@@ -243,12 +246,14 @@ public class Client extends Thread {
 			for (int i = 0; i < numJugadores; i++) {
 				aux.add(0);
 			}
+			player.setNumJugadores(numJugadores);
 			player.setPointList(aux);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void exchangePoints() {
 		ArrayList<Integer> aux = new ArrayList<>();
 		try {
@@ -263,7 +268,6 @@ public class Client extends Thread {
 	private void recieveCard() {
 		try {
 			Carta carta = (Carta) in.readObject();
-//			System.out.println(carta);
 			player.getFullMano().take(carta);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -272,6 +276,7 @@ public class Client extends Thread {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void recieveMano() {
 		try {
 			ArrayList<Carta> aux = (ArrayList<Carta>) in.readObject();

@@ -7,11 +7,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import audio.AudioPlayer;
+import audioClasses.AudioPlayer;
 import gameGraphics.GamePanel;
 import mainGame.Game;
 import net.Client;
@@ -29,8 +28,8 @@ public class Join extends State implements Statemethods {
 	
 	public Join(Game g) {
 		super(g);
-		nombre = new CuadroTexto(604, 293, 196, 19, 15);
-		ip = new CuadroTexto(604, 354, 196, 19, 15);
+		nombre = new CuadroTexto(604, 293, 196, 19, 15, g);
+		ip = new CuadroTexto(604, 354, 196, 19, 15, g);
 		loadButtons();
 		loadBackground();
 		background = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
@@ -98,11 +97,14 @@ public class Join extends State implements Statemethods {
 					buttons[0].setMousePressed(false);
 					Socket s = null;
 					try {
+						if (client != null && client.isAlive()) { client.closeClient(); client.interrupt(); }
 						s = new Socket(ip.getTexto() /*InetAddress.getLocalHost()*/, 6020);
 						s.setKeepAlive(true);
 						client = new Client(s, nombre.getTexto());
+						client.setName("client");
 						client.start();
 						game.getAudioPlayer().startLoop(AudioPlayer.START_PLAYING);
+						game.setPlaying(new Playing(game));
 						Gamestate.state = Gamestate.PLAYING;
 					} catch (UnknownHostException e1) {
 						e1.printStackTrace();

@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import audio.AudioPlayer;
+import audioClasses.AudioPlayer;
 import mainGame.Game;
 import ui.MenuButton;
 import utilz.LoadSave;
@@ -68,10 +68,12 @@ public class Menu extends State implements Statemethods {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		for (MenuButton mb : buttons) {
+		for (int i = 0; i < buttons.length; i++) {
+			MenuButton mb = buttons[i];
 			if (mb.getHitbox().contains(e.getX(), e.getY())) {
 				if (mb.isMousePressed()) {
 					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
+					if (i == 3) { game.getAudioPlayer().stopSong(); }
 					mb.applyGamestate();
 				}
 			}

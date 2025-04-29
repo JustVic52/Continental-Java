@@ -1,4 +1,4 @@
-package audio;
+package audioClasses;
 
 import java.io.IOException;
 import java.net.URL;
@@ -49,12 +49,12 @@ public class AudioPlayer {
 	public void stopSong() {
 		if (songs[currentSongId].isActive()) {
 			songs[currentSongId].stop();
+			songs[currentSongId].setMicrosecondPosition(0);
 		}
 	}
 	
 	private void loadSongs() {
-		String[] names = {"Menu theme", "Card Faces On My Mind", "About that ace", "to be and just to be", 
-				"CardShark Dreams", "Ace of Pixels", "In a blank world", "Pixelated Love", "Pixel Showdown", "Pixel Hearts", "In a pixel world"};
+		String[] names = {"Menu theme", "Card Faces On My Mind", "About that ace", "to be and just to be", "Cardshark Dreams", "Ace of Pixels", "In a blank world", "Pixelated Love", "Pixel Showdown", "Pixel Hearts", "In a pixel world"};
 		songs = new Clip[names.length];
 		for (int i = 0; i < songs.length; i++) {
 			songs[i] = getClip(names[i]);

@@ -236,18 +236,18 @@ public class Mano {
 		return res;
 	}
 	
-	private String resguardoToString() {
-		String res = "[";
-		for (Slot[] sA : resguardo) {
-			res += "[";
-			for(int i = 0; i < sA.length; i++) {
-				if (i != 0) res += ", ";
-				res += sA[i].getCarta();
-			}
-			res += "]";
-		}
-		return res + "]";
-	}
+//	private String resguardoToString() {
+//		String res = "[";
+//		for (Slot[] sA : resguardo) {
+//			res += "[";
+//			for(int i = 0; i < sA.length; i++) {
+//				if (i != 0) res += ", ";
+//				res += sA[i].getCarta();
+//			}
+//			res += "]";
+//		}
+//		return res + "]";
+//	}
 
 	public Carta getUltimaCarta() {
 		return ultimaCartaEliminada;

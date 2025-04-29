@@ -5,8 +5,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import mainGame.Game;
@@ -37,10 +37,10 @@ public class PointsOverlay {
 	
 	public void draw (Graphics g, boolean winner) {
 		g.setColor(Color.white);
-		Font fuente;
 		try {
-			fuente = Font.createFont(Font.TRUETYPE_FONT, new File("res/fuentes/Minecraftia-Regular.ttf"));
-			fuente = fuente.deriveFont(Font.PLAIN, 18);
+			InputStream is = getClass().getResourceAsStream("/fuentes/Minecraftia-Regular.ttf");
+			Font fuente = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, 18);
+			g.setFont(fuente);
 		}
 		catch (FontFormatException | IOException e) {}
 		int xPos = x + 65, yPos = y + 97;

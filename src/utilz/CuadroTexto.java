@@ -1,6 +1,5 @@
 package utilz;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -11,6 +10,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.Timer;
 
 import gameGraphics.GamePanel;
+import mainGame.Game;
 
 public class CuadroTexto {
 	
@@ -21,10 +21,12 @@ public class CuadroTexto {
 	private BufferedImage marco;
 	private Timer caretTimer;
 	private boolean caret = false;
+	private Game game;
 	
-	public CuadroTexto(int xPos, int yPos, int w, int h, int l) {
+	public CuadroTexto(int xPos, int yPos, int w, int h, int l, Game g) {
 		x = xPos;
 		y = yPos;
+		game = g;
 		width = w;
 		height = h;
 		length = l;
@@ -59,9 +61,10 @@ public class CuadroTexto {
 	
 	public void mouseClicked(MouseEvent e) {
 		if (hitbox.contains(e.getX(), e.getY())) {
+			game.getGamePanel().requestFocusInWindow();
 			active = true;
 			caretTimer.start();
-		} else {
+		} else if (active) {
 			active = false;
 			caretTimer.stop();
 		}
@@ -71,7 +74,7 @@ public class CuadroTexto {
 		if (active) {
 			if (e.getKeyChar() == '\b' && texto.length() > 0) {
 				texto = texto.substring(0, texto.length() - 1);
-			} else if (texto == null || texto.length() <= length - 1) {
+			} else if (texto.length() < length && !Character.isISOControl(e.getKeyChar())) {
 				texto += e.getKeyChar();
 			}
 		}

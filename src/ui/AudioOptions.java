@@ -7,7 +7,7 @@ import static utilz.Constants.UI.VolumeButtons.VOLUME_HEIGHT;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 
-import audio.AudioPlayer;
+import audioClasses.AudioPlayer;
 import gamestates.Gamestate;
 import mainGame.Game;
 

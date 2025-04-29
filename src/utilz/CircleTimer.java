@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.Timer;
 
-import audio.AudioPlayer;
+import audioClasses.AudioPlayer;
 import mainGame.Game;
 
 public class CircleTimer {

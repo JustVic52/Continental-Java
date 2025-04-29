@@ -1,7 +1,5 @@
 package utilz;
 
-import mainGame.Game;
-
 public class Constants {
 	
 	public static class UI {

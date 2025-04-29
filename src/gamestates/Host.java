@@ -8,8 +8,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import audio.AudioPlayer;
+import audioClasses.AudioPlayer;
 import mainGame.Game;
+import net.Client;
 import net.Server;
 import ui.ComboButton;
 import ui.URMButton;
@@ -27,7 +28,7 @@ public class Host extends State implements Statemethods {
 	
 	public Host(Game g) {
 		super(g);
-		texto = new CuadroTexto(604, 354, 196, 19, 15);
+		texto = new CuadroTexto(604, 354, 196, 19, 15, g);
 		loadButtons();
 		loadBackground();
 		background = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
@@ -107,20 +108,18 @@ public class Host extends State implements Statemethods {
 					buttons[0].setMousePressed(false);
 					ServerSocket ss = null;
 					try {
+						if (server != null && server.isAlive()) { server.closeServer(); server.interrupt(); }
 						ss = new ServerSocket(6020);
 						server = new Server(ss, numOfPlayers, texto.getTexto());
+						server.setName("server");
 						server.start();
 						boolean clave = server.isAlive();
-						while (clave) { clave = server.getClient() == null; }
+						while (!clave) { clave = server.getClient().isAlive(); }
 						game.getAudioPlayer().startLoop(AudioPlayer.START_PLAYING);
+						game.setPlaying(new Playing(game));
 						Gamestate.state = Gamestate.PLAYING;
 					} catch (IOException e1) {
-						try {
-							if (ss != null) { ss.close(); }
-							if (ss == null && server != null && server.isAlive()) { server.interrupt(); }
-						} catch (IOException e2) {
-							
-						}
+						if (ss == null && server != null && server.isAlive()) { server.interrupt(); }
 					}
 				}
 			}

@@ -5,17 +5,12 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import audio.AudioPlayer;
+import audioClasses.AudioPlayer;
 import gamestates.Gamestate;
 import gamestates.Host;
 import gamestates.Join;
-import gamestates.Playing;
 import mainGame.Game;
-import utilz.Constants;
 import utilz.LoadSave;
-import static utilz.Constants.UI.PauseButtons.*;
-import static utilz.Constants.UI.URMButtons.*;
-import static utilz.Constants.UI.VolumeButtons.*;
 
 public class PauseOverlay {
 

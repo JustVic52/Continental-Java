@@ -11,6 +11,7 @@ import cardTreatment.Slot;
 import gameDynamics.Round;
 import utilz.LoadSave;
 
+@SuppressWarnings("serial")
 public class ResguardoOverlay extends Round {
 	
 	private List<Slot[]> slots;

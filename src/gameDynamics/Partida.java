@@ -58,6 +58,7 @@ public class Partida {
 
 	public Descartes getDescartes() { return descartes; }
 
+	@SuppressWarnings("unchecked")
 	public void run() {
 		for (int i = 0; i < numJugadores; i++) {
 			bajadas.add(new Bajada(round.getNumRound(), 0, 0));
@@ -86,6 +87,11 @@ public class Partida {
 					}
 					aux = (ArrayList<Carta>) inS.readObject();
 					descartes.setDescartes(aux);
+					if (descartes.getDescartes().size() > 5) {
+						Carta last = descartes.getCarta();
+						descartes.clear();
+						descartes.take(last);
+					}
 					updateDescartes(false);
 					//fase 2: bajarse (opcional)
 					boolean bajarse = inS.readBoolean();
@@ -136,6 +142,7 @@ public class Partida {
 		bajadas = new ArrayList<>();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setAndSendRetakes(int numR) {
 		ArrayList<Boolean> retakes = new ArrayList<>();
 		Map<Boolean, Integer> prioridades = new HashMap<>();
@@ -259,20 +266,20 @@ public class Partida {
 		}
 	}
 
-	private List<Carta> makePersonalizedCards() {
-		List<Carta> res = new ArrayList<>();
-		res.add(new Carta(9,1,0,0));
-		res.add(new Carta(9,2,0,0));
-		res.add(new Carta(9,3,0,0));
-		res.add(new Carta(9,4,0,0));
-		res.add(new Carta(10,1,0,0));
-		res.add(new Carta(10,2,0,0));
-		res.add(new Carta(10,3,0,0));
+//	private List<Carta> makePersonalizedCards() {
+//		List<Carta> res = new ArrayList<>();
+//		res.add(new Carta(9,1,0,0));
+//		res.add(new Carta(9,2,0,0));
+//		res.add(new Carta(9,3,0,0));
+//		res.add(new Carta(9,4,0,0));
+//		res.add(new Carta(10,1,0,0));
+//		res.add(new Carta(10,2,0,0));
+//		res.add(new Carta(10,3,0,0));
 //		res.add(new Carta(10,4,0,0));
 //		res.add(new Carta(10,4,0,0));
-		
-		return res;
-	}
+//		
+//		return res;
+//	}
 
 	public void playGame() {
 		//número de jugadores
@@ -350,5 +357,15 @@ public class Partida {
 
 	public Round getRound() {
 		return round;
+	}
+
+	public void closeGates() {
+		try {
+			for (int i = 0; i < numJugadores; i++) {
+				out.get(i).close();
+				in.get(i).close();
+				socketPlayers.get(i).close();
+			}
+		} catch (IOException e) {}
 	}
 }

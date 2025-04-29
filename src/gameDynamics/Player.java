@@ -3,7 +3,6 @@ package gameDynamics;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import cardTreatment.Bajada;
 import cardTreatment.Carta;
@@ -11,9 +10,9 @@ import cardTreatment.Mano;
 import cardTreatment.Slot;
 import ui.ResguardoOverlay;
 
-public class Player extends Round {
+public class Player {
 	
-	private int turno, ciclo = 0, numRound = 1, contRetake = 5, contDes = 0;
+	private int turno, ciclo = 0, numRound = 1, contRetake = 5, contDes = 0, numJugadores = 1;
 	private Mano mano;
 	private boolean roundWinner, gameWinner, yourTurn = false, retake = false, taken = false, vaADescartar = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
@@ -257,7 +256,17 @@ public class Player extends Round {
 		descartado = false;
 		resguardo.updateTablero(numRound);
 		bajadaList = new ArrayList<>();
-		initLists();
+		initBajada();
+	}
+	
+	private void initBajada() {
+		for (int i = 0; i < 4; i++) {
+			if (i == turno) {
+				bajadaList.add(turno, new Bajada(numRound, 229,270));
+			} else {
+				bajadaList.add(null);
+			}
+		}
 	}
 
 	public void countPoints() {
@@ -296,6 +305,12 @@ public class Player extends Round {
 	public int getContDes() {
 		return contDes;
 	}
-	
+
 	public void setContDes(int nice) { contDes = nice; }
+
+	public void setNumJugadores(int numJug) {
+		numJugadores = numJug;
+	}
+	
+	public int getNumJugadores() { return numJugadores; }
 }

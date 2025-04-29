@@ -1,25 +1,21 @@
 package cardTreatment;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Escalera {
 
 	private List<Carta> escalera;
 	private int paloOfEscalera;
-	private int[] numeros;
 	
 	public Escalera() {
 		escalera = new ArrayList<>();
 		paloOfEscalera = 0;
-		numeros = new int[13];
 	}
 	
 	public void clear() {
 		escalera = new ArrayList<>();
 		paloOfEscalera = 0;
-		numeros = new int[13];
 	}
 	
 	public List<Carta> getEscalera() {
@@ -81,16 +77,16 @@ public class Escalera {
 		return false;
 	}
 	
-	private String numerosToString() {
-		String res = "[";
-		boolean first = true;
-		for (int i : numeros) {
-			if (!first) { res += ", "; }
-			res += i;
-			first = false;
-		}
-		return res + "]";
-	}
+//	private String numerosToString() {
+//		String res = "[";
+//		boolean first = true;
+//		for (int i : numeros) {
+//			if (!first) { res += ", "; }
+//			res += i;
+//			first = false;
+//		}
+//		return res + "]";
+//	}
 
 	public boolean canBeAdded(List<Carta> aux, int i) {
 		if (i >= 0 && aux.get(i + 1).isComodin()) { return canBeEscalera(aux); }

@@ -5,8 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.JPanel;
 
@@ -27,6 +27,8 @@ public class GamePanel extends JPanel {
 		mouseInputs = new MouseInputs(this);
 		game = g;
 		setPanelSize();
+		setFocusable(true);
+		requestFocusInWindow();
 		addKeyListener(new KeyboardInputs(this));
 		addMouseListener(mouseInputs);
 		addMouseMotionListener(mouseInputs);
@@ -40,13 +42,10 @@ public class GamePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		try {
-            fuente = Font.createFont(Font.TRUETYPE_FONT, new File("res/fuentes/Minecraftia-Regular.ttf"));
-            fuente = fuente.deriveFont(Font.PLAIN, 18); // Ajustar tamaño y estilo
-        } catch (IOException e) {
-            e.printStackTrace();
-            fuente = new Font("Arial", Font.BOLD, 12);
-        } catch (FontFormatException e) {
-            e.printStackTrace();
+			InputStream is = getClass().getResourceAsStream("/fuentes/Minecraftia-Regular.ttf");
+			Font fuente = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, 18);
+			g.setFont(fuente);
+        } catch (IOException | FontFormatException e) {
             fuente = new Font("Arial", Font.BOLD, 12);
         }
 		g.setFont(fuente);

@@ -52,14 +52,14 @@ public class Bajada implements Serializable {
 		}
 	}
 	
-	private void drawHitboxes(Graphics g) {
-		for (Map.Entry<List<Carta>, Rectangle> entrada : addHitbox.entrySet()) {
-			g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
-		}
-		for (Map.Entry<List<Carta>, Rectangle> entrada : hitboxList.entrySet()) {
-			g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
-		}
-	}
+//	private void drawHitboxes(Graphics g) {
+//		for (Map.Entry<List<Carta>, Rectangle> entrada : addHitbox.entrySet()) {
+//			g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
+//		}
+//		for (Map.Entry<List<Carta>, Rectangle> entrada : hitboxList.entrySet()) {
+//			g.drawRect(entrada.getValue().x, entrada.getValue().y, entrada.getValue().width, entrada.getValue().height);
+//		}
+//	}
 
 	public boolean canBajarse(List<List<Carta>> bajada) {
 		if (bajado || bajada.isEmpty() || bajada == null) { return false; }

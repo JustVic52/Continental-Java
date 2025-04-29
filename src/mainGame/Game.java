@@ -2,7 +2,9 @@ package mainGame;
 
 import java.awt.Graphics;
 
-import audio.AudioPlayer;
+import javax.swing.JComponent;
+
+import audioClasses.AudioPlayer;
 import gameGraphics.GamePanel;
 import gameGraphics.GameWindow;
 import gamestates.Gamestate;
@@ -16,6 +18,7 @@ import utilz.Constants;
 
 public class Game implements Runnable {
 	
+	@SuppressWarnings("unused")
 	private GameWindow gameWindow;
 	private GamePanel gamePanel;
 	private Thread gameThread;
@@ -141,4 +144,20 @@ public class Game implements Runnable {
 	public AudioOptions getAudioOptions() { return audioOptions; }
 	
 	public AudioPlayer getAudioPlayer() { return audioPlayer; }
+
+	public void setPlaying(Playing playing2) {
+		playing = playing2;
+	}
+
+	public JComponent getGamePanel() {
+		return gamePanel;
+	}
+
+	public void setHost(Host host2) {
+		host = host2;
+	}
+	
+	public void setJoin(Join join2) {
+		join = join2;
+	}
 }

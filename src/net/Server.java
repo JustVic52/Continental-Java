@@ -6,12 +6,10 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import gameDynamics.Partida;
-import gamestates.Gamestate;
 
 public class Server extends Thread {
 	
@@ -35,42 +33,48 @@ public class Server extends Thread {
 	
 	@Override
 	public void run() {
-		ArrayList<ObjectOutputStream> listaOut = new ArrayList<>();
-		Socket s;
-		try {
-			Socket sC = new Socket(InetAddress.getLocalHost(), 6020);
-			sC.setKeepAlive(true);
-			s = server.accept();
-			listaPlayers.add(s);
-			client = new Client(sC, nombre);
-			//Mención especial a mi novia por ver en directo cómo modificaba esto y funcionaba.
-			client.start();
-			listaOut.add(new ObjectOutputStream(s.getOutputStream()));
-			listaOut.get(0).flush();
-			listaOut.get(0).writeInt(0);
-			listaOut.get(0).flush();
-			if (numPlayers > 1) {
-				int i = 1;
-				while (i < numPlayers) {
-					s = server.accept();
-					listaPlayers.add(s);
-					listaOut.add(new ObjectOutputStream(s.getOutputStream()));
-					listaOut.get(i).flush();
-					listaOut.get(i).writeInt(i);
-					listaOut.get(i).flush();
-					i++;
+		while (!Thread.currentThread().isInterrupted()) {
+			ArrayList<ObjectOutputStream> listaOut = new ArrayList<>();
+			Socket s;
+			try {
+				Socket sC = new Socket(InetAddress.getLocalHost(), 6020);
+				sC.setKeepAlive(true);
+				s = server.accept();
+				listaPlayers.add(s);
+				client = new Client(sC, nombre);
+				//Mención especial a mi novia por ver en directo cómo modificaba esto y funcionaba.
+				client.setName("client");
+				client.start();
+				listaOut.add(new ObjectOutputStream(s.getOutputStream()));
+				listaOut.get(0).flush();
+				listaOut.get(0).writeInt(0);
+				listaOut.get(0).flush();
+				if (numPlayers > 1) {
+					int i = 1;
+					while (i < numPlayers) {
+						s = server.accept();
+						listaPlayers.add(s);
+						listaOut.add(new ObjectOutputStream(s.getOutputStream()));
+						listaOut.get(i).flush();
+						listaOut.get(i).writeInt(i);
+						listaOut.get(i).flush();
+						i++;
+					}
 				}
-			}
-			starting = true;
-		} catch (IOException e) {}
-		partida = new Partida(listaPlayers, listaOut);
-		partida.playGame();
-		closeServer();
+				starting = true;
+			} catch (IOException e) {}
+			partida = new Partida(listaPlayers, listaOut);
+			partida.playGame();
+			closeServer();
+		}
 	}
 
-    private void closeServer() {
+	public void closeServer() {
     	try {
+    		partida.closeGates();
 			server.close();
+			client.closeClient();
+			client.interrupt();
 		}
     	catch (IOException e) {}
 	}

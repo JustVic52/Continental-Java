@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import audio.AudioPlayer;
+import audioClasses.AudioPlayer;
 import mainGame.Game;
 import ui.AudioOptions;
 import ui.URMButton;
