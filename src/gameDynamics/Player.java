@@ -13,9 +13,9 @@ import ui.ResguardoOverlay;
 
 public class Player extends Round {
 	
-	private int turno, ciclo, numRound = 1;
+	private int turno, ciclo = 0, numRound = 1, contRetake = 5, contDes = 0;
 	private Mano mano;
-	private boolean roundWinner, gameWinner, yourTurn = false, retake = false;
+	private boolean roundWinner, gameWinner, yourTurn = false, retake = false, taken = false, vaADescartar = false;
 	private volatile boolean isDescartes, isBaraja, descartado;
 	private ResguardoOverlay resguardo;
 	private ArrayList<Bajada> bajadaList;
@@ -25,7 +25,6 @@ public class Player extends Round {
 	
 	public Player(int t) {
 		turno = t;
-		ciclo = 1;
 		mano = new Mano();
 		roundWinner = false;
 		gameWinner = false;
@@ -52,10 +51,6 @@ public class Player extends Round {
 			if (nameList.get(i).equals("")) turns.add(false);
 		}
 	}
-
-	public void give() {
-		mano.give();
-	}
 	
 	public void setTurno(int t) {
 		turno = t;
@@ -81,6 +76,14 @@ public class Player extends Round {
 		return gameWinner;
 	}
 	
+	public boolean isVaADescartar() {
+		return vaADescartar;
+	}
+
+	public void setVaADescartar(boolean vaADescartar) {
+		this.vaADescartar = vaADescartar;
+	}
+
 	public void setNumRound(int rapiño) { numRound = rapiño; }
 	
 	public void roundWin() {
@@ -93,14 +96,18 @@ public class Player extends Round {
 		return roundWinner;
 	}
 	
-	public void retake() {
-		if (mano.getRetake()) { mano.retake(); }
-	}
-	
 	public void select(int num) { //añade una carta a la selección
 		mano.select(num);
 	}
 	
+	public boolean isTaken() {
+		return taken;
+	}
+
+	public void setTaken(boolean taken) {
+		this.taken = taken;
+	}
+
 	public void deselect() { //quita una carta de la selección
 		mano.deselect();
 	}
@@ -279,4 +286,16 @@ public class Player extends Round {
 		turns = aux3;
 		setYourTurn(turns.get(turno));
 	}
+
+	public int getContRetake() {
+		return contRetake;
+	}
+	
+	public void contRetake() { if (contRetake > 0 && taken && !yourTurn) contRetake--; }
+
+	public int getContDes() {
+		return contDes;
+	}
+	
+	public void setContDes(int nice) { contDes = nice; }
 }

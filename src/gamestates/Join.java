@@ -1,5 +1,6 @@
 package gamestates;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -57,8 +58,11 @@ public class Join extends State implements Statemethods {
 
 	@Override
 	public void draw(Graphics g) {
+		g.setColor(Color.white);
 		g.drawImage(background, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+		g.drawString("v1.0.0 release", 10, Game.GAME_HEIGHT);
 		g.drawImage(overlay, x, y, width, height, null);
+		g.setColor(Color.black);
 		
 		for (URMButton urm : buttons) {
 			urm.draw(g, 1);
@@ -90,11 +94,11 @@ public class Join extends State implements Statemethods {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
 				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
-//				if (!nombre.getTexto().equals("") && !ip.getTexto().equals("")) {
+				if (!nombre.getTexto().equals("") && !ip.getTexto().equals("")) {
 					buttons[0].setMousePressed(false);
 					Socket s = null;
 					try {
-						s = new Socket(/*ip.getTexto()*/ InetAddress.getLocalHost(), 6020);
+						s = new Socket(ip.getTexto() /*InetAddress.getLocalHost()*/, 6020);
 						s.setKeepAlive(true);
 						client = new Client(s, nombre.getTexto());
 						client.start();
@@ -110,7 +114,7 @@ public class Join extends State implements Statemethods {
 							
 						}
 					}
-//				}
+				}
 			}
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
@@ -154,4 +158,8 @@ public class Join extends State implements Statemethods {
 	}
 	
 	public static Client getClient() { return client; }
+
+	public static void setClient(Client object) {
+		client = object;
+	}
 }

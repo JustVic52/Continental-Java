@@ -1,5 +1,6 @@
 package gamestates;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -44,8 +45,11 @@ public class Options extends State implements Statemethods {
 
 	@Override
 	public void draw(Graphics g) {
+		g.setColor(Color.white);
 		g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		g.drawImage(optionsBackgroundImg, bgX, bgY, bgW, bgH, null);
+		g.drawString("v1.0.0 release", 10, Game.GAME_HEIGHT);
+		g.setColor(Color.black);
 
 		menuB.draw(g, 1);
 		audioOptions.draw(g);

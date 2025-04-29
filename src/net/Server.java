@@ -21,6 +21,7 @@ public class Server extends Thread {
 	private int numPlayers;
 	private String nombre = "";
 	private List<Socket> listaPlayers;
+	private boolean starting = false;
 
 	public Server(ServerSocket ss, int np, String name) {
 		numPlayers = np;
@@ -29,9 +30,7 @@ public class Server extends Thread {
 		server = ss;
 		try {
 			server.setReuseAddress(true);
-		} catch (SocketException e) {
-			
-		}
+		} catch (SocketException e) {}
 	}
 	
 	@Override
@@ -62,28 +61,29 @@ public class Server extends Thread {
 					i++;
 				}
 			}
-		} catch (UnknownHostException e) {
-			closeServer();
-		} catch (IOException e) {
-			closeServer();
-		}
+			starting = true;
+		} catch (IOException e) {}
 		partida = new Partida(listaPlayers, listaOut);
 		partida.playGame();
 		closeServer();
 	}
 
-    public void closeServer() {
-        try {
-            server.close();
-        } catch (final IOException e) {
-        }
-    }
+    private void closeServer() {
+    	try {
+			server.close();
+		}
+    	catch (IOException e) {}
+	}
 
-    public ServerSocket getServerSocket() {
+	public ServerSocket getServerSocket() {
         return server;
     }
     
     public Partida getPartida() { return partida; }
     
     public Client getClient() { return client; }
+
+	public boolean getStarting() {
+		return starting;
+	}
 }

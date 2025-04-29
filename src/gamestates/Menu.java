@@ -49,7 +49,7 @@ public class Menu extends State implements Statemethods {
 		g.drawImage(background, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		g.drawImage(overlay, x, y, width, height, null);
 		g.setColor(Color.white);
-		g.drawString("v0.9.5 pre-release", 10, Game.GAME_HEIGHT);
+		g.drawString("v1.0.0 release", 10, Game.GAME_HEIGHT);
 
 		for (MenuButton mb : buttons) {
 			mb.draw(g);

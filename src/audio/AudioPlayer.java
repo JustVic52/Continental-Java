@@ -53,7 +53,8 @@ public class AudioPlayer {
 	}
 	
 	private void loadSongs() {
-		String[] names = {"Menu theme", "Card Faces On My Mind", "About that ace", "to be and just to be", "CardShark Dreams", "Ace of Pixels", "In a blank world"};
+		String[] names = {"Menu theme", "Card Faces On My Mind", "About that ace", "to be and just to be", 
+				"CardShark Dreams", "Ace of Pixels", "In a blank world", "Pixelated Love", "Pixel Showdown", "Pixel Hearts", "In a pixel world"};
 		songs = new Clip[names.length];
 		for (int i = 0; i < songs.length; i++) {
 			songs[i] = getClip(names[i]);

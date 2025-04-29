@@ -32,6 +32,7 @@ public class LoadSave {
 	public static final String PAUSE_BACKGROUND = "pause_menu.png";
 	public static final String OPTIONS_MENU = "options_background.png";
 	public static final String CIRCLETIMER = "circleTimer.png";
+	public static final String WAITING = "waiting.png";
 
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 
 import audio.AudioPlayer;
 import gamestates.Gamestate;
+import gamestates.Host;
+import gamestates.Join;
 import gamestates.Playing;
 import mainGame.Game;
 import utilz.Constants;
@@ -21,7 +23,7 @@ public class PauseOverlay {
 	private BufferedImage backgroundImg;
 	private int bgX, bgY, bgW, bgH;
 	private AudioOptions audioOptions;
-	private URMButton quitOptions, openOptions;
+	private URMButton quitOptions, openOptions, home;
 	private Game game;
 
 	public PauseOverlay(Game game) {
@@ -32,11 +34,11 @@ public class PauseOverlay {
 	}
 	
 	private void createUrmButtons() {
-		int unpauseX = 640 - 28;
 		int bY = 430;
 
-		quitOptions = new URMButton(unpauseX, bY, 1);
-		openOptions = new URMButton(1270 - 28, 8, 3);
+		quitOptions = new URMButton(682, bY, 1);
+		openOptions = new URMButton(1242, 8, 3);
+		home = new URMButton(540, bY, 2);
 	}
 
 	private void loadBackground() {
@@ -61,6 +63,7 @@ public class PauseOverlay {
 
 			// UrmButtons
 			quitOptions.draw(g, 1);
+			home.draw(g, 1);
 		}
 	}
 
@@ -72,6 +75,10 @@ public class PauseOverlay {
 		if (visible) {
 			if (quitOptions.getHitbox().contains(e.getX(), e.getY())) {
 				quitOptions.setMousePressed(true);
+				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
+			}
+			if (home.getHitbox().contains(e.getX(), e.getY())) {
+				home.setMousePressed(true);
 				game.getAudioPlayer().playEffect(AudioPlayer.FLICK);
 			}
 			else audioOptions.mousePressed(e);
@@ -87,22 +94,34 @@ public class PauseOverlay {
 		if (visible) {
 			if (quitOptions.getHitbox().contains(e.getX(), e.getY())) {
 				if (quitOptions.isMousePressed()) { visible = false; game.getAudioPlayer().playEffect(AudioPlayer.FLACK); }
-			} else audioOptions.mouseReleased(e);
+			}
+			if (home.getHitbox().contains(e.getX(), e.getY())) {
+				if (home.isMousePressed()) {
+					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
+					game.getAudioPlayer().playSong(AudioPlayer.MENU_THEME);
+					Gamestate.state = Gamestate.MENU;
+				}
+			}
+			else audioOptions.mouseReleased(e);
 		} else {
 			if (openOptions.getHitbox().contains(e.getX(), e.getY()))
 				if (openOptions.isMousePressed()) { visible = true; game.getAudioPlayer().playEffect(AudioPlayer.FLACK); }
 		}
 		quitOptions.resetBools();
 		openOptions.resetBools();
+		home.resetBools();
 	}
 
 	public void mouseMoved(MouseEvent e) {
 		quitOptions.setMouseOver(false);
 		openOptions.setMouseOver(false);
+		home.setMouseOver(false);
 
 		if (visible) {
 			if (quitOptions.getHitbox().contains(e.getX(), e.getY()))
 				quitOptions.setMouseOver(true);
+			if (home.getHitbox().contains(e.getX(), e.getY()))
+				home.setMouseOver(true);
 			else audioOptions.mouseMoved(e);
 		} else {
 			if (openOptions.getHitbox().contains(e.getX(), e.getY()))

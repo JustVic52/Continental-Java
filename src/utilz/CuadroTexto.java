@@ -71,10 +71,8 @@ public class CuadroTexto {
 		if (active) {
 			if (e.getKeyChar() == '\b' && texto.length() > 0) {
 				texto = texto.substring(0, texto.length() - 1);
-			} else if (Character.isLetterOrDigit(e.getKeyChar()) || e.getKeyChar() == ' ') {
-				if (texto == null || texto.length() <= length - 1) {
-					texto += e.getKeyChar();
-				}
+			} else if (texto == null || texto.length() <= length - 1) {
+				texto += e.getKeyChar();
 			}
 		}
 	}

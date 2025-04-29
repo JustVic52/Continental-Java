@@ -16,7 +16,7 @@ public class Client extends Thread {
 	private Player player;
 	private final Socket socket;
 	private String nombre = "";
-	private boolean endRound = false, end = false, roundOver = false;
+	private boolean endRound = false, end = false, roundOver = false, starting = false, gameOver = false;
 	private boolean yourTurn = false;
 	private int numRound = 1;
 	ObjectOutputStream out;
@@ -39,6 +39,7 @@ public class Client extends Thread {
 			recievePlayers();
 			//Nombres de los jugadores
 			recieveNames();
+			starting = true;
 			//lógica del juego
 			for (int i = 0; i < 10; i++) {
 				//Recibir cartas
@@ -46,7 +47,9 @@ public class Client extends Thread {
 				//jugar ronda
 				runGame();
 			}			
-			
+			boolean winner = in.readBoolean();
+			player.setGameWinner(winner);
+			gameOver = true;
 			in.close();
 			out.close();
 		} catch (IOException e) {
@@ -76,6 +79,7 @@ public class Client extends Thread {
 	private void runGame() {
 		roundOver = false;
 		int action = 1;
+		boolean vaADescartar = false;
 		ArrayList<Carta> aux = new ArrayList<>();
 		ArrayList<Bajada> aux2 = new ArrayList<>();
 		ArrayList<Boolean> aux3 = new ArrayList<>();
@@ -89,22 +93,26 @@ public class Client extends Thread {
 				aux3 = (ArrayList<Boolean>) in.readObject();
 				player.setTurns(aux3);
 				yourTurn = player.isYourTurn();
+				player.contRetake();
 				if (yourTurn) {
 					//fase 1: robar
 					boolean baraja = false, descartes = false;
-					while (!baraja && !descartes) {
+					while (!baraja && !descartes && !player.isTaken()) {
 						baraja = player.isBaraja();
 						descartes = player.isDescartes();
 					}
+					if (player.isTaken()) { action = 0; }
 					if (player.isBaraja()) { action = 1; }
 					if (player.isDescartes()) { action = 2; }
 					out.writeInt(action);
 					out.flush();
+					if (action != 0) recieveCard();
 					player.setBaraja(false);
 					player.setDescartes(false);
-					recieveCard();
 					out.writeObject(player.getFullMano().getDescartes().getDescartes());
 					out.flush();
+					vaADescartar = in.readBoolean();
+					player.setVaADescartar(vaADescartar);
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
 					//fase 2: bajarse (opcional)
@@ -150,6 +158,27 @@ public class Client extends Thread {
 						while (!descartado) { descartado = player.isDescartado(); }
 						out.writeObject(player.getFullMano().getDescartes().getDescartes());
 						out.flush();
+						vaADescartar = in.readBoolean();
+						player.setVaADescartar(vaADescartar);
+						player.setContDes(1);
+						aux = (ArrayList<Carta>) in.readObject();
+						player.setFullDescartes(aux);
+						player.setCiclo(1);
+						if (player.getNameList().size() != 1) try { Thread.sleep(3000); } catch (InterruptedException e) {}
+						player.setCiclo(0);
+						out.writeBoolean(player.isRetake());
+						out.flush();
+						boolean tempRetake = in.readBoolean();
+						if (tempRetake) {
+							Carta c = (Carta) in.readObject();
+							player.take(c);
+							player.setTaken(true);
+							player.getFullMano().getDescartes().remove();
+							out.writeObject(player.getFullMano().getDescartes().getDescartes());
+							out.flush();
+						} else { player.setTaken(false); }
+						vaADescartar = in.readBoolean();
+						player.setVaADescartar(vaADescartar);
 						aux = (ArrayList<Carta>) in.readObject();
 						player.setFullDescartes(aux);
 						end = player.getFullMano().isEmpty();
@@ -157,6 +186,8 @@ public class Client extends Thread {
 						out.flush();
 					}
 				} else {
+					vaADescartar = in.readBoolean();
+					player.setVaADescartar(vaADescartar);
 					aux = (ArrayList<Carta>) in.readObject();
 					player.setFullDescartes(aux);
 					boolean temp = in.readBoolean();
@@ -165,6 +196,26 @@ public class Client extends Thread {
 					} else {
 						aux2 = (ArrayList<Bajada>) in.readObject();
 						player.setListBajada(aux2);
+						vaADescartar = in.readBoolean();
+						player.setVaADescartar(vaADescartar);
+						player.setContDes(1);
+						aux = (ArrayList<Carta>) in.readObject();
+						player.setFullDescartes(aux);
+						try { Thread.sleep(3000); } catch (InterruptedException e) {}
+						boolean tempRetake = player.isRetake();
+						out.writeBoolean(tempRetake);
+						out.flush();
+						tempRetake = in.readBoolean();
+						if (tempRetake) {
+							Carta c = (Carta) in.readObject();
+							player.take(c);
+							player.setTaken(true);
+							player.getFullMano().getDescartes().remove();
+							out.writeObject(player.getFullMano().getDescartes().getDescartes());
+							out.flush();
+						} else { player.setTaken(false); }
+						vaADescartar = in.readBoolean();
+						player.setVaADescartar(vaADescartar);
 						aux = (ArrayList<Carta>) in.readObject();
 						player.setFullDescartes(aux);
 						end = in.readBoolean();
@@ -181,7 +232,7 @@ public class Client extends Thread {
 		player.setRoundWinner(player.getFullMano().isEmpty());
 		exchangePoints();
 		roundOver = true;
-		try { Thread.sleep(5000); } catch (InterruptedException e) {}
+		try { Thread.sleep(3000); } catch (InterruptedException e) {}
 		player.update();
 	}
 
@@ -245,4 +296,21 @@ public class Client extends Thread {
 	public String getNombre() { return nombre; }
 	
 	public boolean isRoundOver() { return roundOver; }
+
+	public boolean getStarting() {
+		return starting;
+	}
+
+	public void closeClient() {
+		try {
+			out.close();
+			in.close();
+			socket.close();
+		}
+		catch (IOException e) {}
+	}
+
+	public boolean isGameOver() {
+		return gameOver;
+	}
 }

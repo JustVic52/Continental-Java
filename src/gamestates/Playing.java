@@ -33,7 +33,7 @@ public class Playing extends State implements Statemethods {
 	
 	//Playing necesita el player, los botones de retake y bajar, el botón de pausa, y la radio
 
-	private BufferedImage tablero, fondo;
+	private BufferedImage tablero, fondo, waiting;
 	private Player player = null;
 	private GameButton[] buttons = new GameButton[2];
 	private ResguardoOverlay resguardo;
@@ -51,6 +51,7 @@ public class Playing extends State implements Statemethods {
 		super(g);
 		tablero = LoadSave.GetSpriteAtlas(LoadSave.TABLERO);
 		fondo = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
+		waiting = LoadSave.GetSpriteAtlas(LoadSave.WAITING);
 		resguardo = new ResguardoOverlay(1);
 		pointDisplay = new PointsOverlay();
 		pauseOverlay = new PauseOverlay(g);
@@ -93,21 +94,37 @@ public class Playing extends State implements Statemethods {
 			if (resguardo != player.getResguardo()) { resguardo = player.getResguardo(); }
 			if (pointDisplay.getPointList() != player.getPointList()) { pointDisplay.setPointList(player.getPointList()); }
 			if (pointDisplay.getNameList() != player.getNameList()) { pointDisplay.setNameList(player.getNameList()); }
-			if (aux != player.getTurns()) { aux = player.getTurns(); if (player.isYourTurn()) game.getAudioPlayer().playEffect(AudioPlayer.TURN); }
-
+			if (aux != player.getTurns()) {
+				aux = player.getTurns(); 
+				if (player.isYourTurn()) { game.getAudioPlayer().playEffect(AudioPlayer.TURN); }
+			}
+			if (player.isVaADescartar()) {
+				if (player.getContDes() == 1 && player.getNameList().size() != 1) { player.setContDes(0); circleTimer.start(); }
+			}
 			g.drawImage(tablero, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 			if (!resguardo.isActivated()) { buttons[0].draw(g); }
 			buttons[1].draw(g);
 			for (Bajada b : bajadas) {
 				if (b != null && b.isBajado()) { b.draw(g, player.getFullMano().getImage(), player.getFullMano().getMarco(), player.getFullMano().getAddMarco(), player.getFullMano().getClippedMarco()); }
 			}
-			circleTimer.draw(g);
+			if (player.getNameList().size() != 1) circleTimer.draw(g);
 			resguardo.draw(g, player.getFullMano().getImage());
 			player.render(g, resguardo.getSlots(), resguardo.isActivated());
 			printStrings(g);
 			pauseOverlay.draw(g);
 			if (Join.getClient() != null) {
-				if (Join.getClient().isRoundOver()) {
+				if (Join.getClient().isGameOver()) {
+					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+					pointDisplay.draw(g, player.getGameWinner());
+					if (contSound == 0) {
+						if (player.getRoundWinner()) game.getAudioPlayer().playEffect(AudioPlayer.LVL_COMPLETED);
+						else game.getAudioPlayer().playEffect(AudioPlayer.LVL_LOST);
+						contSound = 1;
+					}
+					game.getAudioPlayer().playSong(AudioPlayer.MENU_THEME);
+					Gamestate.state = Gamestate.MENU;
+				}
+				else if (Join.getClient().isRoundOver()) {
 					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 					pointDisplay.draw(g, player.getRoundWinner());
 					if (contSound == 0) {
@@ -117,7 +134,18 @@ public class Playing extends State implements Statemethods {
 					}
 				}
 			} else {
-				if (Host.getServer().getClient().isRoundOver()) {
+				if (Host.getServer().getClient().isGameOver()) {
+					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+					pointDisplay.draw(g, player.getGameWinner());
+					if (contSound == 0) {
+						if (player.getRoundWinner()) game.getAudioPlayer().playEffect(AudioPlayer.LVL_COMPLETED);
+						else game.getAudioPlayer().playEffect(AudioPlayer.LVL_LOST);
+						contSound = 1;
+					}
+					game.getAudioPlayer().playSong(AudioPlayer.MENU_THEME);
+					Gamestate.state = Gamestate.MENU;
+				}
+				else if (Host.getServer().getClient().isRoundOver()) {
 					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
 					pointDisplay.draw(g, player.getRoundWinner());
 					if (contSound == 0) {
@@ -125,6 +153,21 @@ public class Playing extends State implements Statemethods {
 						else game.getAudioPlayer().playEffect(AudioPlayer.LVL_LOST);
 						contSound = 1;
 					}
+				}
+			}
+			if (Join.getClient() != null) {
+				if (!Join.getClient().getStarting()) {
+					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+					g.drawImage(waiting, (Constants.TableroConstants.TABLERO_WIDTH - waiting.getWidth()) / 2, (Constants.TableroConstants.TABLERO_HEIGHT - waiting.getHeight()) / 2, waiting.getWidth(), waiting.getHeight(), null);
+					g.drawString("Waiting for", 586, 360);
+					g.drawString("players...", 586, 390);
+				}
+			} else {
+				if (!Host.getServer().getStarting()) {
+					g.drawImage(fondo, 0, 0, Constants.TableroConstants.TABLERO_WIDTH, Constants.TableroConstants.TABLERO_HEIGHT, null);
+					g.drawImage(waiting, (Constants.TableroConstants.TABLERO_WIDTH - waiting.getWidth()) / 2, (Constants.TableroConstants.TABLERO_HEIGHT - waiting.getHeight()) / 2, waiting.getWidth(), waiting.getHeight(), null);
+					g.drawString("Waiting for", 588, 363);
+					g.drawString("players...", 588, 393);
 				}
 			}
 		}
@@ -136,17 +179,18 @@ public class Playing extends State implements Statemethods {
 			fuente = fuente.deriveFont(Font.PLAIN, 14);
 			g.setFont(fuente);
 			g.setColor(Color.white);
+			g.drawString(player.getContRetake() + "/5", 1210, 565);
 			g.drawString("Objetivo:", 22, 592);
 			g.drawString(player.getBajada().getRound().sacarObjetivosEscaleras(), 22, 609);
 			if (player.getBajada().getRound().sacarObjetivosEscaleras().equals("")) {
 				g.drawString(player.getBajada().getRound().sacarObjetivosTrios(), 22, 609);
 			} else { g.drawString(player.getBajada().getRound().sacarObjetivosTrios(), 22, 626); }
 			int yPos = 648;
-			for (int i = 0; i < player.getTurns().size(); i++) {
+			for (int i = 0; i < player.getNameList().size(); i++) {
 				g.setColor(Color.white);
 				if (i == player.getTurno()) g.drawString(player.getNameList().get(i) + " (you)", 42, yPos);
 				else g.drawString(player.getNameList().get(i), 42, yPos);
-				if (player.getTurns().get(i)) {
+				if (i < player.getTurns().size() && player.getTurns().get(i)) {
 					g.setColor(new Color(47, 143, 33, 255));
 					g.fillRect(24, yPos - 19, 8, 8);
 				}
@@ -161,12 +205,14 @@ public class Playing extends State implements Statemethods {
 		
 		pauseOverlay.mousePressed(e);
 		
+		if (player.isTaken()) numActions = 1;
+		
 		if (!pauseOverlay.isVisible()) {
 			if (baraja.getHitbox().contains(e.getX(), e.getY()) 
-					&& numActions == 0 && player.isYourTurn()) { baraja.setSelected(true); }
+					&& numActions == 0 && player.isYourTurn() && !player.isTaken() && player.getCiclo() == 0) { baraja.setSelected(true); }
 			
 			if (descartes.getHitbox().contains(e.getX(), e.getY()) && !descartes.isEmpty() 
-					&& numActions == 0 && player.isYourTurn()) { descartes.setSelected(true); }
+					&& numActions == 0 && player.isYourTurn() && !player.isTaken() && player.getCiclo() == 0) { descartes.setSelected(true); }
 			
 			for (int i = 0; i < player.getFullMano().getSlots().size(); i++) {
 				Carta c = player.getFullMano().getSlots().get(i).getCarta();
@@ -296,7 +342,15 @@ public class Playing extends State implements Statemethods {
 			} else {
 				if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
-					if (buttons[0].getIndex() == 1) { buttons[0].setIndex(2); player.setRetake(true); }
+					if (buttons[0].getIndex() == 1) {
+						if (player.getContRetake() > 0) {
+							buttons[0].setIndex(2);
+							player.setRetake(true);
+						} else {
+							buttons[0].setIndex(0);
+							player.setRetake(false);
+						}
+					}
 					if (buttons[0].getIndex() == 3) { buttons[0].setIndex(0); player.setRetake(false); }
 				} else { 
 					if (buttons[0].getIndex() == 1) { buttons[0].setIndex(0); }
@@ -328,14 +382,14 @@ public class Playing extends State implements Statemethods {
 				}
 			}
 			
-			if (baraja.isSelected() && numActions == 0 && baraja.getHitbox().contains(e.getX(), e.getY())) {
+			if (baraja.isSelected() && numActions == 0 && baraja.getHitbox().contains(e.getX(), e.getY()) && !player.isTaken()) {
 				game.getAudioPlayer().playEffect(AudioPlayer.ROBAR);
 				player.setBaraja(true);
 				numActions = 1;
 				baraja.setSelected(false);
 			}
 			
-			if (descartes.isSelected() && numActions == 0 && descartes.getHitbox().contains(e.getX(), e.getY())) {
+			if (descartes.isSelected() && numActions == 0 && descartes.getHitbox().contains(e.getX(), e.getY()) && !player.isTaken()) {
 				game.getAudioPlayer().playEffect(AudioPlayer.ROBAR);
 				player.setDescartes(true);
 				descartes.remove();
@@ -349,7 +403,6 @@ public class Playing extends State implements Statemethods {
 				}
 				player.getFullMano().discard(slot.isIn(), posI, posJ);
 				descartes.take(player.getUltimaCarta());
-				if (player.isRetake()) circleTimer.start();
 				player.setDescartado(true);
 			} else {
 				player.deselect();

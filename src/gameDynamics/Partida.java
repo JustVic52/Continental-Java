@@ -1,23 +1,26 @@
 package gameDynamics;
 
 import java.util.List;
+import java.util.Map;
 
 import cardTreatment.Bajada;
 import cardTreatment.Baraja;
 import cardTreatment.Carta;
 import cardTreatment.Descartes;
+import gamestates.Gamestate;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Partida {
 	
 	private Round round;
 	private List<Socket> socketPlayers;
-	private int numJugadores;
+	private int numJugadores, numRetake = 0;
 	private Descartes descartes;
 	private boolean endRound;
 	private Baraja baraja;
@@ -83,7 +86,7 @@ public class Partida {
 					}
 					aux = (ArrayList<Carta>) inS.readObject();
 					descartes.setDescartes(aux);
-					updateDescartes();
+					updateDescartes(false);
 					//fase 2: bajarse (opcional)
 					boolean bajarse = inS.readBoolean();
 					if (bajarse) {
@@ -113,25 +116,61 @@ public class Partida {
 						//fase 3: descartar
 						aux = (ArrayList<Carta>) inS.readObject();
 						descartes.setDescartes(aux);
-						updateDescartes();
+						updateDescartes(true);
+						numRetake = i;
+						setAndSendRetakes(numRetake);
+						updateDescartes(true);
 						end = inS.readBoolean();
 						updateEnd(end, outS);
 						if (end) break;
 					}
-				} catch (IOException e) {
-					
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
+				} catch (IOException | ClassNotFoundException e) {}
 			}
 			endRound = end;
 		}
 		countPoints();
-		try { Thread.sleep(5000); } catch (InterruptedException e) {}
+		try { Thread.sleep(3000); } catch (InterruptedException e) {}
 		round.updateRound();
 		descartes = new Descartes();
 		baraja = new Baraja();
 		bajadas = new ArrayList<>();
+	}
+
+	private void setAndSendRetakes(int numR) {
+		ArrayList<Boolean> retakes = new ArrayList<>();
+		Map<Boolean, Integer> prioridades = new HashMap<>();
+		for (ObjectInputStream inS : in) {
+			try {
+				boolean temp = inS.readBoolean();
+				retakes.add(temp);
+			}
+			catch (IOException e) {}
+		}
+		for (int i = 0; i < numJugadores; i++) {
+	        int diff = (i - numR + numJugadores) % numJugadores;
+	        prioridades.put(retakes.get(i), diff == 0 ? 0 : numJugadores - diff);
+	    }
+		int highest = -1;
+		for (int i = 0; i < numJugadores; i++) {
+			if (retakes.get(i) && prioridades.get(retakes.get(i)) > highest) highest = i;
+		}
+		for (int i = 0; i < numJugadores; i++) {
+			ObjectOutputStream outS = out.get(i);
+			try {
+				outS.writeBoolean(highest == i);
+				outS.flush();
+			}
+			catch (IOException e) {}
+		}
+		if (highest != -1) {
+			sendCard(descartes.getCarta(), out.get(highest));
+			descartes.remove();
+			try {
+				ArrayList<Carta> aux = (ArrayList<Carta>) in.get(highest).readObject();
+				descartes.setDescartes(aux);
+			}
+			catch (ClassNotFoundException | IOException e) {}
+		}
 	}
 
 	private void givePlayers() {
@@ -168,13 +207,15 @@ public class Partida {
 		}
 	}
 
-	private void updateDescartes() {
+	private void updateDescartes(boolean vaADescartar) {
 		for (ObjectOutputStream outS : out) {
 			try {
+				outS.writeBoolean(vaADescartar);
+				outS.flush();
 				outS.writeObject(descartes.getDescartes());
 				outS.flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Gamestate.state = Gamestate.MENU;
 			}
 		}
 	}
@@ -245,7 +286,21 @@ public class Partida {
 			//jugamos ronda
 			run();
 		}
+		setWinner();
 		//Decimos lo del winner y tal
+	}
+
+	private void setWinner() {
+		int lowest = 0;
+		for (int i = 0; i < numJugadores; i++) {
+			if (pointList.get(i) < pointList.get(lowest)) lowest = i;
+		}
+		for (int i = 0; i < numJugadores; i++) {
+			try {
+				out.get(i).writeBoolean(lowest == i);
+				out.get(i).flush();
+			} catch (IOException e) {}
+		}
 	}
 
 	private void giveNames() {

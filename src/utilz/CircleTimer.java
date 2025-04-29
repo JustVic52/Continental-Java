@@ -31,7 +31,7 @@ public class CircleTimer {
 			public void actionPerformed(ActionEvent e) {
 				if (elapsedSeconds == 0) game.getAudioPlayer().playEffect(AudioPlayer.BEEP);
 				elapsedSeconds++;
-                if (elapsedSeconds >= 5) { // Después de 4 cortes (5 segundos en total)
+                if (elapsedSeconds >= 3) { // Después de 4 cortes (5 segundos en total)
                 	active = false;
                 	elapsedSeconds = 0;
                     timer.stop();
@@ -55,7 +55,7 @@ public class CircleTimer {
 //            int y = (height - diameter) / 2;
 
             // El ángulo que queda:
-            int remainingAngle = 360 - (elapsedSeconds * 90);
+            int remainingAngle = 360 - (elapsedSeconds * 120);
 
             // Solo dibujar si queda algo
             if (remainingAngle > 0) {

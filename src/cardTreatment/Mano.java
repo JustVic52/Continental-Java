@@ -15,7 +15,6 @@ public class Mano {
 	private List<Slot> manoSlot;
 	private List<Slot[]> resguardo;
 	private Carta selection;
-	private Carta cartaEscogida = null;
 	private Carta ultimaCartaEliminada; //para el retake
 	private boolean canRetake = false;
 	private BufferedImage img, marco, addMarco, clippedMarco;
@@ -76,13 +75,6 @@ public class Mano {
 	
 	public BufferedImage getMarco() {
 		return marco;
-	}
-
-	public void give() {
-		Carta c = baraja.give();
-		cartaEscogida = c;
-		mano.add(c); //añade una carta de la baraja y la elimina de la lista.
-		addToSlot(c); //añade la carta al slot
 	}
 	
 	public int addToSlot(Carta c) {
@@ -184,10 +176,6 @@ public class Mano {
 		mano.add(posI, carta);
 	}
 	
-	public void retake() {
-		if (canRetake) { mano.add(ultimaCartaEliminada); }
-	}
-	
 	public void select(int num) {
 		if (!mano.get(num).isResguardada()) {
 			selection = mano.get(num);
@@ -271,10 +259,6 @@ public class Mano {
 
 	public void setSelection(Carta carta) {
 		selection = carta;
-	}
-	
-	public Carta getCartaEscogida() {
-		return cartaEscogida;
 	}
 
 	public Baraja getBaraja() {

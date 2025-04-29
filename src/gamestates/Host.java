@@ -1,5 +1,6 @@
 package gamestates;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -58,8 +59,12 @@ public class Host extends State implements Statemethods {
 
 	@Override
 	public void draw(Graphics g) {
+		g.setColor(Color.white);
 		g.drawImage(background, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+		g.drawString("v1.0.0 release", 10, Game.GAME_HEIGHT);
+		
 		g.drawImage(overlay, x, y, width, height, null);
+		g.setColor(Color.black);
 		
 		for (URMButton urm : buttons) {
 			urm.draw(g, 1);
@@ -98,7 +103,7 @@ public class Host extends State implements Statemethods {
 		if (buttons[0].getHitbox().contains(e.getX(), e.getY())) {
 			if (buttons[0].isMousePressed()) {
 				game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
-//				if (!texto.getTexto().equals("")) {
+				if (!texto.getTexto().equals("")) {
 					buttons[0].setMousePressed(false);
 					ServerSocket ss = null;
 					try {
@@ -108,7 +113,7 @@ public class Host extends State implements Statemethods {
 						boolean clave = server.isAlive();
 						while (clave) { clave = server.getClient() == null; }
 						game.getAudioPlayer().startLoop(AudioPlayer.START_PLAYING);
-								Gamestate.state = Gamestate.PLAYING;
+						Gamestate.state = Gamestate.PLAYING;
 					} catch (IOException e1) {
 						try {
 							if (ss != null) { ss.close(); }
@@ -117,7 +122,7 @@ public class Host extends State implements Statemethods {
 							
 						}
 					}
-//				}
+				}
 			}
 		}
 		if (buttons[1].getHitbox().contains(e.getX(), e.getY())) {
@@ -178,4 +183,8 @@ public class Host extends State implements Statemethods {
 	}
 	
 	public static Server getServer() { return server; }
+
+	public static void setServer(Server object) {
+		server = object;
+	}
 }
