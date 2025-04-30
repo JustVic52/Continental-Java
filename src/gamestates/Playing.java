@@ -304,7 +304,7 @@ public class Playing extends State implements Statemethods {
 			
 			for (i = 0; i < player.getFullMano().getSlots().size(); i++) {
 				Slot s = player.getFullMano().getSlots().get(i);
-				if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+				if (s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 					game.getAudioPlayer().playEffect(AudioPlayer.CARDINSLOT);
 					if (slot.isIn()) {
 						resguardo.getSlots().get(posI)[posJ].remove();
@@ -349,7 +349,7 @@ public class Playing extends State implements Statemethods {
 					for (int j = 0; j < resguardo.getSlots().get(i).length; j++) {
 						Slot s = resguardo.getSlots().get(i)[j];
 						//para meterlo en el resguardo
-						if (s.getCarta() == null && s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
+						if (s.getHitbox().contains(e.getX(), e.getY()) && player.getFullMano().getSelection() != null) {
 							game.getAudioPlayer().playEffect(AudioPlayer.CARDINSLOT);
 							if (slot.isIn()) {
 								resguardo.getSlots().get(posI)[posJ].remove();

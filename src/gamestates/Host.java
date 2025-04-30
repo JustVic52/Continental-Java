@@ -10,7 +10,6 @@ import java.net.ServerSocket;
 
 import audioClasses.AudioPlayer;
 import mainGame.Game;
-import net.Client;
 import net.Server;
 import ui.ComboButton;
 import ui.URMButton;
@@ -62,7 +61,7 @@ public class Host extends State implements Statemethods {
 	public void draw(Graphics g) {
 		g.setColor(Color.white);
 		g.drawImage(background, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
-		g.drawString("v1.0.0 release", 10, Game.GAME_HEIGHT);
+		g.drawString("v1.0.3 release", 10, Game.GAME_HEIGHT);
 		
 		g.drawImage(overlay, x, y, width, height, null);
 		g.setColor(Color.black);

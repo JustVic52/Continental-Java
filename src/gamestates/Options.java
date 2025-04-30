@@ -48,7 +48,7 @@ public class Options extends State implements Statemethods {
 		g.setColor(Color.white);
 		g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		g.drawImage(optionsBackgroundImg, bgX, bgY, bgW, bgH, null);
-		g.drawString("v1.0.0 release", 10, Game.GAME_HEIGHT);
+		g.drawString("v1.0.3 release", 10, Game.GAME_HEIGHT);
 		g.setColor(Color.black);
 
 		menuB.draw(g, 1);

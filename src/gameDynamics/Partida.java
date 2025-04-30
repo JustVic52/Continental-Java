@@ -130,7 +130,7 @@ public class Partida {
 						updateEnd(end, outS);
 						if (end) break;
 					}
-				} catch (IOException | ClassNotFoundException e) {}
+				} catch (IOException | ClassNotFoundException e) { Gamestate.state = Gamestate.QUIT; }
 			}
 			endRound = end;
 		}
@@ -222,7 +222,7 @@ public class Partida {
 				outS.writeObject(descartes.getDescartes());
 				outS.flush();
 			} catch (IOException e) {
-				Gamestate.state = Gamestate.MENU;
+				Gamestate.state = Gamestate.QUIT;
 			}
 		}
 	}

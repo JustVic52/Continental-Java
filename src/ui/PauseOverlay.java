@@ -7,8 +7,6 @@ import java.awt.image.BufferedImage;
 
 import audioClasses.AudioPlayer;
 import gamestates.Gamestate;
-import gamestates.Host;
-import gamestates.Join;
 import mainGame.Game;
 import utilz.LoadSave;
 
@@ -93,8 +91,7 @@ public class PauseOverlay {
 			if (home.getHitbox().contains(e.getX(), e.getY())) {
 				if (home.isMousePressed()) {
 					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
-					game.getAudioPlayer().playSong(AudioPlayer.MENU_THEME);
-					Gamestate.state = Gamestate.MENU;
+					Gamestate.state = Gamestate.QUIT;
 				}
 			}
 			else audioOptions.mouseReleased(e);

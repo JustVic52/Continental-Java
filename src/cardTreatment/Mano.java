@@ -124,6 +124,7 @@ public class Mano {
 
 	public void moveBetweenResguardo(boolean isIn, int posI, int posJ, int finalI, int finalJ) {
 		int cont = findPosI(posI);
+		Carta change = resguardo.get(finalI)[finalJ].getCarta();
 		if (isIn) {
 			resguardo.get(posI)[posJ].remove();
 		} else {
@@ -131,6 +132,14 @@ public class Mano {
 			mano.remove(cont);
 		}
 		resguardo.get(finalI)[finalJ].add(selection);
+		if (change != null) {
+			if (isIn) {
+				resguardo.get(posI)[posJ].add(change);
+			} else {
+				manoSlot.get(posI).add(change);
+				mano.add(cont, change);
+			}
+		}
 	}
 	
 	private int findPosI(int posI) {
@@ -146,16 +155,23 @@ public class Mano {
 
 	public void moveBetweenSlots(boolean isIn, int i, int posI, int posJ) {
 		int posI2 = findPosI(posI);
-		if (manoSlot.get(i).getCarta() == null) {
+		Carta change = manoSlot.get(i).getCarta();
+		if (isIn) {
+			resguardo.get(posI)[posJ].remove();
+		} else {
+			mano.remove(posI2);
+			manoSlot.get(posI).remove();
+		}
+		int i2 = findPosI(i + 1);
+		manoSlot.get(i).add(selection);
+		mano.add(i2, selection);
+		if (change != null) {
 			if (isIn) {
-				resguardo.get(posI)[posJ].remove();
+				resguardo.get(posI)[posJ].add(change);
 			} else {
-				mano.remove(posI2);
-				manoSlot.get(posI).remove();
+				manoSlot.get(posI).add(change);
+				mano.add(posI2, change);
 			}
-			int i2 = findPosI(i + 1);
-			manoSlot.get(i).add(selection);
-			mano.add(i2, selection);
 		}
 	}
 

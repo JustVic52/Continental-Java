@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import cardTreatment.Bajada;
 import cardTreatment.Carta;
 import gameDynamics.Player;
+import gamestates.Gamestate;
 
 public class Client extends Thread {
 
@@ -28,33 +29,31 @@ public class Client extends Thread {
 
 	@Override
 	public void run() {
-		while (!Thread.currentThread().isInterrupted()) {
-			try {
-				//creación y obtención del player.
-				out = new ObjectOutputStream(socket.getOutputStream());
-				out.flush();
-				in = new ObjectInputStream(socket.getInputStream());
-				player = new Player(in.readInt());
-				//número de jugadores
-				recievePlayers();
-				//Nombres de los jugadores
-				recieveNames();
-				starting = true;
-				//lógica del juego
-				for (int i = 0; i < 10; i++) {
-					//Recibir cartas
-					recieveMano();
-					//jugar ronda
-					runGame();
-				}			
-				boolean winner = in.readBoolean();
-				player.setGameWinner(winner);
-				gameOver = true;
-				in.close();
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			//creación y obtención del player.
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.flush();
+			in = new ObjectInputStream(socket.getInputStream());
+			player = new Player(in.readInt());
+			//número de jugadores
+			recievePlayers();
+			//Nombres de los jugadores
+			recieveNames();
+			starting = true;
+			//lógica del juego
+			for (int i = 0; i < 10; i++) {
+				//Recibir cartas
+				recieveMano();
+				//jugar ronda
+				runGame();
+			}			
+			boolean winner = in.readBoolean();
+			player.setGameWinner(winner);
+			gameOver = true;
+			in.close();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -228,9 +227,9 @@ public class Client extends Thread {
 				endRound = end;
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Gamestate.state = Gamestate.QUIT;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			Gamestate.state = Gamestate.QUIT;
 		}
 		player.setRoundWinner(player.getFullMano().isEmpty());
 		exchangePoints();
@@ -262,7 +261,7 @@ public class Client extends Thread {
 			out.flush();
 			aux = (ArrayList<Integer>) in.readObject();
 			player.setPointList(aux);
-		} catch (IOException | ClassNotFoundException e) { e.printStackTrace(); }
+		} catch (IOException | ClassNotFoundException e) { Gamestate.state = Gamestate.QUIT; }
 	}
 
 	private void recieveCard() {
