@@ -91,6 +91,7 @@ public class PauseOverlay {
 			if (home.getHitbox().contains(e.getX(), e.getY())) {
 				if (home.isMousePressed()) {
 					game.getAudioPlayer().playEffect(AudioPlayer.FLACK);
+					game.getAudioPlayer().stopLoop();
 					Gamestate.state = Gamestate.QUIT;
 				}
 			}

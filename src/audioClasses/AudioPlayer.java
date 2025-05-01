@@ -82,7 +82,7 @@ public class AudioPlayer {
 	        
 	        currentClip.addLineListener(event -> {
 	            if (event.getType() == LineEvent.Type.STOP) {
-	                currentClip.close();
+	                currentClip.stop();
 	                playNextSong();
 	            }
 	        });
@@ -114,6 +114,13 @@ public class AudioPlayer {
 		songs[currentSongId].setMicrosecondPosition(0);
 		songs[currentSongId].start();
 		songs[currentSongId].loop(Clip.LOOP_CONTINUOUSLY);
+	}
+	
+	public void stopLoop() {
+		for (int i = 0; i < songs.length; i++) {
+			if (songs[i].isActive()) songs[i].stop();
+			songs[i].close();
+		}
 	}
 	
 	private Clip getClip(String name) {

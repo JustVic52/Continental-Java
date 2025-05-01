@@ -123,23 +123,21 @@ public class Mano {
 	}
 
 	public void moveBetweenResguardo(boolean isIn, int posI, int posJ, int finalI, int finalJ) {
+		//Mover algo al resguardo
 		int cont = findPosI(posI);
 		Carta change = resguardo.get(finalI)[finalJ].getCarta();
 		if (isIn) {
 			resguardo.get(posI)[posJ].remove();
+			if (change != null) resguardo.get(posI)[posJ].add(change);
 		} else {
 			manoSlot.get(posI).remove();
 			mano.remove(cont);
-		}
-		resguardo.get(finalI)[finalJ].add(selection);
-		if (change != null) {
-			if (isIn) {
-				resguardo.get(posI)[posJ].add(change);
-			} else {
+			if (change != null) {
 				manoSlot.get(posI).add(change);
 				mano.add(cont, change);
 			}
 		}
+		resguardo.get(finalI)[finalJ].add(selection);
 	}
 	
 	private int findPosI(int posI) {
@@ -153,26 +151,27 @@ public class Mano {
 		return cont;
 	}
 
-	public void moveBetweenSlots(boolean isIn, int i, int posI, int posJ) {
+	public void moveBetweenSlots(boolean isIn, int finalI, int posI, int posJ) {
+		//poner algo en tu mano
 		int posI2 = findPosI(posI);
-		Carta change = manoSlot.get(i).getCarta();
+		Carta change = manoSlot.get(finalI).getCarta();
 		if (isIn) {
 			resguardo.get(posI)[posJ].remove();
+			if (change != null) resguardo.get(posI)[posJ].add(change);
 		} else {
 			mano.remove(posI2);
 			manoSlot.get(posI).remove();
-		}
-		int i2 = findPosI(i + 1);
-		manoSlot.get(i).add(selection);
-		mano.add(i2, selection);
-		if (change != null) {
-			if (isIn) {
-				resguardo.get(posI)[posJ].add(change);
-			} else {
-				manoSlot.get(posI).add(change);
+			if (change != null) {
 				mano.add(posI2, change);
+				manoSlot.get(posI).add(change);
+				mano.remove(findPosI(finalI));
+				manoSlot.get(finalI).remove();
 			}
 		}
+		int i2 = findPosI(finalI + 1);
+		manoSlot.get(finalI).add(selection);
+		mano.add(i2, selection);
+		
 	}
 
 	private void updateSlots(int pos) {
@@ -252,18 +251,18 @@ public class Mano {
 		return res;
 	}
 	
-//	private String resguardoToString() {
-//		String res = "[";
-//		for (Slot[] sA : resguardo) {
-//			res += "[";
-//			for(int i = 0; i < sA.length; i++) {
-//				if (i != 0) res += ", ";
-//				res += sA[i].getCarta();
-//			}
-//			res += "]";
-//		}
-//		return res + "]";
-//	}
+	private String resguardoToString() {
+		String res = "[";
+		for (Slot[] sA : resguardo) {
+			res += "[";
+			for(int i = 0; i < sA.length; i++) {
+				if (i != 0) res += ", ";
+				res += sA[i].getCarta();
+			}
+			res += "]";
+		}
+		return res + "]";
+	}
 
 	public Carta getUltimaCarta() {
 		return ultimaCartaEliminada;

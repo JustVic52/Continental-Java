@@ -184,6 +184,7 @@ public class Client extends Thread {
 						aux = (ArrayList<Carta>) in.readObject();
 						player.setFullDescartes(aux);
 						end = player.getFullMano().isEmpty();
+						System.out.println(end);
 						out.writeBoolean(end);
 						out.flush();
 					}

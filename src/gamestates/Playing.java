@@ -341,7 +341,6 @@ public class Playing extends State implements Statemethods {
 							c.setSeleccionada(false);
 							c.setX(resguardo.getSlots().get(i)[j].getX());
 							c.setY(resguardo.getSlots().get(i)[j].getY());
-							game.getAudioPlayer().playEffect(AudioPlayer.CARDINSLOT);
 						}
 					}
 				}
@@ -355,7 +354,6 @@ public class Playing extends State implements Statemethods {
 								resguardo.getSlots().get(posI)[posJ].remove();
 							}
 							player.getFullMano().moveBetweenResguardo(slot.isIn(), posI, posJ, i, j);
-							s.add(player.getSelection());
 							player.deselect();
 						}
 					}
