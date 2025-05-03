@@ -26,7 +26,8 @@ public class MenuButton {
 	}
 
 	private void initBounds() {
-		hitbox = new Rectangle(xPos - xOffsetCenter, yPos, B_WIDTH, B_HEIGHT);
+		if (rowIndex == 4) hitbox = new Rectangle(xPos - xOffsetCenter, yPos, B_WIDTH, 43);
+		else hitbox = new Rectangle(xPos - xOffsetCenter, yPos, B_WIDTH, B_HEIGHT);
 	}
 
 	private void loadImgs() {
